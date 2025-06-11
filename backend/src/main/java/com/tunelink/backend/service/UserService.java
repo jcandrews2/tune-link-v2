@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -34,9 +35,14 @@ public class UserService {
         if (user.getDislikedSongs() == null) {
             user.setDislikedSongs(new ArrayList<>());
         }
-        if (user.getRecommendedSongs() == null) {
-            user.setRecommendedSongs(new ArrayList<>());
-        }
+        
+        // Initialize recommended songs with some default songs
+        List<String> initialRecommendations = Arrays.asList(
+            "spotify:track:4cOdK2wGLETKBW3PvgPWqT",  // Example song
+            "spotify:track:0HUTL8i4y4MiGCPB5tZNYh",  // Example song
+            "spotify:track:7qiZfU4dY1lWllzX7mPBI3"   // Example song
+        );
+        user.setRecommendedSongs(new ArrayList<>(initialRecommendations));
         
         return userRepository.save(user);
     }

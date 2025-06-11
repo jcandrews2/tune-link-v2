@@ -1,21 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { FC, useEffect, useState } from "react";
 import useStore from "../store";
 
-interface SpotifyPlayer {
-  position: number;
-  currentTrack: {
-    duration_ms: number;
-  } | null;
-}
-
-interface Store {
-  spotifyPlayer: SpotifyPlayer;
-}
-
-const TrackTime: React.FC = () => {
-  const { spotifyPlayer } = useStore() as Store;
-  const [startPosition, setStartPosition] = useState<string>("0:00");
-  const [endPosition, setEndPosition] = useState<string>("0:00");
+const TrackTime: FC = () => {
+  const { spotifyPlayer } = useStore();
+  const [startPosition, setStartPosition] = useState<string>("-:--");
+  const [endPosition, setEndPosition] = useState<string>("-:--");
 
   useEffect(() => {
     if (!spotifyPlayer.currentTrack) {

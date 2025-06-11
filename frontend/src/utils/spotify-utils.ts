@@ -5,30 +5,32 @@ export interface Token {
 }
 
 export interface SpotifyPlayer {
-  deviceID: string;
+  deviceID: string | null;
 }
 
 export async function playSpotifyTrack(
-  trackID: string,
-  spotifyPlayer: SpotifyPlayer,
+  trackUri: string,
+  player: SpotifyPlayer,
   token: Token
 ): Promise<void> {
+  if (!player.deviceID) return;
+
   try {
     await axios.put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${spotifyPlayer.deviceID}`,
+      `https://api.spotify.com/v1/me/player/play?device_id=${player.deviceID}`,
       {
-        uris: [`spotify:track:${trackID}`],
+        uris: [trackUri],
       },
       {
         headers: {
-          "Content-Type": "application/json",
           Authorization: `Bearer ${token.value}`,
+          "Content-Type": "application/json",
         },
       }
     );
     console.log("Successfully played track!");
   } catch (error) {
-    console.error("Error playing the song:", error);
+    console.error("Error playing track:", error);
   }
 }
 

@@ -3,29 +3,8 @@ import Loading from "./Loading";
 import useStore from "../store";
 import { getDominantColor } from "../utils/player-utils";
 
-interface AlbumImage {
-  url: string;
-}
-
-interface Album {
-  images: AlbumImage[];
-}
-
-interface Track {
-  album: Album;
-}
-
-interface SpotifyPlayer {
-  isActive: boolean;
-  currentTrack: Track | null;
-}
-
-interface Store {
-  spotifyPlayer: SpotifyPlayer;
-}
-
 const Cover: FC = () => {
-  const { spotifyPlayer } = useStore() as Store;
+  const { spotifyPlayer } = useStore();
   const [dominantColor, setDominantColor] = useState<string | null>(null);
   const [animationKey, setAnimationKey] = useState<number>(0);
 
@@ -38,7 +17,7 @@ const Cover: FC = () => {
   };
 
   return (
-    <>
+    <div className="p-4">
       <div className="relative w-[18.75rem] h-[18.75rem] left-1/2 -translate-x-1/2 p-[1.875rem] z-0 select-none">
         {spotifyPlayer.isActive ? (
           <>
@@ -66,7 +45,7 @@ const Cover: FC = () => {
           </div>
         )}
       </div>
-    </>
+    </div>
   );
 };
 

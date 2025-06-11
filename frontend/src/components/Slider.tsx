@@ -2,29 +2,8 @@ import React, { useState, useEffect, useRef, FC } from "react";
 import useStore from "../store";
 import axios from "axios";
 
-interface Track {
-  id: string;
-  duration_ms: number;
-}
-
-interface SpotifyPlayer {
-  currentTrack: Track | null;
-  isPaused: boolean;
-  position: number;
-}
-
-interface Token {
-  value: string;
-}
-
-interface Store {
-  spotifyPlayer: SpotifyPlayer;
-  setSpotifyPlayer: (player: Partial<SpotifyPlayer>) => void;
-  token: Token;
-}
-
 const Slider: FC = () => {
-  const { spotifyPlayer, setSpotifyPlayer, token } = useStore() as Store;
+  const { spotifyPlayer, setSpotifyPlayer, token } = useStore();
   const [progress, setProgress] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const slider = useRef<HTMLInputElement>(null);
@@ -46,7 +25,7 @@ const Slider: FC = () => {
     }
   };
 
-  const setBackground = (value: number, min: number, max: number): void => {
+  const setSliderBackground = (value: number, min: number, max: number): void => {
     const backgroundValue = ((value - min) / (max - min)) * 100;
     if (slider.current) {
       slider.current.style.background = `linear-gradient(to right, white 0%, white ${backgroundValue}%, darkslategrey ${backgroundValue}%, darkslategrey 100%)`;
@@ -98,7 +77,7 @@ const Slider: FC = () => {
     if (progress === 100) {
       setProgress(0);
     }
-    setBackground(progress, 0, 100);
+    setSliderBackground(progress, 0, 100);
 
     if (!spotifyPlayer.currentTrack) {
       return;

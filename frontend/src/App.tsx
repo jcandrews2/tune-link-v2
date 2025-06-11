@@ -1,43 +1,71 @@
-import React, { useEffect, useRef } from "react";
+import React, { useEffect, useRef, FC } from "react";
 import Player from "./components/Player";
 import Login from "./pages/Login";
 import useStore from "./store";
 import { playSpotifyTrack } from "./utils/spotify-utils";
-import SpotifyLogo from "./images/Spotify_Logo_RGB_White.png";
+import axios from "axios";
+import { User, Song } from "./utils/user-utils";
+import { Token } from "./utils/spotify-utils";
 
-function App() {
+interface SpotifyUser {
+  id: string;
+  images: Array<{
+    url: string;
+  }>;
+  error?: any;
+}
+
+interface BackendUser {
+  id: number;
+  spotifyId: string;
+  profilePicture: string | null;
+  likedSongs: Song[];
+  dislikedSongs: Song[];
+  recommendedSongs: Song[];
+}
+
+interface SpotifyPlayer {
+  player: any;
+  isActive: boolean;
+  isPaused: boolean;
+  currentTrack: any | null;
+  position: number;
+  deviceID: string | null;
+  areRecommendationsInitialized: boolean;
+  areRecommendationsLoading: boolean;
+}
+
+const App: FC = () => {
   const {
     spotifyPlayer,
     setSpotifyPlayer,
-    profile,
-    setProfile,
+    user,
+    setUser,
     token,
     setToken,
   } = useStore();
 
   const initialTrackPlayed = useRef(false);
 
-  async function getSpotifyUserInfo() {
+  async function getSpotifyUserInfo(): Promise<SpotifyUser> {
     try {
-      const response = await fetch("https://api.spotify.com/v1/me", {
-        method: "GET",
+      const response = await axios.get<SpotifyUser>("https://api.spotify.com/v1/me", {
         headers: {
           Authorization: `Bearer ${token.value}`,
         },
       });
-      const data = await response.json();
-      console.log(data)
-      return data;
+      return response.data;
     } catch (error) {
       console.error("Error fetching user info:", error);
+      return { id: "", images: [], error };
     }
   }
 
-  async function postProfile(spotifyProfileData) {
-    if (spotifyProfileData.error) return;
-    const newProfile = {
-      userID: spotifyProfileData.id,
-      profilePicture: spotifyProfileData.images[0],
+  async function createUser(spotifyUserData: SpotifyUser): Promise<void> {
+    if (spotifyUserData.error) return;
+    const newUser = {
+      userID: spotifyUserData.id,
+      profilePicture: spotifyUserData.images[0],
       token: token,
       likedSongs: [],
       dislikedSongs: [],
@@ -45,62 +73,55 @@ function App() {
     };
 
     try {
-      await fetch(`http://localhost:5050/user/${spotifyProfileData.id}`, {
-        method: "POST",
-        body: JSON.stringify({ profile: newProfile }),
-        headers: { "Content-Type": "application/json" },
+      await axios.post(`http://localhost:5050/user/${spotifyUserData.id}`, {
+        user: newUser
+      }, {
+        headers: { "Content-Type": "application/json" }
       });
     } catch (error) {
-      console.error("Error creating profile.", error);
+      console.error("Error creating user.", error);
     }
   }
 
-  async function getProfile(spotifyProfileData) {
+  async function getUser(spotifyUserData: SpotifyUser): Promise<void> {
     try {
-      const response = await fetch(
-        `http://localhost:5050/user/${spotifyProfileData.id}`
+      const response = await axios.get<BackendUser>(
+        `http://localhost:5050/user/${spotifyUserData.id}`
       );
-      if (!response.ok) {
-        throw new Error("Profile doesn't exist yet.");
-      }
-      const data = await response.json();
+      const data = response.data;
 
-      setProfile({
-        userID: data.userID,
-        profilePicture: data.profilePicture,
+      setUser({
+        userID: data.spotifyId,
         token: token,
-        likedSongs: data.likedSongs,
-        dislikedSongs: data.dislikedSongs,
-        recommendedSongs: data.recommendedSongs,
+        likedSongs: data.likedSongs || [],
+        dislikedSongs: data.dislikedSongs || [],
+        recommendedSongs: data.recommendedSongs || [],
       });
 
-      if (response.ok) {
-        setSpotifyPlayer({ areRecommendationsInitialized: true });
-      }
     } catch (error) {
-      throw new Error("Error getting profile");
+      throw new Error("Error getting user");
     }
   }
 
   useEffect(() => {
-    async function getToken() {
-      const response = await fetch("http://localhost:5050/auth/token");
-      const data = await response.json();
-      setToken({ value: data.access_token });
+    async function getToken(): Promise<void> {
+      const response = await axios.get<{ access_token: string }>("http://localhost:5050/auth/token");
+      setToken({ value: response.data.access_token });
     }
 
     getToken();
   }, []);
 
   useEffect(() => {
-    async function setupProfile() {
-      const spotifyProfileData = await getSpotifyUserInfo();
+    async function setupUser(): Promise<void> {
+      const spotifyUserData = await getSpotifyUserInfo();
 
       try {
-        await getProfile(spotifyProfileData);
+        await getUser(spotifyUserData);
       } catch (error) {
-        await postProfile(spotifyProfileData);
-        await getProfile(spotifyProfileData);
+        console.log("Creating new user");
+        await createUser(spotifyUserData);
+        await getUser(spotifyUserData);
       }
     }
 
@@ -108,11 +129,11 @@ function App() {
       return;
     }
 
-    setupProfile();
+    setupUser();
   }, [token]);
 
   useEffect(() => {
-    if (!spotifyPlayer.isActive && !initialTrackPlayed) {
+    if (!spotifyPlayer.isActive && !initialTrackPlayed.current) {
       return;
     }
 
@@ -124,7 +145,12 @@ function App() {
       return;
     }
 
-    playSpotifyTrack(profile.recommendedSongs[0].songID, spotifyPlayer, token);
+    if (!user.recommendedSongs || user.recommendedSongs.length === 0) {
+      return;
+    }
+
+    console.log("HOW DID IT GET HERE");
+    playSpotifyTrack(user.recommendedSongs[0].songID, spotifyPlayer, token);
     initialTrackPlayed.current = true;
   }, [
     spotifyPlayer.isActive,
@@ -136,11 +162,11 @@ function App() {
   return (
     <div className='flex flex-col items-center justify-center h-screen text-center bg-black'>
       <div className='flex flex-col object-contain w-1/2 h-screen bg-black md:w-7/10 sm:w-9/10'>
-        <h1 className='z-10'>tune link</h1>
+        <h1 className='m-8'>tune link</h1>
         {!token.value ? <Login /> : <Player />}
       </div>
     </div>
   );
-}
+};
 
 export default App;

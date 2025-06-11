@@ -1,34 +1,16 @@
 import React, { FC, useEffect } from "react";
 import LikeIcon from "../images/like.png";
 import useStore from "../store";
-import { saveTrack, Profile } from "../utils/profile-utils";
+import { saveTrack, User } from "../utils/user-utils";
 
-interface SpotifyPlayer {
-  currentTrack: {
-    id: string;
-  } | null;
-}
-
-interface Token {
-  value: string;
-}
-
-interface Store {
-  profile: Profile;
-  setProfile: (profile: Partial<Profile>) => void;
-  spotifyPlayer: SpotifyPlayer;
-  setSpotifyPlayer: (player: Partial<SpotifyPlayer>) => void;
-  token: Token;
-}
 
 const Like: FC = () => {
-  const { profile, setProfile, spotifyPlayer, setSpotifyPlayer, token } =
-    useStore() as Store;
+  const { user, setUser, spotifyPlayer, setSpotifyPlayer, token } = useStore();
 
-  useEffect(() => {}, [profile, spotifyPlayer, token]);
+  useEffect(() => {}, [user, spotifyPlayer, token]);
 
   const handleLike = async (): Promise<void> => {
-    await saveTrack(true, profile, setProfile, spotifyPlayer, setSpotifyPlayer);
+    await saveTrack(true, user, setUser, spotifyPlayer, setSpotifyPlayer);
   };
 
   return (

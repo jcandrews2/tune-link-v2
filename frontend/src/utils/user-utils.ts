@@ -8,7 +8,7 @@ export interface Song {
   songID?: string;
 }
 
-export interface Profile {
+export interface User {
   userID: string;
   token: { value: string };
   likedSongs: Song[];
@@ -16,12 +16,12 @@ export interface Profile {
   recommendedSongs: Song[];
 }
 
-export type SetProfile = (profile: Partial<Profile>) => void;
+export type SetUser = (user: Partial<User>) => void;
 export type SetSpotifyPlayer = (player: Partial<any>) => void;
 
-async function getRecommendations(profile: Profile): Promise<any> {
+async function getRecommendations(user: User): Promise<any> {
   const response = await axios.get(
-    `http://localhost:5050/user/${profile.userID}/recommendations`
+    `http://localhost:5050/user/${user.userID}/recommendations`
   );
   return response.data;
 }
@@ -29,24 +29,24 @@ async function getRecommendations(profile: Profile): Promise<any> {
 async function handleLike(
   song: Song,
   newRecommendedSongs: Song[],
-  profile: Profile,
-  setProfile: SetProfile
+  user: User,
+  setUser: SetUser
 ): Promise<void> {
   const newLikedSongs = [
-    ...profile.likedSongs,
+    ...user.likedSongs,
     {
       songID: song.id,
       name: song.name,
       artist: song.artist,
     },
   ];
-  setProfile({
+  setUser({
     likedSongs: newLikedSongs,
     recommendedSongs: newRecommendedSongs,
   });
 
   await axios.put(
-    `http://localhost:5050/user/${profile.userID}/liked`,
+    `http://localhost:5050/user/${user.userID}/liked`,
     { song },
     { headers: { "Content-Type": "application/json" } }
   );
@@ -56,24 +56,24 @@ async function handleLike(
 async function handleDislike(
   song: Song,
   newRecommendedSongs: Song[],
-  profile: Profile,
-  setProfile: SetProfile
+  user: User,
+  setUser: SetUser
 ): Promise<void> {
   const newDislikedSongs = [
-    ...profile.dislikedSongs,
+    ...user.dislikedSongs,
     {
       songID: song.id,
       name: song.name,
       artist: song.artist,
     },
   ];
-  setProfile({
+  setUser({
     dislikedSongs: newDislikedSongs,
     recommendedSongs: newRecommendedSongs,
   });
 
   await axios.put(
-    `http://localhost:5050/user/${profile.userID}/disliked`,
+    `http://localhost:5050/user/${user.userID}/disliked`,
     { song },
     { headers: { "Content-Type": "application/json" } }
   );
@@ -82,42 +82,42 @@ async function handleDislike(
 
 export async function saveTrack(
   isLiked: boolean,
-  profile: Profile,
-  setProfile: SetProfile,
+  user: User,
+  setUser: SetUser,
   spotifyPlayer: any,
   setSpotifyPlayer: SetSpotifyPlayer
 ): Promise<void> {
-  if (!profile.recommendedSongs || profile.recommendedSongs.length === 0)
+  if (!user.recommendedSongs || user.recommendedSongs.length === 0)
     return;
 
-  const song = profile.recommendedSongs[0];
-  const newRecommendedSongs = profile.recommendedSongs.slice(1);
+  const song = user.recommendedSongs[0];
+  const newRecommendedSongs = user.recommendedSongs.slice(1);
 
   console.log("Saving track:", song, newRecommendedSongs);
 
   if (isLiked) {
-    await handleLike(song, newRecommendedSongs, profile, setProfile);
+    await handleLike(song, newRecommendedSongs, user, setUser);
   } else {
-    await handleDislike(song, newRecommendedSongs, profile, setProfile);
+    await handleDislike(song, newRecommendedSongs, user, setUser);
   }
-  playSpotifyTrack(newRecommendedSongs[0].songID, spotifyPlayer, profile.token);
+  playSpotifyTrack(newRecommendedSongs[0].songID, spotifyPlayer, user.token);
 
-  await checkRecommendations(profile, setProfile, spotifyPlayer, setSpotifyPlayer);
+  await checkRecommendations(user, setUser, spotifyPlayer, setSpotifyPlayer);
 }
 
 export async function checkRecommendations(
-  profile: Profile,
-  setProfile: SetProfile,
+  user: User,
+  setUser: SetUser,
   spotifyPlayer: any,
   setSpotifyPlayer: SetSpotifyPlayer
 ): Promise<void> {
   if (
     !spotifyPlayer.areRecommendationsLoading &&
-    profile.recommendedSongs.length < 5
+    user.recommendedSongs.length < 5
   ) {
     setSpotifyPlayer({ areRecommendationsLoading: true });
-    const newRecs = await getRecommendations(profile);
-    setProfile({ recommendedSongs: newRecs.recommendations });
+    const newRecs = await getRecommendations(user);
+    setUser({ recommendedSongs: newRecs.recommendations });
     setSpotifyPlayer({ areRecommendationsLoading: false });
   }
 } 

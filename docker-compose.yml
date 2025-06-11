@@ -16,38 +16,38 @@
 # docker logs postgres
 services:
   # Frontend Service
-  frontend:
-    container_name: frontend
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
-    environment:
-      - VITE_API_URL=http://localhost:5050
-    depends_on:
-      - backend
+  # frontend:
+  #   container_name: frontend
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   volumes:
+  #     - ./frontend:/app
+  #     - /app/node_modules
+  #   environment:
+  #     - VITE_API_URL=http://localhost:5050
+  #   depends_on:
+  #     - backend
 
-  # Backend Service
-  backend:
-    container_name: backend
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "5050:5050"
-    volumes:
-      - ./backend:/app
-      - ~/.m2:/root/.m2
-    environment:
-      - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-      - SPRING_DATASOURCE_USERNAME=tunelink
-      - SPRING_DATASOURCE_PASSWORD=tunelink
-    depends_on:
-      - db
+  # # Backend Service
+  # backend:
+  #   container_name: backend
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5050:5050"
+  #   volumes:
+  #     - ./backend:/app
+  #     - ~/.m2:/root/.m2
+  #   environment:
+  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
+  #     - SPRING_DATASOURCE_USERNAME=tunelink
+  #     - SPRING_DATASOURCE_PASSWORD=tunelink
+  #   depends_on:
+  #     - db
 
   # PostgreSQL Database
   db:
@@ -63,6 +63,7 @@ services:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-# Named volumes for data persistence
+# Define volumes
 volumes:
-  postgres_data: # PostgreSQL data persistence
+  postgres_data:
+    driver: local

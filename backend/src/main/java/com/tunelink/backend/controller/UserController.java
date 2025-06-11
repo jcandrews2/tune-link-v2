@@ -12,6 +12,8 @@ import org.springframework.web.bind.annotation.*;
 import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
+import java.util.Optional;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/user")
@@ -30,14 +32,14 @@ public class UserController {
             logger.info("Creating user with Spotify ID: {}", userId);
             
             @SuppressWarnings("unchecked")
-            Map<String, Object> profileData = (Map<String, Object>) request.get("profile");
+            Map<String, Object> userData = (Map<String, Object>) request.get("user");
             
             User user = new User();
             user.setSpotifyId(userId);
             
             // Handle profile picture (it might be nested in the images array)
-            if (profileData.get("profilePicture") != null) {
-                user.setProfilePicture(profileData.get("profilePicture").toString());
+            if (userData.get("profilePicture") != null) {
+                user.setProfilePicture(userData.get("profilePicture").toString());
             }
             
             // Initialize empty song lists
@@ -100,6 +102,27 @@ public class UserController {
             return ResponseEntity.badRequest().body(e.getMessage());
         } catch (Exception e) {
             logger.error("Error deleting user: ", e);
+            return ResponseEntity.internalServerError().body("An unexpected error occurred");
+        }
+    }
+
+    @GetMapping("/{userId}/recommendations")
+    public ResponseEntity<?> getRecommendations(@PathVariable String userId) {
+        try {
+            logger.info("Getting recommendations for user with Spotify ID: {}", userId);
+            Optional<User> userOpt = userService.getUserBySpotifyId(userId);
+            
+            if (userOpt.isEmpty()) {
+                return ResponseEntity.notFound().build();
+            }
+            
+            User user = userOpt.get();
+            Map<String, Object> response = new HashMap<>();
+            response.put("recommendations", user.getRecommendedSongs());
+            
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            logger.error("Error getting recommendations: ", e);
             return ResponseEntity.internalServerError().body("An unexpected error occurred");
         }
     }

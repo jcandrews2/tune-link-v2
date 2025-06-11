@@ -1,11 +1,12 @@
 import { create } from "zustand";
 
+// Setup Object Interfaces
 interface Token {
   value: string;
   lastRefreshed: number;
 }
 
-interface Profile {
+interface User {
   userID: string;
   profilePicture: string;
   token: Token | null;
@@ -25,17 +26,19 @@ interface SpotifyPlayer {
   areRecommendationsLoading: boolean;
 }
 
+// Setup Store Interface
 interface Store {
-  profile: Profile;
-  setProfile: (updatedProfile: Partial<Profile>) => void;
+  user: User;
+  setUser: (updatedUser: Partial<User>) => void;
   token: Token;
   setToken: (updatedToken: Partial<Token>) => void;
   spotifyPlayer: SpotifyPlayer;
   setSpotifyPlayer: (updatedSpotifyPlayer: Partial<SpotifyPlayer>) => void;
 }
 
+// Make Store
 const useStore = create<Store>((set) => ({
-  profile: {
+  user: {
     userID: "",
     profilePicture: "",
     token: null,
@@ -43,9 +46,9 @@ const useStore = create<Store>((set) => ({
     dislikedSongs: [],
     recommendedSongs: [],
   },
-  setProfile: (updatedProfile) =>
+  setUser: (updatedUser) =>
     set((state) => ({
-      profile: { ...state.profile, ...updatedProfile },
+      user: { ...state.user, ...updatedUser },
     })),
 
   token: {
@@ -55,8 +58,8 @@ const useStore = create<Store>((set) => ({
   setToken: (updatedToken) => {
     set((state) => ({
       token: { ...state.token, ...updatedToken },
-      profile: {
-        ...state.profile,
+      user: {
+        ...state.user,
         token: { ...state.token, ...updatedToken },
       },
     }));

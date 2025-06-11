@@ -9,39 +9,8 @@ import Slider from "./Slider";
 import TrackTime from "./TrackTime";
 import useStore from "../store";
 import { transferSpotifyPlayback } from "../utils/spotify-utils";
-
-interface Token {
-  value: string;
-}
-
-interface Profile {
-  recommendedSongs: any[];
-}
-
-interface Track {
-  id: string;
-  name: string;
-  artists: Array<{ name: string }>;
-  album: {
-    images: Array<{ url: string }>;
-  };
-}
-
-interface SpotifyPlayer {
-  player: any;
-  deviceID: string;
-  currentTrack: Track | null;
-  isPaused: boolean;
-  isActive: boolean;
-  areRecommendationsLoading: boolean;
-}
-
-interface Store {
-  token: Token;
-  profile: Profile;
-  spotifyPlayer: SpotifyPlayer;
-  setSpotifyPlayer: (player: Partial<SpotifyPlayer>) => void;
-}
+import { useSpring, animated } from "@react-spring/web";
+import { useDrag } from "@use-gesture/react";
 
 declare global {
   interface Window {
@@ -54,8 +23,54 @@ declare global {
 }
 
 const Player: FC = () => {
-  const { token, profile, spotifyPlayer, setSpotifyPlayer } = useStore() as Store;
+  const { token, user, spotifyPlayer, setSpotifyPlayer } = useStore();
+  
+  // Add spring animation
+  const [{ x, y, rotate, scale }, api] = useSpring(() => ({
+    x: 0,
+    y: 0,
+    rotate: 0,
+    scale: 1,
+    config: { tension: 300, friction: 20 }
+  }));
 
+  // Add swipe gesture handler
+  const bind = useDrag(({ active, movement: [mx], direction: [xDir], cancel, tap }) => {
+    if (tap) return;
+
+    // Calculate values
+    const trigger = Math.abs(mx) > 100;
+    const isRight = mx > 0;
+    
+    if (active && trigger) {
+      // If we've dragged far enough, trigger like/dislike
+      if (isRight) {
+        // Like action
+        const likeButton = document.querySelector('[data-testid="like-button"]') as HTMLButtonElement;
+        if (likeButton) likeButton.click();
+      } else {
+        // Dislike action
+        const dislikeButton = document.querySelector('[data-testid="dislike-button"]') as HTMLButtonElement;
+        if (dislikeButton) dislikeButton.click();
+      }
+      cancel();
+    }
+
+    // Animate the card
+    api.start({
+      x: active ? mx : 0,
+      rotate: active ? mx / 20 : 0,
+      scale: active ? 1.05 : 1,
+      immediate: active
+    });
+  }, {
+    from: () => [x.get(), 0],
+    filterTaps: true,
+    bounds: { left: -200, right: 200, top: 0, bottom: 0 },
+    rubberband: true
+  });
+
+  // Initialize Spotify Player
   useEffect(() => {
     const script = document.createElement("script");
     script.src = "https://sdk.scdn.co/spotify-player.js";
@@ -64,9 +79,6 @@ const Player: FC = () => {
     document.body.appendChild(script);
 
     window.onSpotifyWebPlaybackSDKReady = () => {
-      if (window.player) {
-        window.player.disconnect();
-      }
       const player = new window.Spotify.Player({
         name: "tune link",
         getOAuthToken: (cb: (token: string) => void) => {
@@ -75,59 +87,143 @@ const Player: FC = () => {
         volume: 0.5,
       });
 
-      setSpotifyPlayer({ player: player });
+      setSpotifyPlayer({ player });
 
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
-        console.log("Ready with Device ID:", device_id);
-        transferSpotifyPlayback(token, device_id);
+        console.log("Ready with Device ID", device_id);
         setSpotifyPlayer({ deviceID: device_id });
+        transferSpotifyPlayback(token, device_id);
       });
 
       player.addListener("not_ready", ({ device_id }: { device_id: string }) => {
-        console.log("Device ID has gone offline:", device_id);
+        console.log("Device ID has gone offline", device_id);
+        // Try to reconnect when device goes offline
+        reconnectPlayer();
       });
 
-      player.addListener("player_state_changed", (state: any) => {
-        if (!state) {
-          return;
+      player.addListener(
+        "player_state_changed",
+        (state: any) => {
+          if (!state) {
+            return;
+          }
+
+          setSpotifyPlayer({
+            currentTrack: state.track_window.current_track,
+            isPaused: state.paused,
+            position: state.position,
+            isActive: true,
+          });
         }
+      );
 
-        setSpotifyPlayer({
-          currentTrack: state.track_window.current_track,
-          isPaused: state.paused,
-        });
-
-        player.getCurrentState().then((state: any) => {
-          !state
-            ? setSpotifyPlayer({ isActive: false })
-            : setSpotifyPlayer({ isActive: true });
-        });
+      // Add error handling
+      player.addListener("initialization_error", ({ message }: { message: string }) => {
+        console.error("Failed to initialize:", message);
+        reconnectPlayer();
       });
 
-      player.connect();
+      player.addListener("authentication_error", ({ message }: { message: string }) => {
+        console.error("Failed to authenticate:", message);
+        // Attempt to refresh the token
+        refreshToken();
+      });
+
+      player.addListener("account_error", ({ message }: { message: string }) => {
+        console.error("Failed to validate Spotify account:", message);
+      });
+
+      player.addListener("playback_error", ({ message }: { message: string }) => {
+        console.error("Failed to perform playback:", message);
+        reconnectPlayer();
+      });
+
+      player.connect().then((success: boolean) => {
+        if (success) {
+          console.log("Successfully connected to Spotify!");
+        }
+      });
+    };
+
+    return () => {
+      // Cleanup function to disconnect player when component unmounts
+      if (spotifyPlayer.player) {
+        spotifyPlayer.player.disconnect();
+      }
     };
   }, []);
 
+  const reconnectPlayer = async () => {
+    if (spotifyPlayer.player) {
+      try {
+        const connected = await spotifyPlayer.player.connect();
+        if (connected) {
+          console.log("Successfully reconnected to Spotify!");
+          if (spotifyPlayer.deviceID) {
+            transferSpotifyPlayback(token, spotifyPlayer.deviceID);
+          }
+        }
+      } catch (error) {
+        console.error("Failed to reconnect:", error);
+      }
+    }
+  };
+
+  const refreshToken = async () => {
+    try {
+      const response = await fetch("http://localhost:5050/auth/token");
+      const data = await response.json();
+      if (data.access_token) {
+        setSpotifyPlayer({ player: null });  // Reset player
+        window.onSpotifyWebPlaybackSDKReady(); // Reinitialize with new token
+      }
+    } catch (error) {
+      console.error("Failed to refresh token:", error);
+    }
+  };
+
   return (
     <>
-      {spotifyPlayer.areRecommendationsLoading &&
-      profile.recommendedSongs.length === 1 ? (
+      {spotifyPlayer.areRecommendationsLoading && user.recommendedSongs.length <= 1 ? (
         <Loading />
       ) : (
-        <>
-          <Cover />
-          {spotifyPlayer.currentTrack && <TrackDetails />}
-          <div className="flex flex-col items-center p-[0.64rem]">
-            <Slider />
-            <TrackTime />
-          </div>
-        </>
+        <div className="fixed-width-container w-[400px] min-w-[400px] flex-shrink-0 mx-auto select-none">
+          <animated.div
+            {...bind()}
+            style={{
+              x,
+              y,
+              rotate,
+              scale,
+              touchAction: 'none',
+              position: 'relative',
+              backgroundColor: x.to((x: number) => 
+                x > 0 
+                  ? `rgba(74, 222, 128, ${Math.min(Math.abs(x) / 100, 0.4)})` 
+                  : `rgba(248, 113, 113, ${Math.min(Math.abs(x) / 100, 0.4)})`
+              ),
+            }}
+            className="border border-gray-700 rounded-lg p-4 bg-[#121212] cursor-grab active:cursor-grabbing select-none"
+          >
+            <div className="relative z-10 select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none">
+              <Cover />
+              {spotifyPlayer.currentTrack && <TrackDetails />}
+              <div className="flex flex-col items-center p-[0.64rem]">
+                <Slider />
+                <TrackTime />
+              </div>
+              <div className="z-0 flex items-center justify-center">
+                <Dislike />
+                <PlayPause />
+                <Like />
+              </div>
+              {user.recommendedSongs.length === 1 && (
+                <div className="text-white mt-4">Last song!</div>
+              )}
+            </div>
+          </animated.div>
+        </div>
       )}
-      <div className="z-0 flex items-center justify-center select-none">
-        <Dislike />
-        <PlayPause />
-        <Like />
-      </div>
     </>
   );
 };

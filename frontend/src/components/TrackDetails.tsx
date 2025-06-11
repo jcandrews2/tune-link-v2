@@ -1,25 +1,8 @@
 import React, { FC } from "react";
 import useStore from "../store";
 
-interface Artist {
-  name: string;
-}
-
-interface Track {
-  name: string;
-  artists: Artist[];
-}
-
-interface SpotifyPlayer {
-  currentTrack: Track | null;
-}
-
-interface Store {
-  spotifyPlayer: SpotifyPlayer;
-}
-
 const TrackDetails: FC = () => {
-  const { spotifyPlayer } = useStore() as Store;
+  const { spotifyPlayer } = useStore();
 
   if (!spotifyPlayer.currentTrack) {
     return null;

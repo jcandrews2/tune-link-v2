@@ -3,20 +3,8 @@ import PauseIcon from "../images/pause.png";
 import PlayIcon from "../images/play.png";
 import useStore from "../store";
 
-interface SpotifyPlayer {
-  isPaused: boolean;
-  player: {
-    pause: () => Promise<void>;
-    resume: () => Promise<void>;
-  };
-}
-
-interface Store {
-  spotifyPlayer: SpotifyPlayer;
-}
-
 const PlayPause: FC = () => {
-  const { spotifyPlayer } = useStore() as Store;
+  const { spotifyPlayer } = useStore();
 
   const togglePlayback = (): void => {
     if (spotifyPlayer.isPaused) {

@@ -1,7 +1,5 @@
 import React, { useEffect, FC } from "react";
 import PlayPause from "./PlayPause";
-import Like from "./Like";
-import Dislike from "./Dislike";
 import Cover from "./Cover";
 import TrackDetails from "./TrackDetails";
 import Loading from "./Loading";
@@ -11,6 +9,9 @@ import useStore from "../store";
 import { transferSpotifyPlayback } from "../utils/spotify-utils";
 import { useSpring, animated } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
+import { saveTrack } from "../utils/user-utils";
+import LikeIcon from "../images/like.png";
+import DislikeIcon from "../images/dislike.png";
 
 declare global {
   interface Window {
@@ -23,7 +24,7 @@ declare global {
 }
 
 const Player: FC = () => {
-  const { token, user, spotifyPlayer, setSpotifyPlayer } = useStore();
+  const { token, user, spotifyPlayer, setSpotifyPlayer, setUser } = useStore();
   
   // Add spring animation
   const [{ x, y, rotate, scale }, api] = useSpring(() => ({
@@ -34,29 +35,37 @@ const Player: FC = () => {
     config: { tension: 300, friction: 20 }
   }));
 
+  const handleLike = async (): Promise<void> => {
+    console.log("handleLike");
+    if (!user.token?.value) return;
+    await saveTrack(true, user, setUser, spotifyPlayer, setSpotifyPlayer);
+  };
+
+  const handleDislike = async (): Promise<void> => {
+    console.log("handleDislike");
+    if (!user.token?.value) return;
+    await saveTrack(false, user, setUser, spotifyPlayer, setSpotifyPlayer);
+  };
+
   // Add swipe gesture handler
-  const bind = useDrag(({ active, movement: [mx], direction: [xDir], cancel, tap }) => {
+  const bind = useDrag(async ({ active, movement: [mx], direction: [xDir], cancel, tap }) => {
     if (tap) return;
 
     // Calculate values
     const trigger = Math.abs(mx) > 100;
     const isRight = mx > 0;
     
-    if (active && trigger) {
-      // If we've dragged far enough, trigger like/dislike
+    if (active && trigger && user.token?.value) {
+      // If we've dragged far enough and we have a valid token, trigger like/dislike
       if (isRight) {
-        // Like action
-        const likeButton = document.querySelector('[data-testid="like-button"]') as HTMLButtonElement;
-        if (likeButton) likeButton.click();
+        await handleLike();
       } else {
-        // Dislike action
-        const dislikeButton = document.querySelector('[data-testid="dislike-button"]') as HTMLButtonElement;
-        if (dislikeButton) dislikeButton.click();
+        await handleDislike();
       }
       cancel();
     }
 
-    // Animate the card
+    // Animate Player Card
     api.start({
       x: active ? mx : 0,
       rotate: active ? mx / 20 : 0,
@@ -213,9 +222,29 @@ const Player: FC = () => {
                 <TrackTime />
               </div>
               <div className="z-0 flex items-center justify-center">
-                <Dislike />
+                <button 
+                  onClick={handleDislike}
+                  className="Dislike-container"
+                  data-testid="dislike-button"
+                >
+                  <img
+                    src={DislikeIcon}
+                    alt="Dislike"
+                    className="w-[2.25rem] h-auto transform active:scale-95"
+                  />
+                </button>
                 <PlayPause />
-                <Like />
+                <button 
+                  onClick={handleLike}
+                  className="Like-container"
+                  data-testid="like-button"
+                >
+                  <img
+                    src={LikeIcon}
+                    alt="Like"
+                    className="w-[2.25rem] h-auto transform active:scale-95"
+                  />
+                </button>
               </div>
               {user.recommendedSongs.length === 1 && (
                 <div className="text-white mt-4">Last song!</div>

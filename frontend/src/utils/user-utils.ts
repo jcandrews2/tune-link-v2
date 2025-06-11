@@ -120,4 +120,4 @@ export async function checkRecommendations(
     setUser({ recommendedSongs: newRecs.recommendations });
     setSpotifyPlayer({ areRecommendationsLoading: false });
   }
-} 
+}

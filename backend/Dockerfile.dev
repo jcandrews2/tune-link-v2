@@ -1,0 +1,20 @@
+# Use Maven with JDK 21 for development
+FROM maven:3.9-eclipse-temurin-21
+
+# Set working directory
+WORKDIR /app
+
+# Copy pom.xml
+COPY pom.xml .
+
+# Download dependencies
+RUN mvn dependency:go-offline
+
+# Copy source code
+COPY src ./src
+
+# Expose ports
+EXPOSE 5050 5005
+
+# Start the application in development mode with debugging enabled
+CMD ["mvn", "spring-boot:run", "-Dspring-boot.run.jvmArguments='-agentlib:jdwp=transport=dt_socket,server=y,suspend=n,address=*:5005'"]

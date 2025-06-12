@@ -1,3 +1,7 @@
+# IDEA:
+# Get plain text music request from user. Have Chatgpt generate a spotify search from the request.
+# Search spotify with the specific parameters that Chatgpt generates.
+
 # RUN BACKEND
 # ./mvnw spring-boot:run
 

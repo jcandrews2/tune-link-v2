@@ -1,127 +1,60 @@
 import React, { useEffect, useRef, FC } from "react";
-import Player from "./components/Player";
-import Login from "./pages/Login";
+import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import HomePage from "./pages/HomePage";
+import RecommendationsPage from "./pages/RecommendationsPage";
+import ProfilePage from "./pages/ProfilePage";
+import WelcomePage from "./pages/WelcomePage";
+import Navbar from "./components/Navbar";
 import useStore from "./store";
-import { playSpotifyTrack } from "./utils/spotify-utils";
-import axios from "axios";
-import { User, Song } from "./utils/user-utils";
-import { Token } from "./utils/spotify-utils";
-
-interface SpotifyUser {
-  id: string;
-  images: Array<{
-    url: string;
-  }>;
-  error?: any;
-}
-
-interface BackendUser {
-  id: number;
-  spotifyId: string;
-  profilePicture: string | null;
-  likedSongs: Song[];
-  dislikedSongs: Song[];
-  recommendedSongs: Song[];
-}
-
-interface SpotifyPlayer {
-  player: any;
-  isActive: boolean;
-  isPaused: boolean;
-  currentTrack: any | null;
-  position: number;
-  deviceID: string | null;
-  areRecommendationsInitialized: boolean;
-  areRecommendationsLoading: boolean;
-}
+import { playTrack } from "./api/spotifyApi";
+import {
+  getAuthToken,
+  getSpotifyUserInfo,
+  createUser,
+  getUser,
+} from "./api/authApi";
+import { SpotifyUser, BackendUser } from "./types";
 
 const App: FC = () => {
-  const {
-    spotifyPlayer,
-    setSpotifyPlayer,
-    user,
-    setUser,
-    token,
-    setToken,
-  } = useStore();
+  const { spotifyPlayer, setSpotifyPlayer, user, setUser, token, setToken } =
+    useStore();
 
   const initialTrackPlayed = useRef(false);
 
-  async function getSpotifyUserInfo(): Promise<SpotifyUser> {
-    try {
-      const response = await axios.get<SpotifyUser>("https://api.spotify.com/v1/me", {
-        headers: {
-          Authorization: `Bearer ${token.value}`,
-        },
-      });
-      return response.data;
-    } catch (error) {
-      console.error("Error fetching user info:", error);
-      return { id: "", images: [], error };
-    }
-  }
-
-  async function createUser(spotifyUserData: SpotifyUser): Promise<void> {
-    if (spotifyUserData.error) return;
-    const newUser = {
-      userID: spotifyUserData.id,
-      profilePicture: spotifyUserData.images[0],
-      token: token,
-      likedSongs: [],
-      dislikedSongs: [],
-      recommendedSongs: [],
-    };
-
-    try {
-      await axios.post(`http://localhost:5050/user/${spotifyUserData.id}`, {
-        user: newUser
-      }, {
-        headers: { "Content-Type": "application/json" }
-      });
-    } catch (error) {
-      console.error("Error creating user.", error);
-    }
-  }
-
-  async function getUser(spotifyUserData: SpotifyUser): Promise<void> {
-    try {
-      const response = await axios.get<BackendUser>(
-        `http://localhost:5050/user/${spotifyUserData.id}`
-      );
-      const data = response.data;
-
-      setUser({
-        userID: data.spotifyId,
-        token: token,
-        likedSongs: data.likedSongs || [],
-        dislikedSongs: data.dislikedSongs || [],
-        recommendedSongs: data.recommendedSongs || [],
-      });
-
-    } catch (error) {
-      throw new Error("Error getting user");
-    }
-  }
-
   useEffect(() => {
-    async function getToken(): Promise<void> {
-      const response = await axios.get<{ access_token: string }>("http://localhost:5050/auth/token");
-      setToken({ value: response.data.access_token });
+    async function fetchToken(): Promise<void> {
+      const accessToken = await getAuthToken();
+      console.log("TOKEN", accessToken);
+      setToken({ value: accessToken });
     }
 
-    getToken();
+    fetchToken();
   }, []);
 
   useEffect(() => {
     async function setupUser(): Promise<void> {
-      const spotifyUserData = await getSpotifyUserInfo();
+      const spotifyUserData = await getSpotifyUserInfo(token.value);
 
       try {
-        await getUser(spotifyUserData);
+        const userData = await getUser(spotifyUserData);
+        setUser({
+          userID: userData.spotifyId,
+          token: token,
+          likedSongs: userData.likedSongs || [],
+          dislikedSongs: userData.dislikedSongs || [],
+          recommendedSongs: userData.recommendedSongs || [],
+        });
       } catch (error) {
         console.log("Creating new user");
-        await createUser(spotifyUserData);
-        await getUser(spotifyUserData);
+        await createUser(spotifyUserData, token);
+        const userData = await getUser(spotifyUserData);
+        setUser({
+          userID: userData.spotifyId,
+          token: token,
+          likedSongs: userData.likedSongs || [],
+          dislikedSongs: userData.dislikedSongs || [],
+          recommendedSongs: userData.recommendedSongs || [],
+        });
       }
     }
 
@@ -150,7 +83,7 @@ const App: FC = () => {
     }
 
     console.log("HOW DID IT GET HERE");
-    playSpotifyTrack(user.recommendedSongs[0].songID, spotifyPlayer, token);
+    playTrack(user.recommendedSongs[0].songID, spotifyPlayer, token);
     initialTrackPlayed.current = true;
   }, [
     spotifyPlayer.isActive,
@@ -160,12 +93,25 @@ const App: FC = () => {
   ]);
 
   return (
-    <div className='flex flex-col items-center justify-center h-screen text-center bg-black'>
-      <div className='flex flex-col object-contain w-1/2 h-screen bg-black md:w-7/10 sm:w-9/10'>
-        <h1 className='m-8'>tune link</h1>
-        {!token.value ? <Login /> : <Player />}
+    <Router>
+      <div className='min-h-screen bg-black'>
+        {!token.value ? (
+          <WelcomePage />
+        ) : (
+          <>
+            <Navbar />
+            <Routes>
+              <Route path='/' element={<HomePage />} />
+              <Route
+                path='/recommendations'
+                element={<RecommendationsPage />}
+              />
+              <Route path='/profile' element={<ProfilePage />} />
+            </Routes>
+          </>
+        )}
       </div>
-    </div>
+    </Router>
   );
 };
 

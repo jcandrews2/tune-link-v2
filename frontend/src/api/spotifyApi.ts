@@ -1,14 +1,14 @@
 import axios from "axios";
+import { endpoints } from "../config/endpoints";
+import { Token, SpotifyPlayer } from "../types";
 
-export interface Token {
-  value: string;
-}
-
-export interface SpotifyPlayer {
-  deviceID: string | null;
-}
-
-export async function playSpotifyTrack(
+/**
+ * Play a Spotify track on the user's device
+ * @param trackUri The URI of the track to play
+ * @param player The Spotify player instance
+ * @param token The user's authentication token
+ */
+export async function playTrack(
   trackUri: string,
   player: SpotifyPlayer,
   token: Token
@@ -17,7 +17,7 @@ export async function playSpotifyTrack(
 
   try {
     await axios.put(
-      `https://api.spotify.com/v1/me/player/play?device_id=${player.deviceID}`,
+      endpoints.player.play(player.deviceID),
       {
         uris: [trackUri],
       },
@@ -34,13 +34,18 @@ export async function playSpotifyTrack(
   }
 }
 
-export async function transferSpotifyPlayback(
+/**
+ * Transfer playback to a specific Spotify device
+ * @param token The user's authentication token
+ * @param deviceID The ID of the device to transfer playback to
+ */
+export async function transferPlayback(
   token: Token,
   deviceID: string
 ): Promise<void> {
   try {
     await axios.put(
-      "https://api.spotify.com/v1/me/player",
+      endpoints.player.transfer,
       {
         device_ids: [deviceID],
         play: false,
@@ -56,4 +61,4 @@ export async function transferSpotifyPlayback(
   } catch (error) {
     console.error("Error transferring playback:", error);
   }
-} 
+}

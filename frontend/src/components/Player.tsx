@@ -1,17 +1,17 @@
 import React, { useEffect, FC } from "react";
 import PlayPause from "./PlayPause";
 import Cover from "./Cover";
-import TrackDetails from "./TrackDetails";
 import Loading from "./Loading";
 import Slider from "./Slider";
 import TrackTime from "./TrackTime";
 import useStore from "../store";
-import { transferSpotifyPlayback } from "../utils/spotify-utils";
 import { useSpring, animated } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
-import { saveTrack } from "../utils/user-utils";
 import LikeIcon from "../images/like.png";
 import DislikeIcon from "../images/dislike.png";
+import { endpoints } from "../config/endpoints";
+import { transferPlayback } from "../api/spotifyApi";
+import { saveTrack } from "../api/userApi";
 
 declare global {
   interface Window {
@@ -25,14 +25,14 @@ declare global {
 
 const Player: FC = () => {
   const { token, user, spotifyPlayer, setSpotifyPlayer, setUser } = useStore();
-  
+
   // Add spring animation
   const [{ x, y, rotate, scale }, api] = useSpring(() => ({
     x: 0,
     y: 0,
     rotate: 0,
     scale: 1,
-    config: { tension: 300, friction: 20 }
+    config: { tension: 300, friction: 20 },
   }));
 
   const handleLike = async (): Promise<void> => {
@@ -48,36 +48,39 @@ const Player: FC = () => {
   };
 
   // Add swipe gesture handler
-  const bind = useDrag(async ({ active, movement: [mx], direction: [xDir], cancel, tap }) => {
-    if (tap) return;
+  const bind = useDrag(
+    async ({ active, movement: [mx], direction: [xDir], cancel, tap }) => {
+      if (tap) return;
 
-    // Calculate values
-    const trigger = Math.abs(mx) > 100;
-    const isRight = mx > 0;
-    
-    if (active && trigger && user.token?.value) {
-      // If we've dragged far enough and we have a valid token, trigger like/dislike
-      if (isRight) {
-        await handleLike();
-      } else {
-        await handleDislike();
+      // Calculate values
+      const trigger = Math.abs(mx) > 100;
+      const isRight = mx > 0;
+
+      if (active && trigger && user.token?.value) {
+        // If we've dragged far enough and we have a valid token, trigger like/dislike
+        if (isRight) {
+          await handleLike();
+        } else {
+          await handleDislike();
+        }
+        cancel();
       }
-      cancel();
-    }
 
-    // Animate Player Card
-    api.start({
-      x: active ? mx : 0,
-      rotate: active ? mx / 20 : 0,
-      scale: active ? 1.05 : 1,
-      immediate: active
-    });
-  }, {
-    from: () => [x.get(), 0],
-    filterTaps: true,
-    bounds: { left: -200, right: 200, top: 0, bottom: 0 },
-    rubberband: true
-  });
+      // Animate Player Card
+      api.start({
+        x: active ? mx : 0,
+        rotate: active ? mx / 20 : 0,
+        scale: active ? 1.05 : 1,
+        immediate: active,
+      });
+    },
+    {
+      from: () => [x.get(), 0],
+      filterTaps: true,
+      bounds: { left: -200, right: 200, top: 0, bottom: 0 },
+      rubberband: true,
+    }
+  );
 
   // Initialize Spotify Player
   useEffect(() => {
@@ -101,51 +104,63 @@ const Player: FC = () => {
       player.addListener("ready", ({ device_id }: { device_id: string }) => {
         console.log("Ready with Device ID", device_id);
         setSpotifyPlayer({ deviceID: device_id });
-        transferSpotifyPlayback(token, device_id);
-      });
-
-      player.addListener("not_ready", ({ device_id }: { device_id: string }) => {
-        console.log("Device ID has gone offline", device_id);
-        // Try to reconnect when device goes offline
-        reconnectPlayer();
+        transferPlayback(token, device_id);
       });
 
       player.addListener(
-        "player_state_changed",
-        (state: any) => {
-          if (!state) {
-            return;
-          }
-
-          setSpotifyPlayer({
-            currentTrack: state.track_window.current_track,
-            isPaused: state.paused,
-            position: state.position,
-            isActive: true,
-          });
+        "not_ready",
+        ({ device_id }: { device_id: string }) => {
+          console.log("Device ID has gone offline", device_id);
+          // Try to reconnect when device goes offline
+          reconnectPlayer();
         }
       );
 
+      player.addListener("player_state_changed", (state: any) => {
+        if (!state) {
+          return;
+        }
+
+        setSpotifyPlayer({
+          currentTrack: state.track_window.current_track,
+          isPaused: state.paused,
+          position: state.position,
+          isActive: true,
+        });
+      });
+
       // Add error handling
-      player.addListener("initialization_error", ({ message }: { message: string }) => {
-        console.error("Failed to initialize:", message);
-        reconnectPlayer();
-      });
+      player.addListener(
+        "initialization_error",
+        ({ message }: { message: string }) => {
+          console.error("Failed to initialize:", message);
+          reconnectPlayer();
+        }
+      );
 
-      player.addListener("authentication_error", ({ message }: { message: string }) => {
-        console.error("Failed to authenticate:", message);
-        // Attempt to refresh the token
-        refreshToken();
-      });
+      player.addListener(
+        "authentication_error",
+        ({ message }: { message: string }) => {
+          console.error("Failed to authenticate:", message);
+          // Attempt to refresh the token
+          refreshToken();
+        }
+      );
 
-      player.addListener("account_error", ({ message }: { message: string }) => {
-        console.error("Failed to validate Spotify account:", message);
-      });
+      player.addListener(
+        "account_error",
+        ({ message }: { message: string }) => {
+          console.error("Failed to validate Spotify account:", message);
+        }
+      );
 
-      player.addListener("playback_error", ({ message }: { message: string }) => {
-        console.error("Failed to perform playback:", message);
-        reconnectPlayer();
-      });
+      player.addListener(
+        "playback_error",
+        ({ message }: { message: string }) => {
+          console.error("Failed to perform playback:", message);
+          reconnectPlayer();
+        }
+      );
 
       player.connect().then((success: boolean) => {
         if (success) {
@@ -169,7 +184,7 @@ const Player: FC = () => {
         if (connected) {
           console.log("Successfully reconnected to Spotify!");
           if (spotifyPlayer.deviceID) {
-            transferSpotifyPlayback(token, spotifyPlayer.deviceID);
+            transferPlayback(token, spotifyPlayer.deviceID);
           }
         }
       } catch (error) {
@@ -180,10 +195,10 @@ const Player: FC = () => {
 
   const refreshToken = async () => {
     try {
-      const response = await fetch("http://localhost:5050/auth/token");
+      const response = await fetch(endpoints.auth.token);
       const data = await response.json();
       if (data.access_token) {
-        setSpotifyPlayer({ player: null });  // Reset player
+        setSpotifyPlayer({ player: null }); // Reset player
         window.onSpotifyWebPlaybackSDKReady(); // Reinitialize with new token
       }
     } catch (error) {
@@ -193,10 +208,11 @@ const Player: FC = () => {
 
   return (
     <>
-      {spotifyPlayer.areRecommendationsLoading && user.recommendedSongs.length <= 1 ? (
+      {spotifyPlayer.areRecommendationsLoading &&
+      user.recommendedSongs.length <= 1 ? (
         <Loading />
       ) : (
-        <div className="fixed-width-container w-[400px] min-w-[400px] flex-shrink-0 mx-auto select-none">
+        <div className='fixed-width-container w-[400px] min-w-[400px] flex-shrink-0 mx-auto select-none'>
           <animated.div
             {...bind()}
             style={{
@@ -204,50 +220,59 @@ const Player: FC = () => {
               y,
               rotate,
               scale,
-              touchAction: 'none',
-              position: 'relative',
-              backgroundColor: x.to((x: number) => 
-                x > 0 
-                  ? `rgba(74, 222, 128, ${Math.min(Math.abs(x) / 100, 0.4)})` 
+              touchAction: "none",
+              position: "relative",
+              backgroundColor: x.to((x: number) =>
+                x > 0
+                  ? `rgba(74, 222, 128, ${Math.min(Math.abs(x) / 100, 0.4)})`
                   : `rgba(248, 113, 113, ${Math.min(Math.abs(x) / 100, 0.4)})`
               ),
             }}
-            className="border border-gray-700 rounded-lg p-4 bg-[#121212] cursor-grab active:cursor-grabbing select-none"
+            className='border border-gray-700 rounded-lg p-4 bg-[#121212] cursor-grab active:cursor-grabbing select-none'
           >
-            <div className="relative z-10 select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none">
+            <div className='relative z-10 select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
               <Cover />
-              {spotifyPlayer.currentTrack && <TrackDetails />}
-              <div className="flex flex-col items-center p-[0.64rem]">
+              {spotifyPlayer.currentTrack && (
+                <div className='relative p-[0.64rem] z-10'>
+                  <h2 className='text-xl font-bold text-white'>
+                    {spotifyPlayer.currentTrack.name}
+                  </h2>
+                  <h3 className='font-light text-gray-300'>
+                    {spotifyPlayer.currentTrack.artists[0].name}
+                  </h3>
+                </div>
+              )}
+              <div className='flex flex-col items-center p-[0.64rem]'>
                 <Slider />
                 <TrackTime />
               </div>
-              <div className="z-0 flex items-center justify-center">
-                <button 
+              <div className='z-0 flex items-center justify-center'>
+                <button
                   onClick={handleDislike}
-                  className="Dislike-container"
-                  data-testid="dislike-button"
+                  className='Dislike-container'
+                  data-testid='dislike-button'
                 >
                   <img
                     src={DislikeIcon}
-                    alt="Dislike"
-                    className="w-[2.25rem] h-auto transform active:scale-95"
+                    alt='Dislike'
+                    className='w-[2.25rem] h-auto transform active:scale-95'
                   />
                 </button>
                 <PlayPause />
-                <button 
+                <button
                   onClick={handleLike}
-                  className="Like-container"
-                  data-testid="like-button"
+                  className='Like-container'
+                  data-testid='like-button'
                 >
                   <img
                     src={LikeIcon}
-                    alt="Like"
-                    className="w-[2.25rem] h-auto transform active:scale-95"
+                    alt='Like'
+                    className='w-[2.25rem] h-auto transform active:scale-95'
                   />
                 </button>
               </div>
               {user.recommendedSongs.length === 1 && (
-                <div className="text-white mt-4">Last song!</div>
+                <div className='text-white mt-4'>Last song!</div>
               )}
             </div>
           </animated.div>

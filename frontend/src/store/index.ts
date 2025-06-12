@@ -1,40 +1,5 @@
 import { create } from "zustand";
-
-// Setup Object Interfaces
-interface Token {
-  value: string;
-  lastRefreshed: number;
-}
-
-interface User {
-  userID: string;
-  profilePicture: string;
-  token: Token | null;
-  likedSongs: any[];
-  dislikedSongs: any[];
-  recommendedSongs: any[];
-}
-
-interface SpotifyPlayer {
-  player: any;
-  isActive: boolean;
-  isPaused: boolean;
-  currentTrack: any | null;
-  position: number;
-  deviceID: string | null;
-  areRecommendationsInitialized: boolean;
-  areRecommendationsLoading: boolean;
-}
-
-// Setup Store Interface
-interface Store {
-  user: User;
-  setUser: (updatedUser: Partial<User>) => void;
-  token: Token;
-  setToken: (updatedToken: Partial<Token>) => void;
-  spotifyPlayer: SpotifyPlayer;
-  setSpotifyPlayer: (updatedSpotifyPlayer: Partial<SpotifyPlayer>) => void;
-}
+import { User, Token, SpotifyPlayer, Store } from "../types";
 
 // Make Store
 const useStore = create<Store>((set) => ({
@@ -81,4 +46,4 @@ const useStore = create<Store>((set) => ({
     })),
 }));
 
-export default useStore; 
+export default useStore;

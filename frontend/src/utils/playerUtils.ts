@@ -1,21 +1,23 @@
-interface RGB {
-  r: number;
-  g: number;
-  b: number;
-}
+import { RGB } from "../types";
 
+/**
+ * Calculate average RGB color from an image element
+ * @param imgEl HTML image element
+ */
 export const getAverageRGB = (imgEl: HTMLImageElement): RGB => {
   const blockSize = 5; // only visit every 5 pixels
   const defaultRGB: RGB = { r: 0, g: 0, b: 0 }; // for non-supporting envs
-  const canvas = document.createElement('canvas');
-  const context = canvas.getContext && canvas.getContext('2d');
+  const canvas = document.createElement("canvas");
+  const context = canvas.getContext && canvas.getContext("2d");
 
   if (!context) {
     return defaultRGB;
   }
 
-  const height = canvas.height = imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height;
-  const width = canvas.width = imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width;
+  const height = (canvas.height =
+    imgEl.naturalHeight || imgEl.offsetHeight || imgEl.height);
+  const width = (canvas.width =
+    imgEl.naturalWidth || imgEl.offsetWidth || imgEl.width);
 
   context.drawImage(imgEl, 0, 0);
 
@@ -47,6 +49,9 @@ export const getAverageRGB = (imgEl: HTMLImageElement): RGB => {
   return rgb;
 };
 
+/**
+ * Get the dominant color from the current cover image
+ */
 export const getDominantColor = async (): Promise<string | null> => {
   const img = document.querySelector('img[alt="Cover"]') as HTMLImageElement;
   if (!img) return null;
@@ -59,4 +64,4 @@ export const getDominantColor = async (): Promise<string | null> => {
   }
 
   return null;
-}; 
+};

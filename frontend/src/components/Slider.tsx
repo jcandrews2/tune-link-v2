@@ -99,7 +99,7 @@ const Slider: FC = () => {
   }, [spotifyPlayer.isPaused, spotifyPlayer.currentTrack?.id]);
 
   return (
-    <>
+    <div className="py-2 cursor-pointer">
       <input
         ref={slider}
         type="range"
@@ -111,7 +111,7 @@ const Slider: FC = () => {
         onMouseUp={handleMouseUp}
         onChange={handleInput}
       />
-    </>
+    </div>
   );
 };
 

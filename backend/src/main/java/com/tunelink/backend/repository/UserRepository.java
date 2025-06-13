@@ -8,7 +8,7 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
-    Optional<User> findBySpotifyId(String spotifyId);
-    boolean existsBySpotifyId(String spotifyId);
-    void deleteBySpotifyId(String spotifyId);
+    Optional<User> findByUserId(String userId);
+    boolean existsByUserId(String userId);
+    void deleteByUserId(String userId);
 } 

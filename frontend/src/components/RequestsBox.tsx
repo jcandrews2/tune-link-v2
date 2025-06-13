@@ -11,6 +11,12 @@ const RequestsBox: FC = () => {
     e.preventDefault();
     if (!request.trim() || !user.token?.value) return;
 
+    console.log("Current user state:", user); // Debug log
+    if (!user.userId) {
+      console.error("User ID is undefined!");
+      return;
+    }
+
     setIsLoading(true);
     setSpotifyPlayer({ areRecommendationsLoading: true });
 

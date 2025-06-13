@@ -1,5 +1,7 @@
 package com.tunelink.backend.controller;
 
+import com.tunelink.backend.service.UserService;
+import com.tunelink.backend.model.User;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -14,6 +16,7 @@ import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.UUID;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/auth")
@@ -27,15 +30,21 @@ public class SpotifyAuthController {
     private String clientSecret;
 
     private final String redirectUri = "http://localhost:5050/auth/callback";
-    private String accessToken;
+    private final UserService userService;
+    private final RestTemplate restTemplate;
+
+    public SpotifyAuthController(UserService userService, RestTemplate restTemplate) {
+        this.userService = userService;
+        this.restTemplate = restTemplate;
+    }
 
     @GetMapping("/login")
-    public ResponseEntity<Void> login() {
-        logger.info("Login endpoint hit");
+    public ResponseEntity<Void> login(@RequestParam String userId) {
+        logger.info("Login endpoint hit for user: {}", userId);
         logger.info("Client ID: {}", clientId);
         logger.info("Redirect URI: {}", redirectUri);
         
-        String state = UUID.randomUUID().toString();
+        String state = userId; // Use userId as state to identify user in callback
         String scope = "streaming user-read-email user-read-private";
         
         String authUrl = UriComponentsBuilder
@@ -53,9 +62,9 @@ public class SpotifyAuthController {
     }
 
     @GetMapping("/callback")
-    public ResponseEntity<Void> callback(@RequestParam String code) {
-        logger.info("Callback received with code: {}", code);
-        RestTemplate restTemplate = new RestTemplate();
+    public ResponseEntity<Void> callback(@RequestParam String code, @RequestParam String state) {
+        String userId = state; // Get userId from state parameter
+        logger.info("Callback received with code: {} for user: {}", code, userId);
         
         // Create the request body
         MultiValueMap<String, String> body = new LinkedMultiValueMap<>();
@@ -83,9 +92,25 @@ public class SpotifyAuthController {
             );
 
             if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                // Store the access token
-                accessToken = (String) response.getBody().get("access_token");
-                logger.info("Successfully obtained access token");
+                // Get the user and update their tokens
+                Optional<User> userOpt = userService.getUser(userId);
+                if (!userOpt.isPresent()) {
+                    logger.error("User not found: {}", userId);
+                    return ResponseEntity.status(500).build();
+                }
+
+                User user = userOpt.get();
+                String accessToken = (String) response.getBody().get("access_token");
+                String refreshToken = (String) response.getBody().get("refresh_token");
+                Integer expiresIn = (Integer) response.getBody().get("expires_in");
+                Long expiresAt = System.currentTimeMillis() + (expiresIn * 1000);
+                
+                user.setSpotifyAccessToken(accessToken);
+                user.setSpotifyRefreshToken(refreshToken);
+                user.setSpotifyTokenExpiresAt(expiresAt);
+                
+                userService.updateUser(user);
+                logger.info("Successfully stored access token for user: {}", userId);
                 
                 // Redirect to frontend
                 return ResponseEntity.status(302)
@@ -101,10 +126,26 @@ public class SpotifyAuthController {
         }
     }
 
-    @GetMapping("/token")
-    public ResponseEntity<Map<String, String>> getToken() {
-        Map<String, String> response = new HashMap<>();
-        response.put("access_token", accessToken);
-        return ResponseEntity.ok(response);
+    @GetMapping("/token/{userId}")
+    public ResponseEntity<Map<String, String>> getToken(@PathVariable String userId) {
+        try {
+            return userService.getUser(userId)
+                .map(user -> {
+                    if (user.getSpotifyAccessToken() == null) {
+                        return ResponseEntity.status(401).body(Map.of("error", "User not authenticated with Spotify"));
+                    }
+                    
+                    // Check if token is expired
+                    if (user.getSpotifyTokenExpiresAt() < System.currentTimeMillis()) {
+                        return ResponseEntity.status(401).body(Map.of("error", "Token expired"));
+                    }
+                    
+                    return ResponseEntity.ok(Map.of("access_token", user.getSpotifyAccessToken()));
+                })
+                .orElseGet(() -> ResponseEntity.status(404).body(Map.of("error", "User not found")));
+        } catch (Exception e) {
+            logger.error("Error getting access token for user: {}", userId, e);
+            return ResponseEntity.status(500).body(Map.of("error", "Internal server error"));
+        }
     }
 } 

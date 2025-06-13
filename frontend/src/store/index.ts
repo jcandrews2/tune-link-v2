@@ -4,7 +4,7 @@ import { User, Token, SpotifyPlayer, Store } from "../types";
 // Make Store
 const useStore = create<Store>((set) => ({
   user: {
-    userID: "",
+    userId: "",
     profilePicture: "",
     token: null,
     likedSongs: [],
@@ -12,22 +12,34 @@ const useStore = create<Store>((set) => ({
     recommendedSongs: [],
   },
   setUser: (updatedUser) =>
-    set((state) => ({
-      user: { ...state.user, ...updatedUser },
-    })),
+    set((state) => {
+      console.log("Setting user state:", {
+        current: state.user,
+        update: updatedUser,
+      });
+      return {
+        user: { ...state.user, ...updatedUser },
+      };
+    }),
 
   token: {
     value: "",
     lastRefreshed: 0,
   },
   setToken: (updatedToken) => {
-    set((state) => ({
-      token: { ...state.token, ...updatedToken },
-      user: {
-        ...state.user,
+    set((state) => {
+      console.log("Setting token:", {
+        current: state.token,
+        update: updatedToken,
+      });
+      return {
         token: { ...state.token, ...updatedToken },
-      },
-    }));
+        user: {
+          ...state.user,
+          token: { ...state.token, ...updatedToken },
+        },
+      };
+    });
   },
 
   spotifyPlayer: {

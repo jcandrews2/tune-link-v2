@@ -7,13 +7,9 @@ import WelcomePage from "./pages/WelcomePage";
 import Navbar from "./components/Navbar";
 import useStore from "./store";
 import { playTrack } from "./api/spotifyApi";
-import {
-  getAuthToken,
-  getSpotifyUserInfo,
-  createUser,
-  getUser,
-} from "./api/authApi";
-import { SpotifyUser, BackendUser } from "./types";
+import { getAuthToken, getSpotifyUserInfo } from "./api/authApi";
+import { createUser, getUser } from "./api/userApi";
+import { SpotifyUser, User } from "./types";
 
 const App: FC = () => {
   const { spotifyPlayer, setSpotifyPlayer, user, setUser, token, setToken } =
@@ -24,7 +20,6 @@ const App: FC = () => {
   useEffect(() => {
     async function fetchToken(): Promise<void> {
       const accessToken = await getAuthToken();
-      console.log("TOKEN", accessToken);
       setToken({ value: accessToken });
     }
 
@@ -34,11 +29,13 @@ const App: FC = () => {
   useEffect(() => {
     async function setupUser(): Promise<void> {
       const spotifyUserData = await getSpotifyUserInfo(token.value);
+      console.log("Spotify user data:", spotifyUserData);
 
       try {
         const userData = await getUser(spotifyUserData);
+        console.log("Backend user data:", userData);
         setUser({
-          userID: userData.spotifyId,
+          userId: userData.userId,
           token: token,
           likedSongs: userData.likedSongs || [],
           dislikedSongs: userData.dislikedSongs || [],
@@ -48,8 +45,9 @@ const App: FC = () => {
         console.log("Creating new user");
         await createUser(spotifyUserData, token);
         const userData = await getUser(spotifyUserData);
+        console.log("New backend user data:", userData);
         setUser({
-          userID: userData.spotifyId,
+          userId: userData.userId,
           token: token,
           likedSongs: userData.likedSongs || [],
           dislikedSongs: userData.dislikedSongs || [],
@@ -82,7 +80,6 @@ const App: FC = () => {
       return;
     }
 
-    console.log("HOW DID IT GET HERE");
     playTrack(user.recommendedSongs[0].songID, spotifyPlayer, token);
     initialTrackPlayed.current = true;
   }, [

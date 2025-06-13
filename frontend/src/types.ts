@@ -3,7 +3,8 @@
 export const AppTypes = {
   // User related types
   User: {} as {
-    userID: string;
+    id?: number;
+    userId: string;
     profilePicture?: string;
     token: { value: string; lastRefreshed?: number } | null;
     likedSongs: Array<{
@@ -53,31 +54,6 @@ export const AppTypes = {
     areRecommendationsLoading: boolean;
   },
 
-  // Backend related types
-  BackendUser: {} as {
-    id: number;
-    spotifyId: string;
-    profilePicture: string | null;
-    likedSongs: Array<{
-      id?: string;
-      songID?: string;
-      name: string;
-      artist: string;
-    }>;
-    dislikedSongs: Array<{
-      id?: string;
-      songID?: string;
-      name: string;
-      artist: string;
-    }>;
-    recommendedSongs: Array<{
-      id?: string;
-      songID?: string;
-      name: string;
-      artist: string;
-    }>;
-  },
-
   // Tokens
   Token: {} as {
     value: string;
@@ -111,7 +87,6 @@ export type User = typeof AppTypes.User;
 export type Song = typeof AppTypes.Song;
 export type SpotifyUser = typeof AppTypes.SpotifyUser;
 export type SpotifyPlayer = typeof AppTypes.SpotifyPlayer;
-export type BackendUser = typeof AppTypes.BackendUser;
 export type Token = typeof AppTypes.Token;
 export type Store = typeof AppTypes.Store;
 export type RGB = typeof AppTypes.RGB;

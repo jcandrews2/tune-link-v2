@@ -7,8 +7,6 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Optional;
 
@@ -24,48 +22,32 @@ public class UserService {
     }
 
     public User createUser(User user) {
-        if (userRepository.existsBySpotifyId(user.getSpotifyId())) {
-            throw new UserException("User with Spotify ID already exists");
+        Optional<User> existingUser = userRepository.findByUserId(user.getUserId());
+        if (existingUser.isPresent()) {
+            throw new UserException("User already exists.");
         }
-        
-        // Initialize empty lists if they're null
-        if (user.getLikedSongs() == null) {
-            user.setLikedSongs(new ArrayList<>());
-        }
-        if (user.getDislikedSongs() == null) {
-            user.setDislikedSongs(new ArrayList<>());
-        }
-        
-        // Initialize recommended songs with some default songs
-        List<String> initialRecommendations = Arrays.asList(
-            "spotify:track:4cOdK2wGLETKBW3PvgPWqT",  // Example song
-            "spotify:track:0HUTL8i4y4MiGCPB5tZNYh",  // Example song
-            "spotify:track:7qiZfU4dY1lWllzX7mPBI3"   // Example song
-        );
-        user.setRecommendedSongs(new ArrayList<>(initialRecommendations));
-        
         return userRepository.save(user);
     }
 
-    public Optional<User> getUserBySpotifyId(String spotifyId) {
-        return userRepository.findBySpotifyId(spotifyId);
+    public User updateUser(User user) {
+        return userRepository.findByUserId(user.getUserId())
+            .map(existingUser -> userRepository.save(user))
+            .orElseThrow(() -> new UserException("User not found."));
+    }
+
+    public void deleteUser(String userId) {
+        userRepository.findByUserId(userId)
+            .ifPresentOrElse(
+                user -> userRepository.deleteByUserId(userId),
+                () -> { throw new UserException("User not found."); }
+            );
+    }
+
+    public Optional<User> getUser(String userId) {
+        return userRepository.findByUserId(userId);
     }
 
     public List<User> getAllUsers() {
         return userRepository.findAll();
-    }
-
-    public User updateUser(User user) {
-        if (!userRepository.existsBySpotifyId(user.getSpotifyId())) {
-            throw new UserException("User not found");
-        }
-        return userRepository.save(user);
-    }
-
-    public void deleteUser(String spotifyId) {
-        if (!userRepository.existsBySpotifyId(spotifyId)) {
-            throw new UserException("User not found");
-        }
-        userRepository.deleteBySpotifyId(spotifyId);
     }
 } 

@@ -1,7 +1,63 @@
 import axios from "axios";
 import { endpoints } from "../config/endpoints";
-import { User, Song, SetUser, SetSpotifyPlayer } from "../types";
+import {
+  User,
+  Song,
+  SetUser,
+  SetSpotifyPlayer,
+  SpotifyUser,
+  BackendUser,
+} from "../types";
 import { playTrack } from "./spotifyApi";
+
+/**
+ * Create a new user in the backend
+ * @param spotifyUserData Spotify user data
+ * @param token Authentication token
+ */
+export async function createUser(
+  spotifyUserData: SpotifyUser,
+  token: any
+): Promise<void> {
+  if (spotifyUserData.error) return;
+
+  const newUser = {
+    userID: spotifyUserData.id,
+    profilePicture: spotifyUserData.images[0],
+    token: token,
+    likedSongs: [],
+    dislikedSongs: [],
+    recommendedSongs: [],
+  };
+
+  try {
+    await axios.post(
+      endpoints.user.create(spotifyUserData.id),
+      {
+        user: newUser,
+      },
+      {
+        headers: { "Content-Type": "application/json" },
+      }
+    );
+  } catch (error) {
+    console.error("Error creating user.", error);
+  }
+}
+
+/**
+ * Get user data from the backend
+ * @param spotifyUserData Spotify user data
+ * @param token Authentication token
+ */
+export async function getUser(
+  spotifyUserData: SpotifyUser
+): Promise<BackendUser> {
+  const response = await axios.get<BackendUser>(
+    endpoints.user.get(spotifyUserData.id)
+  );
+  return response.data;
+}
 
 /**
  * Get music recommendations for a user
@@ -10,12 +66,12 @@ import { playTrack } from "./spotifyApi";
  */
 export async function getRecommendations(
   user: User,
-  request?: string
+  request: string
 ): Promise<any> {
   if (request) {
-    // When a specific request is provided, use POST
+    console.log("Getting recommendations with request");
     const response = await axios.post(
-      endpoints.user.recommendations(user.userID),
+      endpoints.user.recommendations(user.userId),
       { request },
       {
         headers: {
@@ -26,7 +82,7 @@ export async function getRecommendations(
     );
     return response.data;
   } else {
-    // For automatic recommendations without specific request, use GET
+    console.log("Getting recommendations without request");
     const response = await axios.get(
       endpoints.user.recommendations(user.userID),
       {

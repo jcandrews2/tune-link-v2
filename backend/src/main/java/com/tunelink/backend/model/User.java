@@ -13,9 +13,13 @@ public class User {
     private Long id;
 
     @Column(nullable = false, unique = true)
-    private String spotifyId;
+    private String userId;
 
     private String profilePicture;
+    
+    private String spotifyAccessToken;
+    private String spotifyRefreshToken;
+    private Long spotifyTokenExpiresAt;
 
     @ElementCollection
     private List<String> likedSongs;
@@ -25,12 +29,4 @@ public class User {
 
     @ElementCollection
     private List<String> recommendedSongs;
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public String getEmail() {
-        return spotifyId;
-    }
 } 

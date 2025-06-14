@@ -26,7 +26,7 @@ const TrackTime: FC = () => {
 
   const formatEndPosition = (): string => {
     if (!spotifyPlayer.currentTrack) return "-0:00";
-    
+
     const remainingTime =
       spotifyPlayer.currentTrack.duration_ms / 1000 - spotifyPlayer.position;
     const minutes = Math.floor(remainingTime / 60);
@@ -35,10 +35,10 @@ const TrackTime: FC = () => {
   };
 
   return (
-    <div className="Track-time-container">
-      <div className="flex justify-between w-[300px] pt-[0.375rem] opacity-55 select-none">
-        <p className="text-xs font-light text-gray-300">{startPosition}</p>
-        <p className="text-xs font-light text-gray-300">{endPosition}</p>
+    <div className='Track-time-container w-full'>
+      <div className='flex justify-between w-full pt-[0.375rem] opacity-55 select-none'>
+        <p className='text-xs font-light text-gray-300'>{startPosition}</p>
+        <p className='text-xs font-light text-gray-300'>{endPosition}</p>
       </div>
     </div>
   );

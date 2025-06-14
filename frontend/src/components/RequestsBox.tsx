@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import useStore from "../store";
-import { getRecommendations } from "../api/userApi";
+import { submitMusicRequest } from "../api/userApi";
 
 const RequestsBox: FC = () => {
   const [request, setRequest] = useState("");
@@ -9,29 +9,23 @@ const RequestsBox: FC = () => {
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!request.trim() || !user.token?.value) return;
 
-    console.log("Current user state:", user); // Debug log
-    if (!user.userId) {
-      console.error("User ID is undefined!");
-      return;
-    }
+    if (!request.trim() || !user.userId) return;
 
     setIsLoading(true);
-    setSpotifyPlayer({ areRecommendationsLoading: true });
 
     try {
-      const response = await getRecommendations(user, request.trim());
-
-      if (response.recommendations) {
-        setUser({ recommendedSongs: response.recommendations });
-      }
-      setRequest("");
+      const recommendations = await submitMusicRequest(
+        user.userId,
+        request.trim()
+      );
+      setUser({ recommendedSongs: recommendations });
+      console.log("Request submitted and recommendations updated.");
     } catch (error) {
-      console.error("Failed to get music recommendations:", error);
+      console.error("Error submitting request:", error);
     } finally {
       setIsLoading(false);
-      setSpotifyPlayer({ areRecommendationsLoading: false });
+      setRequest("");
     }
   };
 
@@ -64,10 +58,9 @@ const RequestsBox: FC = () => {
           type='submit'
           disabled={isLoading || !request.trim()}
           className='w-full py-2 px-4 bg-white text-black rounded-full
-                  disabled:bg-gray-600 disabled:cursor-not-allowed
-                   transition-colors duration-200 font-medium'
+                  disabled:bg-gray-600 disabled:cursor-not-allowed'
         >
-          {isLoading ? "Getting recommendations..." : "Request"}
+          {isLoading ? "Getting recommendations..." : "Submit"}
         </button>
       </form>
     </div>

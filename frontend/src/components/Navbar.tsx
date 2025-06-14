@@ -6,6 +6,7 @@ import useStore from "../store";
 const Navbar: FC = () => {
   const location = useLocation();
   const { user } = useStore();
+  const isWelcomePage = location.pathname === "/welcome";
 
   const isActive = (path: string) => {
     return location.pathname === path;
@@ -19,61 +20,65 @@ const Navbar: FC = () => {
           <div className='flex items-center'>
             <Link
               to='/'
-              className="font-['Aladin'] text-4xl text-white font-black"
+              className="font-['Aladin'] text-3xl text-white font-black"
             >
-              tune link
+              vibe based
             </Link>
           </div>
 
-          {/* Navigation Links */}
-          <div className='flex items-center space-x-8'>
-            <Link
-              to='/'
-              className={`px-3 py-2 rounded-lg transition-colors duration-200
-                ${
-                  isActive("/")
-                    ? "text-white"
-                    : "text-gray-700 hover:text-white"
-                } hover:bg-gray-900 `}
-            >
-              Home
-            </Link>
-            <Link
-              to='/recommendations'
-              className={`
-                ${
-                  isActive("/recommendations")
-                    ? "text-white"
-                    : "text-gray-700 hover:text-white"
-                } hover:bg-gray-900 px-3 py-2 rounded-lg transition-colors duration-200`}
-            >
-              Recommendations
-            </Link>
-          </div>
+          {!isWelcomePage && (
+            <>
+              {/* Navigation Links */}
+              <div className='flex items-center space-x-8'>
+                <Link
+                  to='/'
+                  className={`px-3 py-2 rounded-lg transition-colors duration-200
+                    ${
+                      isActive("/")
+                        ? "text-white"
+                        : "text-gray-700 hover:text-white"
+                    } hover:bg-gray-900 `}
+                >
+                  Home
+                </Link>
+                <Link
+                  to='/recommendations'
+                  className={`
+                    ${
+                      isActive("/recommendations")
+                        ? "text-white"
+                        : "text-gray-700 hover:text-white"
+                    } hover:bg-gray-900 px-3 py-2 rounded-lg transition-colors duration-200`}
+                >
+                  Recommendations
+                </Link>
+              </div>
 
-          {/* Profile Picture */}
-          <div className='flex items-center'>
-            <Link
-              to='/profile'
-              className={`
-                ${
-                  isActive("/profile")
-                    ? "text-white"
-                    : "text-gray-700 hover:text-white"
-                } 
-                 hover:outline hover:outline-gray-700 w-12 h-12 p-2 rounded-lg transition-colors duration-200`}
-            >
-              {user?.profilePicture ? (
-                <img
-                  src={user.profilePicture}
-                  alt='Profile'
-                  className='w-full h-full rounded-full object-cover'
-                />
-              ) : (
-                <FiUser className='w-full h-full' />
-              )}
-            </Link>
-          </div>
+              {/* Profile Picture */}
+              <div className='flex items-center'>
+                <Link
+                  to='/profile'
+                  className={`
+                    ${
+                      isActive("/profile")
+                        ? "text-white"
+                        : "text-gray-700 hover:text-white"
+                    } 
+                     hover:outline hover:outline-gray-700 w-12 h-12 p-2 rounded-lg transition-colors duration-200`}
+                >
+                  {user?.profilePicture ? (
+                    <img
+                      src={user.profilePicture}
+                      alt='Profile'
+                      className='w-full h-full rounded-full object-cover'
+                    />
+                  ) : (
+                    <FiUser className='w-full h-full' />
+                  )}
+                </Link>
+              </div>
+            </>
+          )}
         </div>
       </div>
     </nav>

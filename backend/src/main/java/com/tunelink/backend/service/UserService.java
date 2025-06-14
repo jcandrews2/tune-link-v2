@@ -21,33 +21,53 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
-    public User createUser(User user) {
-        Optional<User> existingUser = userRepository.findByUserId(user.getUserId());
-        if (existingUser.isPresent()) {
-            throw new UserException("User already exists.");
-        }
+    // Create or update a user after they authenticate with Spotify
+    public User createOrUpdateUser(
+        String spotifyUserId,
+        String accessToken,
+        String refreshToken,
+        long expiresAt
+    ) {
+        User user = userRepository.findByUserId(spotifyUserId)
+            .orElse(new User());
+        
+        user.setUserId(spotifyUserId);
+        user.setSpotifyAccessToken(accessToken);
+        user.setSpotifyRefreshToken(refreshToken);
+        user.setSpotifyTokenExpiresAt(expiresAt);
+        
         return userRepository.save(user);
     }
 
+    public User getUserByAccessToken(String accessToken) {
+        return userRepository.findBySpotifyAccessToken(accessToken)
+                .orElse(null);
+    }
+
+    public User getUserByUserId(String userId) {
+        return userRepository.findByUserId(userId)
+                .orElse(null);
+    }
+
     public User updateUser(User user) {
-        return userRepository.findByUserId(user.getUserId())
-            .map(existingUser -> userRepository.save(user))
-            .orElseThrow(() -> new UserException("User not found."));
+        if (user.getUserId() == null) {
+            throw new UserException("Cannot update user: userId is null");
+        }
+        
+        User existingUser = getUserByUserId(user.getUserId());
+        if (existingUser == null) {
+            throw new UserException("Cannot update user: user not found with id " + user.getUserId());
+        }
+        
+        user.setId(existingUser.getId());
+        return userRepository.save(user);
     }
 
     public void deleteUser(String userId) {
-        userRepository.findByUserId(userId)
-            .ifPresentOrElse(
-                user -> userRepository.deleteByUserId(userId),
-                () -> { throw new UserException("User not found."); }
-            );
-    }
-
-    public Optional<User> getUser(String userId) {
-        return userRepository.findByUserId(userId);
-    }
-
-    public List<User> getAllUsers() {
-        return userRepository.findAll();
+        User user = getUserByUserId(userId);
+        if (user == null) {
+            throw new UserException("User not found with id: " + userId);
+        }
+        userRepository.delete(user);
     }
 } 

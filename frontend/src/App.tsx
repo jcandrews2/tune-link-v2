@@ -1,112 +1,67 @@
-import React, { useEffect, useRef, FC } from "react";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import React, { FC, useEffect, useCallback, useState } from "react";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+  useLocation,
+} from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import RecommendationsPage from "./pages/RecommendationsPage";
 import ProfilePage from "./pages/ProfilePage";
 import WelcomePage from "./pages/WelcomePage";
 import Navbar from "./components/Navbar";
 import useStore from "./store";
-import { playTrack } from "./api/spotifyApi";
-import { getAuthToken, getSpotifyUserInfo } from "./api/authApi";
-import { createUser, getUser } from "./api/userApi";
-import { SpotifyUser, User } from "./types";
+import { getCurrentUser } from "./api/userApi";
+import ProtectedRoute from "./components/ProtectedRoute";
 
 const App: FC = () => {
-  const { spotifyPlayer, setSpotifyPlayer, user, setUser, token, setToken } =
-    useStore();
+  const { user, setUser } = useStore();
+  const [loading, setLoading] = useState(true);
 
-  const initialTrackPlayed = useRef(false);
+  const fetchUser = async () => {
+    try {
+      setLoading(true);
+      const userData = await getCurrentUser();
+      if (userData) {
+        setUser(userData);
+      }
+    } catch (error) {
+      console.error("Error fetching user:", error);
+    } finally {
+      setLoading(false);
+    }
+  };
 
   useEffect(() => {
-    async function fetchToken(): Promise<void> {
-      const accessToken = await getAuthToken();
-      setToken({ value: accessToken });
-    }
-
-    fetchToken();
+    fetchUser();
   }, []);
 
-  useEffect(() => {
-    async function setupUser(): Promise<void> {
-      const spotifyUserData = await getSpotifyUserInfo(token.value);
-      console.log("Spotify user data:", spotifyUserData);
-
-      try {
-        const userData = await getUser(spotifyUserData);
-        console.log("Backend user data:", userData);
-        setUser({
-          userId: userData.userId,
-          token: token,
-          likedSongs: userData.likedSongs || [],
-          dislikedSongs: userData.dislikedSongs || [],
-          recommendedSongs: userData.recommendedSongs || [],
-        });
-      } catch (error) {
-        console.log("Creating new user");
-        await createUser(spotifyUserData, token);
-        const userData = await getUser(spotifyUserData);
-        console.log("New backend user data:", userData);
-        setUser({
-          userId: userData.userId,
-          token: token,
-          likedSongs: userData.likedSongs || [],
-          dislikedSongs: userData.dislikedSongs || [],
-          recommendedSongs: userData.recommendedSongs || [],
-        });
-      }
-    }
-
-    if (!token.value) {
-      return;
-    }
-
-    setupUser();
-  }, [token]);
-
-  useEffect(() => {
-    if (!spotifyPlayer.isActive && !initialTrackPlayed.current) {
-      return;
-    }
-
-    if (!spotifyPlayer.deviceID) {
-      return;
-    }
-
-    if (!spotifyPlayer.areRecommendationsInitialized) {
-      return;
-    }
-
-    if (!user.recommendedSongs || user.recommendedSongs.length === 0) {
-      return;
-    }
-
-    playTrack(user.recommendedSongs[0].songID, spotifyPlayer, token);
-    initialTrackPlayed.current = true;
-  }, [
-    spotifyPlayer.isActive,
-    spotifyPlayer.areRecommendationsInitialized,
-    token,
-    initialTrackPlayed,
-  ]);
+  if (loading) {
+    return (
+      <div className='min-h-screen bg-black text-white flex items-center justify-center'>
+        Loading...
+      </div>
+    );
+  }
 
   return (
     <Router>
-      <div className='min-h-screen bg-black'>
-        {!token.value ? (
-          <WelcomePage />
-        ) : (
-          <>
-            <Navbar />
-            <Routes>
-              <Route path='/' element={<HomePage />} />
-              <Route
-                path='/recommendations'
-                element={<RecommendationsPage />}
-              />
-              <Route path='/profile' element={<ProfilePage />} />
-            </Routes>
-          </>
-        )}
+      <Navbar />
+      <div className='min-h-screen bg-black text-white'>
+        <Routes>
+          <Route path='/welcome' element={<WelcomePage />} />
+          <Route path='/' element={<ProtectedRoute element={<HomePage />} />} />
+          <Route
+            path='/recommendations'
+            element={<ProtectedRoute element={<RecommendationsPage />} />}
+          />
+          <Route
+            path='/profile'
+            element={<ProtectedRoute element={<ProfilePage />} />}
+          />
+          <Route path='*' element={<Navigate to='/' replace />} />
+        </Routes>
       </div>
     </Router>
   );

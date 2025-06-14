@@ -3,7 +3,7 @@ import useStore from "../store";
 import axios from "axios";
 
 const Slider: FC = () => {
-  const { spotifyPlayer, setSpotifyPlayer, token } = useStore();
+  const { spotifyPlayer, setSpotifyPlayer, user } = useStore();
   const [progress, setProgress] = useState<number>(0);
   const [isDragging, setIsDragging] = useState<boolean>(false);
   const slider = useRef<HTMLInputElement>(null);
@@ -15,7 +15,7 @@ const Slider: FC = () => {
         {},
         {
           headers: {
-            Authorization: `Bearer ${token.value}`,
+            Authorization: `Bearer ${user.spotifyAccessToken}`,
           },
         }
       );
@@ -25,7 +25,11 @@ const Slider: FC = () => {
     }
   };
 
-  const setSliderBackground = (value: number, min: number, max: number): void => {
+  const setSliderBackground = (
+    value: number,
+    min: number,
+    max: number
+  ): void => {
     const backgroundValue = ((value - min) / (max - min)) * 100;
     if (slider.current) {
       slider.current.style.background = `linear-gradient(to right, white 0%, white ${backgroundValue}%, darkslategrey ${backgroundValue}%, darkslategrey 100%)`;
@@ -99,17 +103,18 @@ const Slider: FC = () => {
   }, [spotifyPlayer.isPaused, spotifyPlayer.currentTrack?.id]);
 
   return (
-    <div className="py-2 cursor-pointer">
+    <div className='py-2 cursor-pointer w-full'>
       <input
         ref={slider}
-        type="range"
-        step="0.01"
-        min="0"
-        max="100"
+        type='range'
+        step='0.01'
+        min='0'
+        max='100'
         value={progress}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onChange={handleInput}
+        className='w-full'
       />
     </div>
   );

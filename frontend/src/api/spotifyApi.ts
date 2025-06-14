@@ -1,29 +1,24 @@
-import axios from "axios";
 import { endpoints } from "../config/endpoints";
-import { Token, SpotifyPlayer } from "../types";
+import { SpotifyPlayer } from "../types";
+import useStore from "../store";
+import { spotifyAxios } from "../utils/axiosUtils";
 
-/**
- * Play a Spotify track on the user's device
- * @param trackUri The URI of the track to play
- * @param player The Spotify player instance
- * @param token The user's authentication token
- */
 export async function playTrack(
   trackUri: string,
-  player: SpotifyPlayer,
-  token: Token
+  player: SpotifyPlayer
 ): Promise<void> {
   if (!player.deviceID) return;
 
   try {
-    await axios.put(
+    const { user } = useStore.getState();
+    await spotifyAxios.put(
       endpoints.player.play(player.deviceID),
       {
         uris: [trackUri],
       },
       {
         headers: {
-          Authorization: `Bearer ${token.value}`,
+          Authorization: `Bearer ${user.spotifyAccessToken}`,
           "Content-Type": "application/json",
         },
       }
@@ -34,17 +29,10 @@ export async function playTrack(
   }
 }
 
-/**
- * Transfer playback to a specific Spotify device
- * @param token The user's authentication token
- * @param deviceID The ID of the device to transfer playback to
- */
-export async function transferPlayback(
-  token: Token,
-  deviceID: string
-): Promise<void> {
+export async function transferPlayback(deviceID: string): Promise<void> {
   try {
-    await axios.put(
+    const { user } = useStore.getState();
+    await spotifyAxios.put(
       endpoints.player.transfer,
       {
         device_ids: [deviceID],
@@ -52,8 +40,8 @@ export async function transferPlayback(
       },
       {
         headers: {
+          Authorization: `Bearer ${user.spotifyAccessToken}`,
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token.value}`,
         },
       }
     );

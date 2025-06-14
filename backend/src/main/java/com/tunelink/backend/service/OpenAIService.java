@@ -31,7 +31,7 @@ public class OpenAIService {
         this.promptTemplate = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
     }
 
-    public String getRecommendations(String userRequest) {
+    public String getRecommendationParameters(String userRequest) {
         try {
             ChatCompletionCreateParams params = ChatCompletionCreateParams.builder()
                 .addSystemMessage(promptTemplate)

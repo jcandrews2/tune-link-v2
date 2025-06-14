@@ -8,7 +8,6 @@ import java.util.Optional;
 
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
+    Optional<User> findBySpotifyAccessToken(String accessToken);
     Optional<User> findByUserId(String userId);
-    boolean existsByUserId(String userId);
-    void deleteByUserId(String userId);
 } 

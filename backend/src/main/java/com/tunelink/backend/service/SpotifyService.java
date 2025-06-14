@@ -1,66 +1,83 @@
 package com.tunelink.backend.service;
 
-import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.stereotype.Service;
 import org.springframework.web.client.RestTemplate;
-import org.springframework.web.util.UriComponentsBuilder;
-import com.fasterxml.jackson.databind.ObjectMapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Map;
-import java.util.List;
+import java.util.Base64;
 
 @Service
 public class SpotifyService {
     private static final Logger logger = LoggerFactory.getLogger(SpotifyService.class);
+    private static final String spotify_token_url = "https://accounts.spotify.com/api/token";
+    
     private final RestTemplate restTemplate;
-    private final ObjectMapper objectMapper;
-    private static final String SPOTIFY_API_BASE_URL = "https://api.spotify.com/v1";
 
-    @Autowired
+    @Value("${SPOTIFY_CLIENT_ID}")
+    private String clientId;
+
+    @Value("${SPOTIFY_CLIENT_SECRET}")
+    private String clientSecret;
+
+    private final String redirectUri = "http://localhost:5050/auth/callback";
+
     public SpotifyService(RestTemplate restTemplate) {
         this.restTemplate = restTemplate;
-        this.objectMapper = new ObjectMapper();
     }
 
-    public List<Map<String, Object>> getRecommendations(String accessToken, String recommendationParams) {
-        try {
-            // Parse the recommendation parameters
-            Map<String, Object> params = objectMapper.readValue(recommendationParams, Map.class);
-            
-            // Build the URL with query parameters
-            UriComponentsBuilder builder = UriComponentsBuilder
-                .fromHttpUrl(SPOTIFY_API_BASE_URL + "/recommendations");
-            
-            // Add all non-null parameters to the query
-            params.forEach((key, value) -> {
-                if (value != null) {
-                    builder.queryParam(key, value);
-                }
-            });
+    // Goes to Spotify to exchange the authorization code for an access token
+    public Map<String, Object> exchangeCodeForToken(String code) {
+        // Create auth header
+        String credentials = clientId + ":" + clientSecret;
+        String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
+        
+        // Set up headers
+        HttpHeaders headers = new HttpHeaders();
+        headers.set("Authorization", "Basic " + encodedCredentials);
+        headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-            // Create headers with authorization
-            HttpHeaders headers = new HttpHeaders();
-            headers.setBearerAuth(accessToken);
-            
-            // Make the request
-            ResponseEntity<Map> response = restTemplate.exchange(
-                builder.build().toUriString(),
-                HttpMethod.GET,
-                new HttpEntity<>(headers),
-                Map.class
-            );
+        // Set up body parameters
+        String requestBody = String.format(
+            "code=%s&redirect_uri=%s&grant_type=authorization_code",
+            code, redirectUri
+        );
 
-            if (response.getStatusCode() == HttpStatus.OK && response.getBody() != null) {
-                return (List<Map<String, Object>>) response.getBody().get("tracks");
-            } else {
-                logger.error("Failed to get recommendations. Status: {}", response.getStatusCode());
-                throw new RuntimeException("Failed to get recommendations from Spotify");
-            }
-        } catch (Exception e) {
-            logger.error("Error getting recommendations from Spotify", e);
-            throw new RuntimeException("Error getting recommendations from Spotify", e);
-        }
+        // Make request to Spotify
+        HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+            spotify_token_url,
+            HttpMethod.POST,
+            request,
+            Map.class
+        );
+
+        return response.getBody();
+    }
+
+    public Map<String, Object> getSpotifyUserInfo(String accessToken) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        ResponseEntity<Map> userResponse = restTemplate.exchange(
+            "https://api.spotify.com/v1/me",
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            Map.class
+        );
+        return userResponse.getBody();
+    }
+
+    public Map<String, Object> getRecommendations(String accessToken, String request) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+        ResponseEntity<Map> recommendationsResponse = restTemplate.exchange(
+            "https://api.spotify.com/v1/recommendations",
+            HttpMethod.GET,
+            new HttpEntity<>(headers),
+            Map.class
+        );
+        return recommendationsResponse.getBody();
     }
 } 

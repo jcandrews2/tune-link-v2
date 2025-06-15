@@ -1,7 +1,9 @@
 package com.tunelink.backend.service;
 
 import com.tunelink.backend.model.User;
+import com.tunelink.backend.model.Track;
 import com.tunelink.backend.repository.UserRepository;
+import com.tunelink.backend.repository.TrackRepository;
 import com.tunelink.backend.exception.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -9,16 +11,19 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.ArrayList;
 
 @Service
 @Transactional
 public class UserService {
     
     private final UserRepository userRepository;
+    private final TrackRepository trackRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(UserRepository userRepository, TrackRepository trackRepository) {
         this.userRepository = userRepository;
+        this.trackRepository = trackRepository;
     }
 
     // Create or update a user after they authenticate with Spotify
@@ -68,6 +73,15 @@ public class UserService {
         if (user == null) {
             throw new UserException("User not found with id: " + userId);
         }
+
+        // Delete all tracks associated with this user
+        List<Track> allUserTracks = new ArrayList<>();
+        allUserTracks.addAll(user.getLikedSongs());
+        allUserTracks.addAll(user.getDislikedSongs());
+        allUserTracks.addAll(user.getRecommendedSongs());
+        trackRepository.deleteAll(allUserTracks);
+
+        // Delete the user
         userRepository.delete(user);
     }
 } 

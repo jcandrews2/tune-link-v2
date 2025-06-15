@@ -8,6 +8,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.Map;
 import java.util.Base64;
+import java.util.List;
+import java.util.ArrayList;
+import java.util.stream.Collectors;
+import org.json.JSONObject;
+import org.json.JSONArray;
+import org.springframework.web.util.UriComponentsBuilder;
+import com.tunelink.backend.model.Track;
 
 @Service
 public class SpotifyService {
@@ -69,15 +76,47 @@ public class SpotifyService {
         return userResponse.getBody();
     }
 
-    public Map<String, Object> getRecommendations(String accessToken, String request) {
+    public List<Track> getRecommendations(String accessToken, String q_string, int offset) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
-        ResponseEntity<Map> recommendationsResponse = restTemplate.exchange(
-            "https://api.spotify.com/v1/recommendations",
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.spotify.com/v1/search");
+        builder.queryParam("q", q_string);
+        builder.queryParam("type", "track");
+        builder.queryParam("limit", 20);
+        builder.queryParam("offset", offset);
+        String uri = builder.build().toUriString();
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+            uri,
             HttpMethod.GET,
-            new HttpEntity<>(headers),
+            requestEntity,
             Map.class
         );
-        return recommendationsResponse.getBody();
+
+        List<Track> tracks = new ArrayList<>();
+        
+        if (response.getBody() != null) {
+            Map<String, Object> responseBody = response.getBody();
+            Map<String, Object> tracksObj = (Map<String, Object>) responseBody.get("tracks");
+            List<Map<String, Object>> items = (List<Map<String, Object>>) tracksObj.get("items");
+            
+            for (Map<String, Object> item : items) {
+                String id = (String) item.get("id");
+                String name = (String) item.get("name");
+                
+                Map<String, Object> album = (Map<String, Object>) item.get("album");
+                String albumName = (String) album.get("name");
+                
+                List<Map<String, Object>> artists = (List<Map<String, Object>>) item.get("artists");
+                String artistName = artists.isEmpty() ? "Unknown Artist" : 
+                                  (String) artists.get(0).get("name");
+                
+                tracks.add(new Track(name, artistName, id, albumName));
+            }
+        }
+
+        return tracks;
     }
 } 

@@ -3,6 +3,7 @@ package com.tunelink.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import java.util.List;
+import java.util.ArrayList;
 
 @Data
 @Entity
@@ -21,12 +22,15 @@ public class User {
     private String spotifyRefreshToken;
     private Long spotifyTokenExpiresAt;
 
-    @ElementCollection
-    private List<String> likedSongs;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private List<Track> likedSongs = new ArrayList<>();
 
-    @ElementCollection
-    private List<String> dislikedSongs;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private List<Track> dislikedSongs = new ArrayList<>();
 
-    @ElementCollection
-    private List<String> recommendedSongs;
+    @OneToMany(cascade = CascadeType.ALL, orphanRemoval = true)
+    @JoinColumn(name = "user_id")
+    private List<Track> recommendedSongs = new ArrayList<>();
 } 

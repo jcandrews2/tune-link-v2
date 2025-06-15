@@ -19,6 +19,7 @@ const RequestsBox: FC = () => {
         user.userId,
         request.trim()
       );
+      console.log("Recommendations received:", recommendations);
       setUser({ recommendedSongs: recommendations });
       console.log("Request submitted and recommendations updated.");
     } catch (error) {

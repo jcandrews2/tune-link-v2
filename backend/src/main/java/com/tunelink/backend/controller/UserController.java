@@ -1,7 +1,10 @@
 package com.tunelink.backend.controller;
 
 import com.tunelink.backend.model.User;
+import com.tunelink.backend.model.Track;
 import com.tunelink.backend.service.UserService;
+import com.tunelink.backend.service.OpenAIService;
+import com.tunelink.backend.service.SpotifyService;
 import com.tunelink.backend.exception.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,11 +21,14 @@ import java.util.Map;
 public class UserController {
     private static final Logger logger = LoggerFactory.getLogger(UserController.class);
     private final UserService userService;
+    private final OpenAIService openAIService;
+    private final SpotifyService spotifyService;
 
     @Autowired
-    public UserController(UserService userService, OpenAIService openAIService) {
+    public UserController(UserService userService, OpenAIService openAIService, SpotifyService spotifyService) {
         this.userService = userService;
         this.openAIService = openAIService;
+        this.spotifyService = spotifyService;
     }
 
     @GetMapping("/me")
@@ -54,16 +60,31 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/recommendations")
-    public ResponseEntity<List<String>> getRecommendations(@PathVariable String userId, @RequestBody String request) {
+    public ResponseEntity<?> getRecommendations(@PathVariable String userId, @RequestBody String request) {
         User user = userService.getUserByUserId(userId);
         if (user == null) {
             return ResponseEntity.notFound().build();
         }
         try {
-            Map<String, Object> recommendationParameters = openAIService.getRecommendationParameters(user, request);
-            return ResponseEntity.ok(spotifyService.getRecommendations(user.getSpotifyAccessToken(), recommendationParameters));
+            Map<String, Object> searchParams = openAIService.getSearchQuery(request);
+            String q_string = (String) searchParams.get("q_string");
+            int offset = (int) searchParams.get("offset");
+            
+            List<Track> recommendations = spotifyService.getRecommendations(
+                user.getSpotifyAccessToken(), 
+                q_string,
+                offset
+            );
+
+            // Append new recommendations to the existing list
+            user.getRecommendedSongs().addAll(recommendations);
+            userService.updateUser(user);
+            
+            return ResponseEntity.ok(recommendations);
         } catch (Exception e) { 
-            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body("Error getting recommendations.");
+            logger.error("Error getting recommendations", e);
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
+                .body("Error getting recommendations: " + e.getMessage());
         }
     }
 } 

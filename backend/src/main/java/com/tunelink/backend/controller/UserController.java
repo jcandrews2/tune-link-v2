@@ -1,7 +1,6 @@
 package com.tunelink.backend.controller;
 
-import com.tunelink.backend.model.User;
-import com.tunelink.backend.model.Track;
+import com.tunelink.backend.model.*;
 import com.tunelink.backend.service.UserService;
 import com.tunelink.backend.service.OpenAIService;
 import com.tunelink.backend.service.SpotifyService;
@@ -12,6 +11,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.http.HttpStatus;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
@@ -60,6 +60,7 @@ public class UserController {
     }
 
     @PostMapping("/{userId}/recommendations")
+    @Transactional
     public ResponseEntity<?> getRecommendations(@PathVariable String userId, @RequestBody String request) {
         User user = userService.getUserByUserId(userId);
         if (user == null) {
@@ -76,15 +77,36 @@ public class UserController {
                 offset
             );
 
-            // Append new recommendations to the existing list
-            user.getRecommendedSongs().addAll(recommendations);
-            userService.updateUser(user);
+            // Update user's recommendations using the new service method
+            List<RecommendedTrack> savedTracks = userService.updateRecommendedTracks(user, recommendations);
             
-            return ResponseEntity.ok(recommendations);
+            return ResponseEntity.ok(savedTracks);
         } catch (Exception e) { 
             logger.error("Error getting recommendations", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)
                 .body("Error getting recommendations: " + e.getMessage());
         }
+    }
+
+    @PostMapping("/{userId}/like")
+    public ResponseEntity<?> likeTrack(@PathVariable String userId, @RequestBody Track track) {
+        User user = userService.getUserByUserId(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        userService.addLikedTrack(user, track);
+        return ResponseEntity.ok().body("Track liked successfully");
+    }
+
+    @PostMapping("/{userId}/dislike")
+    public ResponseEntity<?> dislikeTrack(@PathVariable String userId, @RequestBody Track track) {
+        User user = userService.getUserByUserId(userId);
+        if (user == null) {
+            return ResponseEntity.notFound().build();
+        }
+        
+        userService.addDislikedTrack(user, track);
+        return ResponseEntity.ok().body("Track disliked successfully");
     }
 } 

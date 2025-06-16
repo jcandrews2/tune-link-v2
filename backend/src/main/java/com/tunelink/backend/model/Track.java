@@ -3,23 +3,23 @@ package com.tunelink.backend.model;
 import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
-import lombok.AllArgsConstructor;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 
 @Data
-@Entity
+@MappedSuperclass
 @NoArgsConstructor
-@AllArgsConstructor
-@Table(name = "tracks")
+@JsonIgnoreProperties({"hibernateLazyInitializer", "handler"})
 public class Track {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+    @Column(nullable = false)
     private String name;
+
+    @Column(nullable = false)
     private String artist;
-    
-    @Column(unique = true)
+
+    @Column(nullable = false)
     private String spotifyId;
+
+    @Column(nullable = false)
     private String album;
 
     // Constructor for creating from Spotify API response

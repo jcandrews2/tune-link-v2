@@ -7,9 +7,10 @@ const WelcomePage: FC = () => {
   };
 
   return (
-    <div className='flex flex-col items-center justify-center min-h-screen bg-gradient-to-b from-gray-900 to-black text-white'>
-      <h1 className='text-6xl font-bold mb-8'>tune link</h1>
-      <p className='text-xl mb-12'>Discover music you'll love.</p>
+    <div className='flex flex-col items-center min-h-screen text-white p-16'>
+      <h1 className='text-8xl font-bold'>Welcome to</h1>
+      <h1 className='font-kirang text-6xl font-bold p-16'>Vibesbased</h1>
+      <h2 className='text-xl mb-12'>Save time finding your favorite music.</h2>
       <button
         onClick={() => handleLogin()}
         className='bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-6 rounded-full transition duration-300'

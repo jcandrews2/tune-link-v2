@@ -10,6 +10,8 @@ import LikeIcon from "../images/like.png";
 import DislikeIcon from "../images/dislike.png";
 import { endpoints } from "../config/endpoints";
 import { transferPlayback } from "../api/spotifyApi";
+import { Song } from "../types";
+import { userAxios } from "../utils/axiosUtils";
 
 const Player: FC = () => {
   const { user, spotifyPlayer, setSpotifyPlayer, setUser } = useStore();
@@ -26,26 +28,86 @@ const Player: FC = () => {
 
   const handleLike = async (): Promise<void> => {
     console.log("handleLike");
+    if (
+      !spotifyPlayer.currentTrack ||
+      !spotifyPlayer.player ||
+      user.recommendedSongs.length === 0
+    ) {
+      console.error("No current track, player, or recommended songs available");
+      return;
+    }
+
+    try {
+      const likedSong = user.recommendedSongs[0];
+
+      // Update local state immediately for smooth animation
+      setUser({
+        recommendedSongs: user.recommendedSongs.slice(1),
+      });
+
+      // Play next track immediately
+      await spotifyPlayer.player.nextTrack();
+
+      // Send API request in the background
+      userAxios
+        .post(endpoints.user.liked(user.userId), likedSong)
+        .catch((error) => {
+          console.error("Error in handleLike:", error);
+          // Could add toast notification here for error
+        });
+    } catch (error) {
+      console.error("Error in handleLike:", error);
+    }
   };
 
   const handleDislike = async (): Promise<void> => {
     console.log("handleDislike");
+    if (
+      !spotifyPlayer.currentTrack ||
+      !spotifyPlayer.player ||
+      user.recommendedSongs.length === 0
+    ) {
+      console.error("No current track, player, or recommended songs available");
+      return;
+    }
+
+    try {
+      const dislikedSong = user.recommendedSongs[0];
+
+      // Update local state immediately for smooth animation
+      setUser({
+        recommendedSongs: user.recommendedSongs.slice(1),
+      });
+
+      // Play next track immediately
+      await spotifyPlayer.player.nextTrack();
+
+      // Send API request in the background
+      userAxios
+        .post(endpoints.user.disliked(user.userId), dislikedSong)
+        .catch((error) => {
+          console.error("Error in handleDislike:", error);
+          // Could add toast notification here for error
+        });
+    } catch (error) {
+      console.error("Error in handleDislike:", error);
+    }
   };
 
   const bind = useDrag(
     async ({ active, movement: [mx], direction: [xDir], cancel, tap }) => {
       if (tap) return;
 
-      const trigger = Math.abs(mx) > 100;
+      const trigger = Math.abs(mx) > 150;
       const isRight = mx > 0;
 
-      if (active && trigger && user.token?.value) {
+      if (active && trigger) {
+        cancel();
         if (isRight) {
           await handleLike();
         } else {
           await handleDislike();
         }
-        cancel();
       }
 
       api.start({
@@ -53,6 +115,7 @@ const Player: FC = () => {
         rotate: active ? mx / 20 : 0,
         scale: active ? 1.05 : 1,
         immediate: active,
+        config: { tension: 300, friction: active ? 10 : 20 },
       });
     },
     {
@@ -164,6 +227,21 @@ const Player: FC = () => {
     };
   }, [user.userId]);
 
+  // Monitor recommendedSongs and handle empty state
+  useEffect(() => {
+    if (!spotifyPlayer.player) return;
+
+    if (user.recommendedSongs.length === 0) {
+      // Pause playback when no songs are available
+      spotifyPlayer.player.pause();
+      setSpotifyPlayer({
+        currentTrack: null,
+        isPaused: true,
+        isActive: false,
+      });
+    }
+  }, [user.recommendedSongs, spotifyPlayer.player]);
+
   const reconnectPlayer = async () => {
     if (spotifyPlayer.player) {
       try {
@@ -180,9 +258,78 @@ const Player: FC = () => {
     }
   };
 
+  useEffect(() => {
+    const playRecommendations = async () => {
+      try {
+        // Create array of properly formatted Spotify URIs
+        const spotifyUris = user.recommendedSongs.map(
+          (track) => `spotify:track:${track.spotifyId}`
+        );
+
+        console.log("Attempting to play with data:", {
+          deviceId: spotifyPlayer.deviceID,
+          spotifyUris,
+          firstSong: user.recommendedSongs[0],
+        });
+
+        await fetch(
+          `https://api.spotify.com/v1/me/player/play?device_id=${spotifyPlayer.deviceID}`,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${user.spotifyAccessToken}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              uris: spotifyUris,
+            }),
+          }
+        );
+      } catch (err) {
+        console.error("Error starting playback:", {
+          error: err,
+          status: err.status,
+          statusText: err.statusText,
+          responseText: await err.text?.(),
+          recommendedSongs: user.recommendedSongs,
+        });
+      }
+    };
+
+    console.log("useEffect for recommendations triggered", {
+      deviceId: spotifyPlayer.deviceID,
+      recommendedSongsLength: user.recommendedSongs?.length,
+      hasPlayer: !!spotifyPlayer.player,
+      hasToken: !!user.spotifyAccessToken,
+    });
+
+    if (user.recommendedSongs?.length > 0) {
+      console.log("Playing recommendations");
+      playRecommendations();
+    }
+  }, [
+    user.recommendedSongs,
+    spotifyPlayer.deviceID,
+    spotifyPlayer.player,
+    user.spotifyAccessToken,
+  ]);
+
+  // Only render player if we have recommended songs
+  if (user.recommendedSongs.length === 0) {
+    return (
+      <div className='mx-auto select-none'>
+        <div className='border border-gray-700 rounded-lg p-8 bg-[#121212] text-center text-gray-400'>
+          No more songs in queue.
+          <br />
+          Try getting new recommendations!
+        </div>
+      </div>
+    );
+  }
+
   return (
     <>
-      <div className='fixed-width-container w-[400px] min-w-[400px] flex-shrink-0 mx-auto select-none'>
+      <div className='mx-auto select-none'>
         <animated.div
           {...bind()}
           style={{
@@ -198,12 +345,12 @@ const Player: FC = () => {
                 : `rgba(248, 113, 113, ${Math.min(Math.abs(x) / 100, 0.4)})`
             ),
           }}
-          className='border border-gray-700 rounded-lg p-4 bg-[#121212] cursor-grab active:cursor-grabbing select-none'
+          className='border border-gray-700 rounded-lg p-8 bg-[#121212] cursor-grab active:cursor-grabbing select-none'
         >
           <div className='relative z-10 select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
             <Cover />
             {spotifyPlayer.currentTrack && (
-              <div className='relative px-[1.875rem] py-2 z-10 text-left'>
+              <div className='relative py-2 z-10 text-left'>
                 <h2 className='text-xl font-bold text-white'>
                   {spotifyPlayer.currentTrack.name}
                 </h2>
@@ -212,7 +359,7 @@ const Player: FC = () => {
                 </h3>
               </div>
             )}
-            <div className='flex flex-col items-start w-full px-[1.875rem] py-2'>
+            <div className='flex flex-col items-start w-full  py-2'>
               <Slider />
               <TrackTime />
             </div>

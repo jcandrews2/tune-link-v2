@@ -54,7 +54,7 @@ edm
 rock
 indie
 indie-rock
-rnb
+r&b
 soul
 funk
 house

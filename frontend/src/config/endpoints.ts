@@ -14,8 +14,8 @@ export const endpoints = {
     create: (id: string) => `${BASE_URL}/user/${id}`,
     get: (id: string) => `${BASE_URL}/user/${id}`,
     recommendations: (id: string) => `${BASE_URL}/user/${id}/recommendations`,
-    liked: (id: string) => `${BASE_URL}/user/${id}/liked`,
-    disliked: (id: string) => `${BASE_URL}/user/${id}/disliked`,
+    liked: (id: string) => `${BASE_URL}/user/${id}/like`,
+    disliked: (id: string) => `${BASE_URL}/user/${id}/dislike`,
   },
   player: {
     play: (deviceId: string) =>

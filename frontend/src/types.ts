@@ -5,6 +5,8 @@ export interface Song {
   songID?: string;
   name: string;
   artist: string;
+  spotifyId: string; // The Spotify track ID used to construct the URI
+  album: string;
 }
 
 export interface User {
@@ -62,3 +64,17 @@ export interface RGB {
 
 export type SetUser = (user: Partial<User>) => void;
 export type SetSpotifyPlayer = (player: Partial<SpotifyPlayer>) => void;
+
+declare global {
+  interface Window {
+    Spotify: {
+      Player: any;
+    };
+    onSpotifyWebPlaybackSDKReady: () => void;
+  }
+}
+
+declare module "*.png" {
+  const value: string;
+  export default value;
+}

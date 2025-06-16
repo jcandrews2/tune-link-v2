@@ -1,9 +1,7 @@
 package com.tunelink.backend.service;
 
-import com.tunelink.backend.model.User;
-import com.tunelink.backend.model.Track;
-import com.tunelink.backend.repository.UserRepository;
-import com.tunelink.backend.repository.TrackRepository;
+import com.tunelink.backend.model.*;
+import com.tunelink.backend.repository.*;
 import com.tunelink.backend.exception.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,15 +16,23 @@ import java.util.ArrayList;
 public class UserService {
     
     private final UserRepository userRepository;
-    private final TrackRepository trackRepository;
+    private final LikedTrackRepository likedTrackRepository;
+    private final DislikedTrackRepository dislikedTrackRepository;
+    private final RecommendedTrackRepository recommendedTrackRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository, TrackRepository trackRepository) {
+    public UserService(
+        UserRepository userRepository,
+        LikedTrackRepository likedTrackRepository,
+        DislikedTrackRepository dislikedTrackRepository,
+        RecommendedTrackRepository recommendedTrackRepository
+    ) {
         this.userRepository = userRepository;
-        this.trackRepository = trackRepository;
+        this.likedTrackRepository = likedTrackRepository;
+        this.dislikedTrackRepository = dislikedTrackRepository;
+        this.recommendedTrackRepository = recommendedTrackRepository;
     }
 
-    // Create or update a user after they authenticate with Spotify
     public User createOrUpdateUser(
         String spotifyUserId,
         String accessToken,
@@ -74,14 +80,48 @@ public class UserService {
             throw new UserException("User not found with id: " + userId);
         }
 
-        // Delete all tracks associated with this user
-        List<Track> allUserTracks = new ArrayList<>();
-        allUserTracks.addAll(user.getLikedSongs());
-        allUserTracks.addAll(user.getDislikedSongs());
-        allUserTracks.addAll(user.getRecommendedSongs());
-        trackRepository.deleteAll(allUserTracks);
-
-        // Delete the user
         userRepository.delete(user);
+    }
+
+    public LikedTrack addLikedTrack(User user, Track track) {
+        LikedTrack likedTrack = new LikedTrack(
+            track.getName(),
+            track.getArtist(),
+            track.getSpotifyId(),
+            track.getAlbum(),
+            user
+        );
+        return likedTrackRepository.save(likedTrack);
+    }
+
+    public DislikedTrack addDislikedTrack(User user, Track track) {
+        DislikedTrack dislikedTrack = new DislikedTrack(
+            track.getName(),
+            track.getArtist(),
+            track.getSpotifyId(),
+            track.getAlbum(),
+            user
+        );
+        return dislikedTrackRepository.save(dislikedTrack);
+    }
+
+    public List<RecommendedTrack> updateRecommendedTracks(User user, List<Track> tracks) {
+        // Clear existing recommendations
+        recommendedTrackRepository.deleteAll(user.getRecommendedSongs());
+        user.getRecommendedSongs().clear();
+
+        // Add new recommendations
+        List<RecommendedTrack> recommendedTracks = new ArrayList<>();
+        for (Track track : tracks) {
+            RecommendedTrack recommendedTrack = new RecommendedTrack(
+                track.getName(),
+                track.getArtist(),
+                track.getSpotifyId(),
+                track.getAlbum(),
+                user
+            );
+            recommendedTracks.add(recommendedTrack);
+        }
+        return recommendedTrackRepository.saveAll(recommendedTracks);
     }
 } 

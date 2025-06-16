@@ -21,7 +21,6 @@ const RequestsBox: FC = () => {
       );
       console.log("Recommendations received:", recommendations);
       setUser({ recommendedSongs: recommendations });
-      console.log("Request submitted and recommendations updated.");
     } catch (error) {
       console.error("Error submitting request:", error);
     } finally {
@@ -37,6 +36,15 @@ const RequestsBox: FC = () => {
     }
   };
 
+  const handleKeyDown = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
+    if (e.key === "Enter" && !e.shiftKey) {
+      e.preventDefault();
+      if (request.trim() && !isLoading) {
+        handleSubmit(e);
+      }
+    }
+  };
+
   return (
     <div className='w-full p-4 bg-black border border-gray-700 rounded-lg'>
       <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
@@ -44,6 +52,7 @@ const RequestsBox: FC = () => {
           <textarea
             value={request}
             onChange={handleChange}
+            onKeyDown={handleKeyDown}
             placeholder='I want to hear old indie rock songs with heavy guitar riffs.'
             maxLength={100}
             className='w-full h-[200px] p-3 bg-black text-white rounded-lg resize-none 

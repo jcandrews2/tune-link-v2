@@ -20,9 +20,9 @@ const Navbar: FC = () => {
           <div className='flex items-center'>
             <Link
               to='/'
-              className="font-['Aladin'] text-3xl text-white font-black"
+              className='font-kirang text-4xl text-white font-semibold'
             >
-              vibe based
+              Vibesbased
             </Link>
           </div>
 

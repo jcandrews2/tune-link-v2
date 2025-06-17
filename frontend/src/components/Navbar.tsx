@@ -13,11 +13,11 @@ const Navbar: FC = () => {
   };
 
   return (
-    <nav className='bg-black'>
+    <nav className=''>
       <div className='container mx-auto px-4'>
-        <div className='flex items-center justify-between h-16'>
+        <div className='flex items-center h-16'>
           {/* Logo and Brand */}
-          <div className='flex items-center'>
+          <div className='w-1/4'>
             <Link
               to='/'
               className='font-kirang text-4xl text-white font-semibold'
@@ -28,34 +28,36 @@ const Navbar: FC = () => {
 
           {!isWelcomePage && (
             <>
-              {/* Navigation Links */}
-              <div className='flex items-center space-x-8'>
-                <Link
-                  to='/'
-                  className={`px-3 py-2 rounded-lg transition-colors duration-200
-                    ${
-                      isActive("/")
-                        ? "text-white"
-                        : "text-gray-700 hover:text-white"
-                    } hover:bg-gray-900 `}
-                >
-                  Home
-                </Link>
-                <Link
-                  to='/recommendations'
-                  className={`
-                    ${
-                      isActive("/recommendations")
-                        ? "text-white"
-                        : "text-gray-700 hover:text-white"
-                    } hover:bg-gray-900 px-3 py-2 rounded-lg transition-colors duration-200`}
-                >
-                  Recommendations
-                </Link>
+              {/* Navigation Links - Centered */}
+              <div className='flex items-center justify-center w-2/4'>
+                <div className='flex items-center space-x-8'>
+                  <Link
+                    to='/'
+                    className={`px-3 py-2 rounded-lg transition-colors duration-200
+                      ${
+                        isActive("/")
+                          ? "text-white"
+                          : "text-gray-700 hover:text-white"
+                      } hover:bg-gray-900 `}
+                  >
+                    Home
+                  </Link>
+                  <Link
+                    to='/recommendations'
+                    className={`
+                      ${
+                        isActive("/recommendations")
+                          ? "text-white"
+                          : "text-gray-700 hover:text-white"
+                      } hover:bg-gray-900 px-3 py-2 rounded-lg transition-colors duration-200`}
+                  >
+                    Recommendations
+                  </Link>
+                </div>
               </div>
 
               {/* Profile Picture */}
-              <div className='flex items-center'>
+              <div className='flex items-center justify-end w-1/4'>
                 <Link
                   to='/profile'
                   className={`

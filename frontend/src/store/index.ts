@@ -8,6 +8,7 @@ const useStore = create<Store>((set) => ({
     likedSongs: [],
     dislikedSongs: [],
     recommendedSongs: [],
+    previousRequests: [],
   },
 
   setUser: (updatedUser) =>

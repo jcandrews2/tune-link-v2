@@ -22,7 +22,7 @@ const Cover: FC = () => {
         <>
           <img
             src={spotifyPlayer.currentTrack?.album.images[0].url}
-            className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2'
+            className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm'
             alt='Cover'
             height={300}
             width={300}

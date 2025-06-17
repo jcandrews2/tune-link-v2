@@ -109,4 +109,17 @@ public class UserController {
         userService.addDislikedTrack(user, track);
         return ResponseEntity.ok().body("Track disliked successfully");
     }
+
+    @GetMapping("/{userId}/requests")
+    public ResponseEntity<List<Request>> getUserRequests(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getUserRequests(userId));
+    }
+
+    @PostMapping("/{userId}/requests")
+    public ResponseEntity<Void> saveRequest(@PathVariable String userId, @RequestBody Map<String, Object> requestBody) {
+        String request = (String) requestBody.get("request");
+        
+        userService.saveRequest(userId, request);
+        return ResponseEntity.ok().build();
+    }
 } 

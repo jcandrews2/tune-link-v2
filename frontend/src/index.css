@@ -6,20 +6,12 @@
 
 @layer base {
   body {
+
     margin: 0;
     @apply font-poppins;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
-}
-
-code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
-    monospace;
-}
-
-html { 
-  overflow: hidden;
 }
 
 @keyframes fadeIn {

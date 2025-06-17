@@ -9,9 +9,8 @@ import { useDrag } from "@use-gesture/react";
 import LikeIcon from "../images/like.png";
 import DislikeIcon from "../images/dislike.png";
 import { endpoints } from "../config/endpoints";
-import { transferPlayback } from "../api/spotifyApi";
-import { Song } from "../types";
-import { userAxios } from "../utils/axiosUtils";
+import { transferPlayback, playTracks } from "../api/spotifyApi";
+import { dislikeTrack, likeTrack } from "../api/userApi";
 
 const Player: FC = () => {
   const { user, spotifyPlayer, setSpotifyPlayer, setUser } = useStore();
@@ -40,21 +39,13 @@ const Player: FC = () => {
     try {
       const likedSong = user.recommendedSongs[0];
 
-      // Update local state immediately for smooth animation
       setUser({
         recommendedSongs: user.recommendedSongs.slice(1),
       });
 
-      // Play next track immediately
       await spotifyPlayer.player.nextTrack();
 
-      // Send API request in the background
-      userAxios
-        .post(endpoints.user.liked(user.userId), likedSong)
-        .catch((error) => {
-          console.error("Error in handleLike:", error);
-          // Could add toast notification here for error
-        });
+      likeTrack(user.userId, likedSong);
     } catch (error) {
       console.error("Error in handleLike:", error);
     }
@@ -74,21 +65,13 @@ const Player: FC = () => {
     try {
       const dislikedSong = user.recommendedSongs[0];
 
-      // Update local state immediately for smooth animation
       setUser({
         recommendedSongs: user.recommendedSongs.slice(1),
       });
 
-      // Play next track immediately
       await spotifyPlayer.player.nextTrack();
 
-      // Send API request in the background
-      userAxios
-        .post(endpoints.user.disliked(user.userId), dislikedSong)
-        .catch((error) => {
-          console.error("Error in handleDislike:", error);
-          // Could add toast notification here for error
-        });
+      dislikeTrack(user.userId, dislikedSong);
     } catch (error) {
       console.error("Error in handleDislike:", error);
     }
@@ -147,10 +130,10 @@ const Player: FC = () => {
           if (user.spotifyAccessToken) {
             cb(user.spotifyAccessToken);
           } else {
-            console.error("No token available in user state");
+            console.error("No token available in user state.");
           }
         },
-        volume: 0.5,
+        volume: 0.01,
       });
 
       setSpotifyPlayer({ player });
@@ -227,12 +210,11 @@ const Player: FC = () => {
     };
   }, [user.userId]);
 
-  // Monitor recommendedSongs and handle empty state
+  // Handle empty recommended songs
   useEffect(() => {
     if (!spotifyPlayer.player) return;
 
     if (user.recommendedSongs.length === 0) {
-      // Pause playback when no songs are available
       spotifyPlayer.player.pause();
       setSpotifyPlayer({
         currentTrack: null,
@@ -261,6 +243,11 @@ const Player: FC = () => {
   useEffect(() => {
     const playRecommendations = async () => {
       try {
+        if (!spotifyPlayer.deviceID) {
+          console.error("No device ID available");
+          return;
+        }
+
         // Create array of properly formatted Spotify URIs
         const spotifyUris = user.recommendedSongs.map(
           (track) => `spotify:track:${track.spotifyId}`
@@ -272,25 +259,10 @@ const Player: FC = () => {
           firstSong: user.recommendedSongs[0],
         });
 
-        await fetch(
-          `https://api.spotify.com/v1/me/player/play?device_id=${spotifyPlayer.deviceID}`,
-          {
-            method: "PUT",
-            headers: {
-              Authorization: `Bearer ${user.spotifyAccessToken}`,
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify({
-              uris: spotifyUris,
-            }),
-          }
-        );
+        await playTracks(spotifyPlayer.deviceID, spotifyUris);
       } catch (err) {
         console.error("Error starting playback:", {
           error: err,
-          status: err.status,
-          statusText: err.statusText,
-          responseText: await err.text?.(),
           recommendedSongs: user.recommendedSongs,
         });
       }

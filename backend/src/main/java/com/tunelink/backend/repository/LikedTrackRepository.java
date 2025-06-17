@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface LikedTrackRepository extends JpaRepository<LikedTrack, Long> {
     Optional<LikedTrack> findBySpotifyId(String spotifyId);
+    Optional<LikedTrack> findBySpotifyIdAndUser(String spotifyId, User user);
     List<LikedTrack> findByUser(User user);
 } 

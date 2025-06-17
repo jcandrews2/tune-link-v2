@@ -3,32 +3,6 @@ import { SpotifyPlayer } from "../types";
 import useStore from "../store";
 import { spotifyAxios } from "../utils/axiosUtils";
 
-export async function playTrack(
-  trackUri: string,
-  player: SpotifyPlayer
-): Promise<void> {
-  if (!player.deviceID) return;
-
-  try {
-    const { user } = useStore.getState();
-    await spotifyAxios.put(
-      endpoints.player.play(player.deviceID),
-      {
-        uris: [trackUri],
-      },
-      {
-        headers: {
-          Authorization: `Bearer ${user.spotifyAccessToken}`,
-          "Content-Type": "application/json",
-        },
-      }
-    );
-    console.log("Successfully played track!");
-  } catch (error) {
-    console.error("Error playing track:", error);
-  }
-}
-
 export async function transferPlayback(deviceID: string): Promise<void> {
   try {
     const { user } = useStore.getState();
@@ -48,5 +22,30 @@ export async function transferPlayback(deviceID: string): Promise<void> {
     console.log("Playback successfully transferred to the device:", deviceID);
   } catch (error) {
     console.error("Error transferring playback:", error);
+  }
+}
+
+export async function playTracks(
+  deviceID: string,
+  trackUris: string[]
+): Promise<void> {
+  try {
+    const { user } = useStore.getState();
+    await spotifyAxios.put(
+      endpoints.player.play(deviceID),
+      {
+        uris: trackUris,
+      },
+      {
+        headers: {
+          Authorization: `Bearer ${user.spotifyAccessToken}`,
+          "Content-Type": "application/json",
+        },
+      }
+    );
+    console.log("Successfully started playing tracks!");
+  } catch (error) {
+    console.error("Error playing tracks:", error);
+    throw error;
   }
 }

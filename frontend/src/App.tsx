@@ -1,10 +1,9 @@
-import React, { FC, useEffect, useCallback, useState } from "react";
+import React, { FC, useState, useEffect } from "react";
 import {
   BrowserRouter as Router,
   Routes,
   Route,
   Navigate,
-  useLocation,
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
 import RecommendationsPage from "./pages/RecommendationsPage";
@@ -14,6 +13,8 @@ import Navbar from "./components/Navbar";
 import useStore from "./store";
 import { getCurrentUser } from "./api/userApi";
 import ProtectedRoute from "./components/ProtectedRoute";
+import Footer from "./components/Footer";
+import Layout from "./components/Layout";
 
 const App: FC = () => {
   const { user, setUser } = useStore();
@@ -39,7 +40,7 @@ const App: FC = () => {
 
   if (loading) {
     return (
-      <div className='min-h-screen bg-black text-white flex items-center justify-center'>
+      <div className='min-h-screen text-white flex items-center justify-center'>
         Loading...
       </div>
     );
@@ -47,22 +48,30 @@ const App: FC = () => {
 
   return (
     <Router>
-      <Navbar />
-      <div className='min-h-screen bg-black text-white'>
-        <Routes>
-          <Route path='/welcome' element={<WelcomePage />} />
-          <Route path='/' element={<ProtectedRoute element={<HomePage />} />} />
-          <Route
-            path='/recommendations'
-            element={<ProtectedRoute element={<RecommendationsPage />} />}
-          />
-          <Route
-            path='/profile'
-            element={<ProtectedRoute element={<ProfilePage />} />}
-          />
-          <Route path='*' element={<Navigate to='/' replace />} />
-        </Routes>
-      </div>
+      <Layout>
+        <div className='flex flex-col min-h-screen bg-black justify-between'>
+          <Navbar />
+          <div className='text-white flex flex-col'>
+            <Routes>
+              <Route path='/welcome' element={<WelcomePage />} />
+              <Route
+                path='/'
+                element={<ProtectedRoute element={<HomePage />} />}
+              />
+              <Route
+                path='/recommendations'
+                element={<ProtectedRoute element={<RecommendationsPage />} />}
+              />
+              <Route
+                path='/profile'
+                element={<ProtectedRoute element={<ProfilePage />} />}
+              />
+              <Route path='*' element={<Navigate to='/' replace />} />
+            </Routes>
+          </div>
+          <Footer />
+        </div>
+      </Layout>
     </Router>
   );
 };

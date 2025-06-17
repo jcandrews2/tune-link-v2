@@ -27,18 +27,18 @@ const PlayPause: FC = () => {
   };
 
   return (
-    <div className="p-2" onClick={togglePlayback}>
+    <div className='p-2' onClick={togglePlayback}>
       {!spotifyPlayer.isPaused ? (
         <img
           src={PauseIcon}
-          alt="Pause"
-          className="w-[3.75rem] h-auto transform active:scale-95"
+          alt='Pause'
+          className='w-[3.75rem] h-auto transform active:scale-95'
         />
       ) : (
         <img
           src={PlayIcon}
-          alt="Play"
-          className="w-[3.75rem] h-auto transform active:scale-95"
+          alt='Play'
+          className='w-[3.75rem] h-auto transform active:scale-95'
         />
       )}
     </div>

@@ -1,12 +1,9 @@
 // types.ts - Centralized type definitions for the application
-
-export interface Song {
-  id?: string;
-  songID?: string;
-  name: string;
-  artist: string;
-  spotifyId: string; // The Spotify track ID used to construct the URI
-  album: string;
+export interface Request {
+  id: string;
+  userId: string;
+  text: string;
+  timestamp: string;
 }
 
 export interface User {
@@ -15,6 +12,7 @@ export interface User {
   likedSongs: Song[];
   dislikedSongs: Song[];
   recommendedSongs: Song[];
+  previousRequests: Request[];
   token?: {
     value: string;
     expiresAt: number;

@@ -16,7 +16,7 @@ public class Track {
     @Column(nullable = false)
     private String artist;
 
-    @Column(nullable = false)
+    @Column(name = "spotify_id", nullable = false)
     private String spotifyId;
 
     @Column(nullable = false)

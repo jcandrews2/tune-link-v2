@@ -1,6 +1,6 @@
 import { endpoints } from "../config/endpoints";
 import { userAxios } from "../utils/axiosUtils";
-import { Song } from "../types";
+import { Song, Request } from "../types";
 
 export async function getCurrentUser() {
   try {
@@ -29,11 +29,6 @@ export async function submitMusicRequest(
   }
 }
 
-/**
- * Get recommendations for a user
- * @param userId The user ID
- * @returns Array of recommended songs
- */
 export async function getRecommendations(userId: string): Promise<Song[]> {
   try {
     const response = await userAxios.get(
@@ -46,33 +41,38 @@ export async function getRecommendations(userId: string): Promise<Song[]> {
   }
 }
 
-// export async function getRecommendations(
-//   user: User,
-//   request: string
-// ): Promise<any> {
-//   if (request) {
-//     console.log("Getting recommendations with request");
-//     const response = await userAxios.post(
-//       endpoints.user.recommendations(user.userId),
-//       { request },
-//       {
-//         headers: {
-//           "Content-Type": "application/json",
-//           Authorization: `Bearer ${user.token?.value}`,
-//         },
-//       }
-//     );
-//     return response.data;
-//   } else {
-//     console.log("Getting recommendations without request");
-//     const response = await userAxios.get(
-//       endpoints.user.recommendations(user.userID),
-//       {
-//         headers: {
-//           Authorization: `Bearer ${user.token?.value}`,
-//         },
-//       }
-//     );
-//     return response.data;
-//   }
-// }
+export async function likeTrack(userId: string, track: Song) {
+  userAxios.post(endpoints.user.liked(userId), track).catch((error) => {
+    console.error("Error in handleLike:", error);
+  });
+}
+
+export async function dislikeTrack(userId: string, track: Song) {
+  userAxios.post(endpoints.user.disliked(userId), track).catch((error) => {
+    console.error("Error in handleDislike:", error);
+  });
+}
+
+export async function getPreviousRequests(userId: string): Promise<Request[]> {
+  try {
+    const response = await userAxios.get(endpoints.user.requests(userId));
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching previous requests:", error);
+    throw error;
+  }
+}
+
+export async function addPreviousRequest(
+  userId: string,
+  request: string
+): Promise<void> {
+  try {
+    await userAxios.post(endpoints.user.requests(userId), {
+      request,
+    });
+  } catch (error) {
+    console.error("Error adding previous request:", error);
+    throw error;
+  }
+}

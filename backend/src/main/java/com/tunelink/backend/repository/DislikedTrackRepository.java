@@ -10,5 +10,6 @@ import java.util.Optional;
 @Repository
 public interface DislikedTrackRepository extends JpaRepository<DislikedTrack, Long> {
     Optional<DislikedTrack> findBySpotifyId(String spotifyId);
+    Optional<DislikedTrack> findBySpotifyIdAndUser(String spotifyId, User user);
     List<DislikedTrack> findByUser(User user);
 } 

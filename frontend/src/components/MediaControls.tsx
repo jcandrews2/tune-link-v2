@@ -36,7 +36,7 @@ const MediaControls: FC = () => {
     <div className='z-0 flex items-center justify-center w-full'>
       <button
         onClick={onDislike}
-        className='flex items-center justify-center'
+        className='flex items-center justify-center cursor-default'
         data-testid='dislike-button'
       >
         <img
@@ -46,7 +46,7 @@ const MediaControls: FC = () => {
         />
       </button>
       <button
-        className='flex items-center justify-center'
+        className='flex items-center justify-center cursor-default'
         onClick={togglePlayback}
       >
         {!spotifyPlayer.isPaused ? (
@@ -65,7 +65,7 @@ const MediaControls: FC = () => {
       </button>
       <button
         onClick={onLike}
-        className='flex items-center justify-center'
+        className='flex items-center justify-center cursor-default'
         data-testid='like-button'
       >
         <img

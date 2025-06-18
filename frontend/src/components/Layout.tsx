@@ -1,12 +1,17 @@
-import React from "react";
-import { useLocation } from "react-router-dom";
-import Player from "./Player";
+import React, { FC, ReactNode } from "react";
+import PlayerCore from "./PlayerCore";
 
-const Layout = ({ children }: { children: React.ReactNode }) => {
+interface LayoutProps {
+  children: ReactNode;
+}
+
+const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <>
+      <PlayerCore />
       {children}
-      <Player /> {/* Only render this ONCE, always */}
+      <div id='player-portal' />
+      <div id='mini-player-portal' />
     </>
   );
 };

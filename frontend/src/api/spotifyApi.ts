@@ -49,3 +49,21 @@ export async function playTracks(
     throw error;
   }
 }
+
+export async function setTrackPosition(position: number): Promise<void> {
+  try {
+    const { user } = useStore.getState();
+    await spotifyAxios.put(
+      endpoints.player.seek(position),
+      {},
+      {
+        headers: {
+          Authorization: `Bearer ${user.spotifyAccessToken}`,
+        },
+      }
+    );
+    console.log("Set track position!");
+  } catch (error) {
+    console.error("Error setting track position", error);
+  }
+}

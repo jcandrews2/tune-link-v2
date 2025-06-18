@@ -19,32 +19,16 @@ export interface User {
   };
   spotifyAccessToken?: string;
 }
-
-export interface SpotifyUser {
-  id: string;
-  images: Array<{
-    url: string;
-  }>;
-  error?: any;
-}
-
-export interface BackendUser {
-  userId: string;
-  profilePicture?: string;
-  likedSongs: string[];
-  dislikedSongs: string[];
-  recommendedSongs: string[];
-}
-
 export interface SpotifyPlayer {
   player?: any;
-  deviceID?: string;
+  deviceID?: any;
   currentTrack?: any;
   isPaused?: boolean;
   position?: number;
   isActive?: boolean;
   areRecommendationsLoading?: boolean;
   areRecommendationsInitialized?: boolean;
+  progress?: number;
 }
 
 export interface Store {
@@ -70,9 +54,4 @@ declare global {
     };
     onSpotifyWebPlaybackSDKReady: () => void;
   }
-}
-
-declare module "*.png" {
-  const value: string;
-  export default value;
 }

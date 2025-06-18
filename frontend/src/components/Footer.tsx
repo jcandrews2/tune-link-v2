@@ -5,7 +5,7 @@ const Footer: FC = () => {
   return (
     <nav className=''>
       <div className='container mx-auto px-4'>
-        <div className='flex items-center justify-between h-16'>
+        <div className='flex items-center justify-between h-20'>
           {/* Copyright */}
           <p className='text-white'>{new Date().getFullYear()} Vibesbased.</p>
 

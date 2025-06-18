@@ -1,13 +1,7 @@
 import React, { FC } from "react";
 
 const RecommendationsPage: FC = () => {
-  return (
-    <div className='min-h-screen '>
-      <div className='container mx-auto py-8 px-4'>
-        {/* Content will be added later */}
-      </div>
-    </div>
-  );
+  return <div id='mini-player-portal' className='w-[300px] mx-auto'></div>;
 };
 
 export default RecommendationsPage;

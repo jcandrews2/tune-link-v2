@@ -15,35 +15,32 @@ import { getCurrentUser } from "./api/userApi";
 import ProtectedRoute from "./components/ProtectedRoute";
 import Footer from "./components/Footer";
 import Layout from "./components/Layout";
+import Loading from "./components/Loading";
 
 const App: FC = () => {
   const { user, setUser } = useStore();
   const [loading, setLoading] = useState(true);
 
-  const fetchUser = async () => {
-    try {
-      setLoading(true);
-      const userData = await getCurrentUser();
-      if (userData) {
-        setUser(userData);
-      }
-    } catch (error) {
-      console.error("Error fetching user:", error);
-    } finally {
-      setLoading(false);
-    }
-  };
-
   useEffect(() => {
+    const fetchUser = async () => {
+      try {
+        setLoading(true);
+        const userData = await getCurrentUser();
+        if (userData) {
+          setUser(userData);
+        }
+      } catch (error) {
+        console.error("Error fetching user:", error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
     fetchUser();
   }, []);
 
   if (loading) {
-    return (
-      <div className='min-h-screen text-white flex items-center justify-center'>
-        Loading...
-      </div>
-    );
+    return <Loading />;
   }
 
   return (

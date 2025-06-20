@@ -9,16 +9,13 @@ const SliderUI: FC = () => {
   const slider = useRef<HTMLInputElement>(null);
 
   function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
-    console.log("handleChange", event.target.value);
     const value = parseFloat(event.target.value);
-    setSpotifyPlayer({ progress: value });
-
-    if (!spotifyPlayer.isDragging) {
-      const position = Math.round(
+    setSpotifyPlayer({
+      progress: value,
+      position: Math.round(
         (value / 100) * spotifyPlayer.currentTrack.duration_ms
-      );
-      setTrackPosition(position);
-    }
+      ),
+    });
   }
 
   function setBackground(value: number, min: number, max: number) {
@@ -33,14 +30,16 @@ const SliderUI: FC = () => {
   };
 
   const handleMouseUp = (): void => {
-    setSpotifyPlayer({ isDragging: false });
-
     const position = Math.round(
       ((spotifyPlayer.progress || 0) / 100) *
         spotifyPlayer.currentTrack.duration_ms
     );
+
     setTrackPosition(position);
-    setSpotifyPlayer({ progress: spotifyPlayer.progress });
+    setSpotifyPlayer({
+      isDragging: false,
+      position: position,
+    });
   };
 
   const formatStartPosition = (): string => {
@@ -80,7 +79,6 @@ const SliderUI: FC = () => {
       return;
     }
 
-    console.log("spotifyPlayer.position", spotifyPlayer.position);
     const formattedStartPosition = formatStartPosition();
     const formattedEndPosition = formatEndPosition();
     setStartPosition(formattedStartPosition);

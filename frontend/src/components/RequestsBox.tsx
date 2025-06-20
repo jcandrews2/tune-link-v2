@@ -5,6 +5,7 @@ import {
   addPreviousRequest,
   getPreviousRequests,
 } from "../api/userApi";
+import Loading from "./Loading";
 
 const RequestsBox: FC = () => {
   const [requestText, setRequestText] = useState("");
@@ -83,7 +84,7 @@ const RequestsBox: FC = () => {
           className='w-full py-2 px-4 bg-white text-black rounded-full
                   disabled:bg-gray-600 disabled:cursor-not-allowed'
         >
-          {isLoading ? "Getting recommendations..." : "Submit"}
+          {isLoading ? <Loading /> : "Submit"}
         </button>
       </form>
     </div>

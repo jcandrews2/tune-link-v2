@@ -3,7 +3,7 @@ import LoadingIcon from "../images/loading.svg";
 
 const Loading: FC = () => {
   return (
-    <div className='w-[300px] h-[300px] flex items-center justify-center'>
+    <div className='w-full h-full flex items-center justify-center'>
       <img
         src={LoadingIcon}
         alt='Loading'

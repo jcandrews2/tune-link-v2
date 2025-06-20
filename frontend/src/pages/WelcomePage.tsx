@@ -7,7 +7,7 @@ const WelcomePage: FC = () => {
   };
 
   return (
-    <div className='flex flex-col items-center min-h-screen text-white p-16'>
+    <div className='flex flex-col items-center justify-center h-full text-white'>
       <h1 className='text-8xl font-bold'>Welcome to</h1>
       <h1 className='font-kirang text-6xl font-bold p-16'>Vibesbased</h1>
       <h2 className='text-xl mb-12'>Save time finding your favorite music.</h2>

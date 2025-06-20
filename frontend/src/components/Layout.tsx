@@ -1,14 +1,11 @@
 import React, { FC, ReactNode } from "react";
 import PlayerCore from "./PlayerCore";
-
-interface LayoutProps {
-  children: ReactNode;
-}
+import { useLocation } from "react-router-dom";
 
 const Layout: FC<LayoutProps> = ({ children }) => {
   return (
     <>
-      <PlayerCore />
+      {location.pathname !== "/welcome" && <PlayerCore />}
       {children}
       <div id='player-portal' />
       <div id='mini-player-portal' />

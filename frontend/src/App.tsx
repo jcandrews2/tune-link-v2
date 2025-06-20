@@ -18,7 +18,7 @@ import Layout from "./components/Layout";
 import Loading from "./components/Loading";
 
 const App: FC = () => {
-  const { user, setUser } = useStore();
+  const { setUser } = useStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -46,9 +46,9 @@ const App: FC = () => {
   return (
     <Router>
       <Layout>
-        <div className='flex flex-col min-h-screen bg-black justify-between'>
+        <div className='flex flex-col min-h-screen bg-black'>
           <Navbar />
-          <div className='text-white flex flex-col'>
+          <div className='flex-grow text-white p-8'>
             <Routes>
               <Route path='/welcome' element={<WelcomePage />} />
               <Route

@@ -59,30 +59,31 @@ const RequestsBox: FC = () => {
   };
 
   return (
-    <div className='w-full p-4 border border-gray-700 rounded-lg'>
-      <h2 className='text-xl font-semibold text-white mb-4'> Make Request</h2>
-      <form onSubmit={handleSubmit} className='flex flex-col gap-4'>
-        <div className='relative'>
+    <div className='w-full p-4 border border-gray-700 rounded-lg h-[332px] flex flex-col'>
+      <h2 className='text-xl font-semibold text-white mb-4'>Make Request</h2>
+      <form onSubmit={handleSubmit} className='flex flex-col flex-1'>
+        <div className='relative flex-1 mb-4'>
           <textarea
             value={requestText}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder='I want to hear old indie rock songs with heavy guitar riffs.'
             maxLength={100}
-            className='w-full h-[200px] p-3  text-white rounded-lg resize-none 
+            className='w-full h-full p-3 text-white rounded-lg resize-none 
                      border border-gray-600 focus:border-white focus:outline-none
                      placeholder:text-gray-400 bg-black'
             disabled={isLoading}
           />
-          <div className='absolute bottom-2 right-2 text-sm text-gray-400'>
+          <div className='absolute bottom-2 right-4 text-sm text-gray-400'>
             {requestText.length}/100
           </div>
         </div>
         <button
           type='submit'
           disabled={isLoading || !requestText.trim()}
-          className='w-full py-2 px-4 bg-white text-black rounded-full
-                  disabled:bg-gray-600 disabled:cursor-not-allowed'
+          className='w-full py-2 px-6 bg-white text-black rounded-full
+                  disabled:bg-gray-600 disabled:cursor-not-allowed
+                  h-10 flex items-center justify-center'
         >
           {isLoading ? <Loading /> : "Submit"}
         </button>

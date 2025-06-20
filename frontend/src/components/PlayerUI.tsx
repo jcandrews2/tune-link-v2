@@ -8,7 +8,6 @@ import { useSpring, animated } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
 import { handleLike, handleDislike } from "../utils/userUtils";
 import { useLocation } from "react-router-dom";
-import { setTrackPosition } from "../api/spotifyApi";
 
 const PlayerUI: FC = () => {
   const { user, spotifyPlayer, setUser, setSpotifyPlayer } = useStore();
@@ -21,17 +20,6 @@ const PlayerUI: FC = () => {
     x: 20,
     y: 20,
   });
-
-  const handlePositionChange = (value: number) => {
-    setSpotifyPlayer({ progress: value });
-
-    if (!spotifyPlayer.isPaused && spotifyPlayer.currentTrack) {
-      const position = Math.round(
-        (value / 100) * spotifyPlayer.currentTrack.duration_ms
-      );
-      setTrackPosition(position);
-    }
-  };
 
   // Player card animation
   const [{ x, y, rotate, scale }, api] = useSpring(() => ({
@@ -138,7 +126,7 @@ const PlayerUI: FC = () => {
               </h3>
             </div>
             <div className='w-full slider-container'>
-              <SliderUI onPositionChange={handlePositionChange} />
+              <SliderUI />
             </div>
             <div className='w-full'>
               <MediaControls />
@@ -181,7 +169,7 @@ const PlayerUI: FC = () => {
             </div>
           )}
           <div className='flex flex-col items-start w-full py-2 slider-container'>
-            <SliderUI onPositionChange={handlePositionChange} />
+            <SliderUI />
           </div>
           <MediaControls />
         </div>

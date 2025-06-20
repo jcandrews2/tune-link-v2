@@ -29,6 +29,7 @@ export interface SpotifyPlayer {
   areRecommendationsLoading?: boolean;
   areRecommendationsInitialized?: boolean;
   progress?: number;
+  isDragging?: boolean;
 }
 
 export interface Store {

@@ -24,11 +24,12 @@ const useStore = create<Store>((set) => ({
 
   spotifyPlayer: {
     player: null,
+    deviceID: null,
+    currentTrack: null,
     isActive: false,
     isPaused: true,
-    currentTrack: null,
+    isDragging: false,
     position: 0,
-    deviceID: null,
     progress: 0,
   },
   setSpotifyPlayer: (updatedSpotifyPlayer) =>

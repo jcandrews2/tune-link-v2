@@ -1,9 +1,5 @@
 import { RGB } from "../types";
 
-/**
- * Calculate average RGB color from an image element
- * @param imgEl HTML image element
- */
 export const getAverageRGB = (imgEl: HTMLImageElement): RGB => {
   const blockSize = 5; // only visit every 5 pixels
   const defaultRGB: RGB = { r: 0, g: 0, b: 0 }; // for non-supporting envs

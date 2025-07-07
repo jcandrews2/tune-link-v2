@@ -30,6 +30,8 @@ export interface SpotifyPlayer {
   areRecommendationsInitialized?: boolean;
   progress?: number;
   isDragging?: boolean;
+  dominantColor?: string;
+  animationKey?: number;
 }
 
 export interface Store {

@@ -8,6 +8,7 @@ import { useSpring, animated } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
 import { handleLike, handleDislike } from "../utils/userUtils";
 import { useLocation } from "react-router-dom";
+import { getDominantColor } from "../utils/playerUtils";
 
 const PlayerUI: FC = () => {
   const { user, spotifyPlayer, setUser, setSpotifyPlayer } = useStore();
@@ -101,40 +102,52 @@ const PlayerUI: FC = () => {
 
   // Simplified player content for non-home pages
   const miniPlayerContent = (
-    <animated.div
-      {...bind()}
-      style={{
-        position: "fixed",
-        left: 76,
-        bottom: 100,
-        x: miniPlayerPosition.x,
-        y: miniPlayerPosition.y,
-        touchAction: "none",
-        cursor: "grab",
-      }}
-      className='border border-gray-700 rounded-lg w-[300px] shadow-lg'
-    >
-      <div className='w-full p-4'>
-        {spotifyPlayer.currentTrack && (
-          <>
-            <div className=''>
-              <h2 className='text-md font-bold text-white'>
-                {spotifyPlayer.currentTrack.name}
-              </h2>
-              <h3 className='font-light text-gray-300'>
-                {spotifyPlayer.currentTrack.artists[0].name}
-              </h3>
-            </div>
-            <div className='w-full slider-container'>
-              <SliderUI />
-            </div>
-            <div className='w-full'>
-              <MediaControls />
-            </div>
-          </>
-        )}
-      </div>
-    </animated.div>
+    <>
+      <animated.div
+        {...bind()}
+        style={{
+          position: "fixed",
+          left: 76,
+          bottom: 100,
+          x: miniPlayerPosition.x,
+          y: miniPlayerPosition.y,
+          touchAction: "none",
+          cursor: "grab",
+        }}
+        className='w-[300px]'
+      >
+        <div className='w-full p-4 border border-gray-700 rounded-lg bg-black'>
+          {spotifyPlayer.currentTrack && (
+            <>
+              <div className=''>
+                <h2 className='text-md font-bold text-white'>
+                  {spotifyPlayer.currentTrack.name}
+                </h2>
+                <h3 className='font-light text-gray-300'>
+                  {spotifyPlayer.currentTrack.artists[0].name}
+                </h3>
+              </div>
+              <div className='w-full slider-container'>
+                <SliderUI />
+              </div>
+              <div className='w-full'>
+                <MediaControls />
+              </div>
+            </>
+          )}
+        </div>
+        <div
+          className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] fade-in z-0'
+          key={spotifyPlayer.animationKey}
+          style={{
+            width: "250px",
+            height: "60%",
+            zIndex: -1,
+            backgroundColor: spotifyPlayer.dominantColor || "transparent",
+          }}
+        />
+      </animated.div>
+    </>
   );
 
   const playerContent = (

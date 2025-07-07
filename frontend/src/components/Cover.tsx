@@ -4,15 +4,15 @@ import useStore from "../store";
 import { getDominantColor } from "../utils/playerUtils";
 
 const Cover: FC = () => {
-  const { spotifyPlayer } = useStore();
-  const [dominantColor, setDominantColor] = useState<string | null>(null);
-  const [animationKey, setAnimationKey] = useState<number>(0);
+  const { spotifyPlayer, setSpotifyPlayer } = useStore();
 
-  const handleImageLoad = async (): Promise<void> => {
+  const handleGetImageColor = async (): Promise<void> => {
     const color = await getDominantColor();
     if (color) {
-      setDominantColor(color);
-      setAnimationKey((prevKey) => prevKey + 1);
+      setSpotifyPlayer({
+        dominantColor: color,
+        animationKey: (spotifyPlayer.animationKey ?? 0) + 1,
+      });
     }
   };
 
@@ -26,15 +26,15 @@ const Cover: FC = () => {
             alt='Cover'
             height={300}
             width={300}
-            onLoad={handleImageLoad}
+            onLoad={handleGetImageColor}
           />
           <div
             className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] fade-in'
-            key={animationKey}
+            key={spotifyPlayer.animationKey}
             style={{
               width: "300px",
               height: "300px",
-              backgroundColor: dominantColor || "transparent",
+              backgroundColor: spotifyPlayer.dominantColor || "transparent",
             }}
           />
         </>

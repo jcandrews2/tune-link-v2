@@ -31,6 +31,8 @@ const useStore = create<Store>((set) => ({
     isDragging: false,
     position: 0,
     progress: 0,
+    dominantColor: "",
+    animationKey: 0,
   },
   setSpotifyPlayer: (updatedSpotifyPlayer) =>
     set((state) => ({

@@ -13,6 +13,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Set;
 import java.time.Instant;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional
@@ -41,6 +42,7 @@ public class UserService {
 
     public User createOrUpdateUser(
         String spotifyUserId,
+        String profilePicture,
         String accessToken,
         String refreshToken,
         long expiresAt
@@ -49,6 +51,7 @@ public class UserService {
             .orElse(new User());
         
         user.setUserId(spotifyUserId);
+        user.setProfilePicture(profilePicture);
         user.setSpotifyAccessToken(accessToken);
         user.setSpotifyRefreshToken(refreshToken);
         user.setSpotifyTokenExpiresAt(expiresAt);
@@ -177,5 +180,39 @@ public class UserService {
         request.setText(text);
         request.setTimestamp(Instant.now());
         requestRepository.save(request);
+    }
+
+    public List<Track> getLikedTracks(String userId) {
+        User user = getUserByUserId(userId);
+        if (user == null) {
+            throw new UserException("User not found with id: " + userId);
+        }
+
+        return likedTrackRepository.findByUser(user)
+            .stream()
+            .map(likedTrack -> new Track(
+                likedTrack.getName(),
+                likedTrack.getArtist(),
+                likedTrack.getSpotifyId(),
+                likedTrack.getAlbum()
+            ))
+            .collect(Collectors.toList());
+    }
+
+    public List<Track> getDislikedTracks(String userId) {
+        User user = getUserByUserId(userId);
+        if (user == null) {
+            throw new UserException("User not found with id: " + userId);
+        }
+
+        return dislikedTrackRepository.findByUser(user)
+            .stream()
+            .map(dislikedTrack -> new Track(
+                dislikedTrack.getName(),
+                dislikedTrack.getArtist(),
+                dislikedTrack.getSpotifyId(),
+                dislikedTrack.getAlbum()
+            ))
+            .collect(Collectors.toList());
     }
 } 

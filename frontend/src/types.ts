@@ -6,9 +6,19 @@ export interface Request {
   timestamp: string;
 }
 
+export interface Song {
+  id: string;
+  name: string;
+  artist: string;
+  duration: string;
+  albumArt?: string;
+  previewUrl?: string;
+  spotifyUri?: string;
+}
+
 export interface User {
   userId: string;
-  profilePicture?: string;
+  profilePicture?: string | null;
   likedSongs: Song[];
   dislikedSongs: Song[];
   recommendedSongs: Song[];
@@ -19,6 +29,7 @@ export interface User {
   };
   spotifyAccessToken?: string;
 }
+
 export interface SpotifyPlayer {
   player?: any;
   deviceID?: any;

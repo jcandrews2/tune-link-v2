@@ -42,7 +42,11 @@ const ProfilePage: FC = () => {
     >
       <div className='w-72 h-auto rounded-full border border-gray-700'>
         {user.profilePicture ? (
-          <img src={user.profilePicture} alt='Profile Picture' />
+          <img
+            className='w-full h-full rounded-full'
+            src={user.profilePicture}
+            alt='Profile Picture'
+          />
         ) : (
           <FiUser className='w-full h-full p-8' />
         )}

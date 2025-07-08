@@ -41,16 +41,22 @@ export async function getRecommendations(userId: string): Promise<Song[]> {
   }
 }
 
-export async function likeTrack(userId: string, track: Song) {
-  userAxios.post(endpoints.user.liked(userId), track).catch((error) => {
+export async function likeTrack(userId: string, track: Song): Promise<void> {
+  try {
+    await userAxios.post(endpoints.user.likes(userId), track);
+  } catch (error) {
     console.error("Error in handleLike:", error);
-  });
+    throw error;
+  }
 }
 
-export async function dislikeTrack(userId: string, track: Song) {
-  userAxios.post(endpoints.user.disliked(userId), track).catch((error) => {
+export async function dislikeTrack(userId: string, track: Song): Promise<void> {
+  try {
+    await userAxios.post(endpoints.user.dislikes(userId), track);
+  } catch (error) {
     console.error("Error in handleDislike:", error);
-  });
+    throw error;
+  }
 }
 
 export async function getPreviousRequests(userId: string): Promise<Request[]> {
@@ -73,6 +79,26 @@ export async function addPreviousRequest(
     });
   } catch (error) {
     console.error("Error adding previous request:", error);
+    throw error;
+  }
+}
+
+export async function getLikedSongs(userId: string): Promise<Song[]> {
+  try {
+    const response = await userAxios.get(endpoints.user.likes(userId));
+    return response.data;
+  } catch (error) {
+    console.error("Error getting liked songs:", error);
+    throw error;
+  }
+}
+
+export async function getDislikedSongs(userId: string): Promise<Song[]> {
+  try {
+    const response = await userAxios.get(endpoints.user.dislikes(userId));
+    return response.data;
+  } catch (error) {
+    console.error("Error getting disliked songs:", error);
     throw error;
   }
 }

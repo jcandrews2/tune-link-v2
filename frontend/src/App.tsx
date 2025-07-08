@@ -26,6 +26,7 @@ const App: FC = () => {
       try {
         setLoading(true);
         const userData = await getCurrentUser();
+        console.log("USER DATA", userData);
         if (userData) {
           setUser(userData);
         }

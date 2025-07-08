@@ -68,9 +68,18 @@ public class SpotifyAuthController {
 
             Map<String, Object> spotifyUser = spotifyService.getSpotifyUserInfo(accessToken);
             String spotifyUserId = (String) spotifyUser.get("id");
+            
+            String profilePicture = null;
+            if (spotifyUser.containsKey("images")) {
+                List<Map<String, Object>> images = (List<Map<String, Object>>) spotifyUser.get("images");
+                if (!images.isEmpty()) {
+                    profilePicture = (String) images.get(0).get("url");
+                }
+            }
 
             User savedUser = userService.createOrUpdateUser(
                 spotifyUserId,
+                profilePicture,
                 accessToken,
                 refreshToken,
                 System.currentTimeMillis() + (expiresIn * 1000)

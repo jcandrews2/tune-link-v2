@@ -4,7 +4,7 @@ import { User, SpotifyPlayer, Store } from "../types";
 const useStore = create<Store>((set) => ({
   user: {
     userId: "",
-    profilePicture: "",
+    profilePicture: null,
     likedSongs: [],
     dislikedSongs: [],
     recommendedSongs: [],

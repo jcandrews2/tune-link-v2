@@ -1,4 +1,4 @@
-// Base URLs
+// URLs
 const BASE_URL = "http://localhost:5050";
 const SPOTIFY_API_URL = "https://api.spotify.com/v1";
 
@@ -14,8 +14,8 @@ export const endpoints = {
     create: (id: string) => `${BASE_URL}/user/${id}`,
     get: (id: string) => `${BASE_URL}/user/${id}`,
     recommendations: (id: string) => `${BASE_URL}/user/${id}/recommendations`,
-    liked: (id: string) => `${BASE_URL}/user/${id}/like`,
-    disliked: (id: string) => `${BASE_URL}/user/${id}/dislike`,
+    likes: (id: string) => `${BASE_URL}/user/${id}/likes`,
+    dislikes: (id: string) => `${BASE_URL}/user/${id}/dislikes`,
     requests: (id: string) => `${BASE_URL}/user/${id}/requests`,
   },
   player: {

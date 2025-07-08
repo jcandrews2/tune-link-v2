@@ -88,7 +88,7 @@ public class UserController {
         }
     }
 
-    @PostMapping("/{userId}/like")
+    @PostMapping("/{userId}/likes")
     public ResponseEntity<?> likeTrack(@PathVariable String userId, @RequestBody Track track) {
         User user = userService.getUserByUserId(userId);
         if (user == null) {
@@ -99,7 +99,7 @@ public class UserController {
         return ResponseEntity.ok().body("Track liked successfully");
     }
 
-    @PostMapping("/{userId}/dislike")
+    @PostMapping("/{userId}/dislikes")
     public ResponseEntity<?> dislikeTrack(@PathVariable String userId, @RequestBody Track track) {
         User user = userService.getUserByUserId(userId);
         if (user == null) {
@@ -121,5 +121,20 @@ public class UserController {
         
         userService.saveRequest(userId, request);
         return ResponseEntity.ok().build();
+    }
+
+    @GetMapping("/{userId}/likes")
+    public ResponseEntity<List<Track>> getLikedTracks(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getLikedTracks(userId));
+    }
+
+    @GetMapping("/{userId}/dislikes")
+    public ResponseEntity<List<Track>> getDislikedTracks(@PathVariable String userId) {
+        return ResponseEntity.ok(userService.getDislikedTracks(userId));
+    }
+
+    @GetMapping("/{userId}/artists")
+    public ResponseEntity<List<Artist>> getArtists(@PathVariable String userId) { 
+        return ResponseEntity.ok(userService.getArtists(userId));
     }
 } 

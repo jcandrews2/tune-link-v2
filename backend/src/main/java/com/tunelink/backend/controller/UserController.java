@@ -134,7 +134,7 @@ public class UserController {
     }
 
     @GetMapping("/{userId}/artists")
-    public ResponseEntity<List<Artist>> getArtists(@PathVariable String userId) { 
-        return ResponseEntity.ok(userService.getArtists(userId));
+    public ResponseEntity<List<String>> getArtists(@PathVariable String userId) { 
+        return ResponseEntity.ok(userService.getTopArtists(userId));
     }
 } 

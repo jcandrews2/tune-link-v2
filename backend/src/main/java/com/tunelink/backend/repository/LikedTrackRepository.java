@@ -3,6 +3,7 @@ package com.tunelink.backend.repository;
 import com.tunelink.backend.model.LikedTrack;
 import com.tunelink.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.util.List;
 import java.util.Optional;
@@ -12,4 +13,11 @@ public interface LikedTrackRepository extends JpaRepository<LikedTrack, Long> {
     Optional<LikedTrack> findBySpotifyId(String spotifyId);
     Optional<LikedTrack> findBySpotifyIdAndUser(String spotifyId, User user);
     List<LikedTrack> findByUser(User user);
+    
+    @Query("SELECT lt.artist, COUNT(lt) as artistCount " +
+           "FROM LikedTrack lt " +
+           "WHERE lt.user = :user " +
+           "GROUP BY lt.artist " +
+           "ORDER BY artistCount DESC")
+    List<Object[]> getTopArtistsByUser(User user);
 } 

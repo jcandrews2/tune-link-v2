@@ -9,6 +9,7 @@ const useStore = create<Store>((set) => ({
     dislikedSongs: [],
     recommendedSongs: [],
     previousRequests: [],
+    topArtists: [],
   },
 
   setUser: (updatedUser) =>

@@ -1,5 +1,11 @@
-import { dislikeTrack, likeTrack } from "../api/userApi";
-import { SpotifyPlayer, User } from "../types/store";
+import {
+  dislikeTrack,
+  likeTrack,
+  getTopArtists,
+  getLikedSongs,
+  getDislikedSongs,
+} from "../api/userApi";
+import type { SpotifyPlayer, User } from "../types";
 
 export const handleLike = async (
   spotifyPlayer: SpotifyPlayer,
@@ -25,7 +31,17 @@ export const handleLike = async (
 
     await spotifyPlayer.player.nextTrack();
 
-    likeTrack(user.userId, likedSong);
+    await likeTrack(user.userId, likedSong);
+
+    const [updatedLikedSongs, updatedTopArtists] = await Promise.all([
+      getLikedSongs(user.userId),
+      getTopArtists(user.userId),
+    ]);
+
+    setUser({
+      likedSongs: updatedLikedSongs,
+      topArtists: updatedTopArtists,
+    });
   } catch (error) {
     console.error("Error in handleLike:", error);
   }
@@ -55,7 +71,13 @@ export const handleDislike = async (
 
     await spotifyPlayer.player.nextTrack();
 
-    dislikeTrack(user.userId, dislikedSong);
+    await dislikeTrack(user.userId, dislikedSong);
+
+    const updatedDislikedSongs = await getDislikedSongs(user.userId);
+
+    setUser({
+      dislikedSongs: updatedDislikedSongs,
+    });
   } catch (error) {
     console.error("Error in handleDislike:", error);
   }

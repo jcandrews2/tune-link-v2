@@ -102,3 +102,13 @@ export async function getDislikedSongs(userId: string): Promise<Song[]> {
     throw error;
   }
 }
+
+export async function getTopArtists(userId: string): Promise<string[]> {
+  try {
+    const response = await userAxios.get(endpoints.user.artists(userId));
+    return response.data;
+  } catch (error) {
+    console.error("Error getting top artists:", error);
+    throw error;
+  }
+}

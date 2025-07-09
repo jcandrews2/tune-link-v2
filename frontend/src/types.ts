@@ -23,6 +23,7 @@ export interface User {
   dislikedSongs: Song[];
   recommendedSongs: Song[];
   previousRequests: Request[];
+  topArtists: string[];
   token?: {
     value: string;
     expiresAt: number;

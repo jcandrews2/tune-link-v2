@@ -6,7 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import RecommendationsPage from "./pages/RecommendationsPage";
+import Charts from "./pages/Charts";
 import ProfilePage from "./pages/ProfilePage";
 import WelcomePage from "./pages/WelcomePage";
 import Navbar from "./components/Navbar";
@@ -57,8 +57,8 @@ const App: FC = () => {
                 element={<ProtectedRoute element={<HomePage />} />}
               />
               <Route
-                path='/recommendations'
-                element={<ProtectedRoute element={<RecommendationsPage />} />}
+                path='/charts'
+                element={<ProtectedRoute element={<Charts />} />}
               />
               <Route
                 path='/profile'

@@ -43,15 +43,15 @@ const Navbar: FC = () => {
                     Home
                   </Link>
                   <Link
-                    to='/recommendations'
+                    to='/charts'
                     className={`
                       ${
-                        isActive("/recommendations")
+                        isActive("/charts")
                           ? "text-white"
                           : "text-gray-700 hover:text-white"
                       } hover:bg-gray-900 px-3 py-2 rounded-lg transition-colors duration-200`}
                   >
-                    Recommendations
+                    Charts
                   </Link>
                 </div>
               </div>

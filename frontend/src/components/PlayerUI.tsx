@@ -9,6 +9,7 @@ import { useDrag } from "@use-gesture/react";
 import { handleLike, handleDislike } from "../utils/userUtils";
 import { useLocation } from "react-router-dom";
 import { getDominantColor } from "../utils/playerUtils";
+import MarqueeText from "./MarqueeText";
 
 const PlayerUI: FC = () => {
   const { user, spotifyPlayer, setUser, setSpotifyPlayer } = useStore();
@@ -120,12 +121,14 @@ const PlayerUI: FC = () => {
           {spotifyPlayer.currentTrack && (
             <>
               <div className=''>
-                <h2 className='text-md font-bold text-white'>
-                  {spotifyPlayer.currentTrack.name}
-                </h2>
-                <h3 className='font-light text-gray-300'>
-                  {spotifyPlayer.currentTrack.artists[0].name}
-                </h3>
+                <MarqueeText
+                  text={spotifyPlayer.currentTrack.name}
+                  className='text-md font-bold text-white'
+                />
+                <MarqueeText
+                  text={spotifyPlayer.currentTrack.artists[0].name}
+                  className='font-light text-gray-300'
+                />
               </div>
               <div className='w-full slider-container'>
                 <SliderUI />
@@ -170,17 +173,21 @@ const PlayerUI: FC = () => {
         className='border border-gray-700 rounded-lg p-8 bg-[#121212] cursor-grab active:cursor-grabbing select-none'
       >
         <div className='relative z-10 select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
-          <Cover />
-          {spotifyPlayer.currentTrack && (
-            <div className='relative py-2 z-10 text-left'>
-              <h2 className='text-xl font-bold text-white'>
-                {spotifyPlayer.currentTrack.name}
-              </h2>
-              <h3 className='font-light text-gray-300'>
-                {spotifyPlayer.currentTrack.artists[0].name}
-              </h3>
-            </div>
-          )}
+          <div className='w-[18.75rem] mx-auto'>
+            <Cover />
+            {spotifyPlayer.currentTrack && (
+              <div className='relative py-2 z-10 text-left'>
+                <MarqueeText
+                  text={spotifyPlayer.currentTrack.name}
+                  className='text-xl font-bold text-white'
+                />
+                <MarqueeText
+                  text={spotifyPlayer.currentTrack.artists[0].name}
+                  className='font-light text-gray-300'
+                />
+              </div>
+            )}
+          </div>
           <div className='flex flex-col items-start w-full py-2 slider-container'>
             <SliderUI />
           </div>

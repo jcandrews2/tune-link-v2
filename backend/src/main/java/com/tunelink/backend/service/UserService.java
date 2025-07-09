@@ -14,6 +14,8 @@ import java.util.HashSet;
 import java.util.Set;
 import java.time.Instant;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.LinkedHashMap;
 
 @Service
 @Transactional
@@ -213,6 +215,18 @@ public class UserService {
                 dislikedTrack.getSpotifyId(),
                 dislikedTrack.getAlbum()
             ))
+            .collect(Collectors.toList());
+    }
+
+    public List<String> getTopArtists(String userId) { 
+        User user = getUserByUserId(userId);
+        if (user == null) {
+            throw new UserException("User not found with id: " + userId);
+        }
+
+        List<Object[]> topArtists = likedTrackRepository.getTopArtistsByUser(user);
+        return topArtists.stream()
+            .map(result -> (String) result[0])
             .collect(Collectors.toList());
     }
 } 

@@ -16,6 +16,7 @@ import java.time.Instant;
 import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.LinkedHashMap;
+import java.util.HashMap;
 
 @Service
 @Transactional
@@ -26,6 +27,7 @@ public class UserService {
     private final DislikedTrackRepository dislikedTrackRepository;
     private final RecommendedTrackRepository recommendedTrackRepository;
     private final RequestRepository requestRepository;
+    private final SpotifyService spotifyService;
 
     @Autowired
     public UserService(
@@ -33,13 +35,15 @@ public class UserService {
         LikedTrackRepository likedTrackRepository,
         DislikedTrackRepository dislikedTrackRepository,
         RecommendedTrackRepository recommendedTrackRepository,
-        RequestRepository requestRepository
+        RequestRepository requestRepository,
+        SpotifyService spotifyService
     ) {
         this.userRepository = userRepository;
         this.likedTrackRepository = likedTrackRepository;
         this.dislikedTrackRepository = dislikedTrackRepository;
         this.recommendedTrackRepository = recommendedTrackRepository;
         this.requestRepository = requestRepository;
+        this.spotifyService = spotifyService;
     }
 
     public User createOrUpdateUser(
@@ -106,6 +110,7 @@ public class UserService {
                 track.getName(),
                 track.getArtist(),
                 track.getSpotifyId(),
+                track.getArtistSpotifyId(),
                 track.getAlbum(),
                 user
             );
@@ -129,6 +134,7 @@ public class UserService {
                 track.getName(),
                 track.getArtist(),
                 track.getSpotifyId(),
+                track.getArtistSpotifyId(),
                 track.getAlbum(),
                 user
             );
@@ -159,6 +165,7 @@ public class UserService {
                 track.getName(),
                 track.getArtist(),
                 track.getSpotifyId(),
+                track.getArtistSpotifyId(),
                 track.getAlbum(),
                 user
             );
@@ -196,6 +203,7 @@ public class UserService {
                 likedTrack.getName(),
                 likedTrack.getArtist(),
                 likedTrack.getSpotifyId(),
+                likedTrack.getArtistSpotifyId(),
                 likedTrack.getAlbum()
             ))
             .collect(Collectors.toList());
@@ -213,20 +221,31 @@ public class UserService {
                 dislikedTrack.getName(),
                 dislikedTrack.getArtist(),
                 dislikedTrack.getSpotifyId(),
+                dislikedTrack.getArtistSpotifyId(),
                 dislikedTrack.getAlbum()
             ))
             .collect(Collectors.toList());
     }
 
-    public List<String> getTopArtists(String userId) { 
+    public List<Map<String, String>> getTopArtists(String userId) { 
         User user = getUserByUserId(userId);
         if (user == null) {
             throw new UserException("User not found with id: " + userId);
         }
 
         List<Object[]> topArtists = likedTrackRepository.getTopArtistsByUser(user);
-        return topArtists.stream()
-            .map(result -> (String) result[0])
-            .collect(Collectors.toList());
+        List<Map<String, String>> artistsWithIds = new ArrayList<>();
+        
+        for (Object[] result : topArtists) {
+            String artistName = (String) result[0];
+            String artistId = (String) result[1];
+            
+            Map<String, String> artist = new HashMap<>();
+            artist.put("name", artistName);
+            artist.put("spotifyId", artistId);
+            artistsWithIds.add(artist);
+        }
+        
+        return artistsWithIds;
     }
 } 

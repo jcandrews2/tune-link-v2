@@ -67,3 +67,23 @@ export async function setTrackPosition(position: number): Promise<void> {
     console.error("Error setting track position", error);
   }
 }
+
+export async function getTrackDetails(trackId: string) {
+  try {
+    const response = await spotifyAxios.get(endpoints.spotify.track(trackId));
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching track details:", error);
+    throw error;
+  }
+}
+
+export async function getArtistDetails(artistId: string) {
+  try {
+    const response = await spotifyAxios.get(endpoints.spotify.artist(artistId));
+    return response.data;
+  } catch (error) {
+    console.error("Error fetching artist details:", error);
+    throw error;
+  }
+}

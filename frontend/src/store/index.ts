@@ -14,10 +14,6 @@ const useStore = create<Store>((set) => ({
 
   setUser: (updatedUser) =>
     set((state) => {
-      console.log("Setting user state:", {
-        current: state.user,
-        update: updatedUser,
-      });
       return {
         user: { ...state.user, ...updatedUser },
       };

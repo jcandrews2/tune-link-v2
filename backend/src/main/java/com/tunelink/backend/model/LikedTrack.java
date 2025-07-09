@@ -26,8 +26,8 @@ public class LikedTrack extends Track {
     @JsonBackReference
     private User user;
 
-    public LikedTrack(String name, String artist, String spotifyId, String album, User user) {
-        super(name, artist, spotifyId, album);
+    public LikedTrack(String name, String artist, String spotifyId, String artistSpotifyId, String album, User user) {
+        super(name, artist, spotifyId, artistSpotifyId, album);
         this.user = user;
     }
 } 

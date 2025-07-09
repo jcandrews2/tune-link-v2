@@ -6,14 +6,21 @@ export interface Request {
   timestamp: string;
 }
 
+export interface Artist {
+  spotifyId: string;
+  name: string;
+}
+
 export interface Song {
   id: string;
   name: string;
-  artist: string;
+  artist: Artist;
   duration: string;
   albumArt?: string;
   previewUrl?: string;
   spotifyUri?: string;
+  spotifyId: string;
+  artistSpotifyId: string;
 }
 
 export interface User {
@@ -23,7 +30,7 @@ export interface User {
   dislikedSongs: Song[];
   recommendedSongs: Song[];
   previousRequests: Request[];
-  topArtists: string[];
+  topArtists: Artist[];
   token?: {
     value: string;
     expiresAt: number;

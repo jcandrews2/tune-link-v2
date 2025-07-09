@@ -19,14 +19,18 @@ public class Track {
     @Column(name = "spotify_id", nullable = false)
     private String spotifyId;
 
+    @Column(name = "artist_spotify_id", nullable = false)
+    private String artistSpotifyId;
+
     @Column(nullable = false)
     private String album;
 
     // Constructor for creating from Spotify API response
-    public Track(String name, String artist, String spotifyId, String album) {
+    public Track(String name, String artist, String spotifyId, String artistSpotifyId, String album) {
         this.name = name;
         this.artist = artist;
         this.spotifyId = spotifyId;
+        this.artistSpotifyId = artistSpotifyId;
         this.album = album;
     }
 } 

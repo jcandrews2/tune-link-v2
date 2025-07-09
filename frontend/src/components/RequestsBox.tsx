@@ -25,7 +25,6 @@ const RequestsBox: FC = () => {
         user.userId,
         trimmedRequest
       );
-      console.log("Recommendations received:", recommendations);
 
       await addPreviousRequest(user.userId, trimmedRequest);
 

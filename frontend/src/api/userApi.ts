@@ -1,6 +1,6 @@
 import { endpoints } from "../config/endpoints";
 import { userAxios } from "../utils/axiosUtils";
-import { Song, Request } from "../types";
+import { Song, Request, Artist } from "../types";
 
 export async function getCurrentUser() {
   try {
@@ -103,7 +103,7 @@ export async function getDislikedSongs(userId: string): Promise<Song[]> {
   }
 }
 
-export async function getTopArtists(userId: string): Promise<string[]> {
+export async function getTopArtists(userId: string): Promise<Artist[]> {
   try {
     const response = await userAxios.get(endpoints.user.artists(userId));
     return response.data;

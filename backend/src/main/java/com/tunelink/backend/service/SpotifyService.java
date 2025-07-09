@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import org.json.JSONArray;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.tunelink.backend.model.Track;
+import java.util.HashMap;
 
 @Service
 public class SpotifyService {
@@ -110,13 +111,58 @@ public class SpotifyService {
                 String albumName = (String) album.get("name");
                 
                 List<Map<String, Object>> artists = (List<Map<String, Object>>) item.get("artists");
-                String artistName = artists.isEmpty() ? "Unknown Artist" : 
-                                  (String) artists.get(0).get("name");
+                String artistName = "Unknown Artist";
+                String artistId = "";
                 
-                tracks.add(new Track(name, artistName, id, albumName));
+                if (!artists.isEmpty()) {
+                    Map<String, Object> firstArtist = artists.get(0);
+                    artistName = (String) firstArtist.get("name");
+                    artistId = (String) firstArtist.get("id");
+                }
+                
+                tracks.add(new Track(name, artistName, id, artistId, albumName));
             }
         }
 
         return tracks;
+    }
+
+    public List<Map<String, String>> searchArtists(String accessToken, String artistName) {
+        HttpHeaders headers = new HttpHeaders();
+        headers.setBearerAuth(accessToken);
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.spotify.com/v1/search");
+        builder.queryParam("q", artistName);
+        builder.queryParam("type", "artist");
+        builder.queryParam("limit", 1);
+        String uri = builder.build().toUriString();
+
+        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
+        ResponseEntity<Map> response = restTemplate.exchange(
+            uri,
+            HttpMethod.GET,
+            requestEntity,
+            Map.class
+        );
+
+        List<Map<String, String>> artists = new ArrayList<>();
+        
+        if (response.getBody() != null) {
+            Map<String, Object> responseBody = response.getBody();
+            Map<String, Object> artistsObj = (Map<String, Object>) responseBody.get("artists");
+            List<Map<String, Object>> items = (List<Map<String, Object>>) artistsObj.get("items");
+            
+            for (Map<String, Object> item : items) {
+                String id = (String) item.get("id");
+                String name = (String) item.get("name");
+                
+                Map<String, String> artist = new HashMap<>();
+                artist.put("id", id);
+                artist.put("name", name);
+                artists.add(artist);
+            }
+        }
+
+        return artists;
     }
 } 

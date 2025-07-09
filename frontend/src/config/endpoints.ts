@@ -26,6 +26,10 @@ export const endpoints = {
       `${SPOTIFY_API_URL}/me/player/seek?position_ms=${positionMs}`,
     transfer: `${SPOTIFY_API_URL}/me/player`,
   },
+  spotify: {
+    track: (id: string) => `${SPOTIFY_API_URL}/tracks/${id}`,
+    artist: (id: string) => `${SPOTIFY_API_URL}/artists/${id}`,
+  },
 } as const;
 
 export type Endpoints = typeof endpoints;

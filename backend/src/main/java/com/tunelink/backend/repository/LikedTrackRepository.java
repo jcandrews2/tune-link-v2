@@ -14,10 +14,10 @@ public interface LikedTrackRepository extends JpaRepository<LikedTrack, Long> {
     Optional<LikedTrack> findBySpotifyIdAndUser(String spotifyId, User user);
     List<LikedTrack> findByUser(User user);
     
-    @Query("SELECT lt.artist, COUNT(lt) as artistCount " +
+    @Query("SELECT lt.artist, lt.artistSpotifyId, COUNT(lt) as artistCount " +
            "FROM LikedTrack lt " +
            "WHERE lt.user = :user " +
-           "GROUP BY lt.artist " +
+           "GROUP BY lt.artist, lt.artistSpotifyId " +
            "ORDER BY artistCount DESC")
     List<Object[]> getTopArtistsByUser(User user);
 } 

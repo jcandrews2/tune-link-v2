@@ -1,4 +1,5 @@
-import axios, { AxiosInstance } from "axios";
+import axios, { AxiosInstance, InternalAxiosRequestConfig } from "axios";
+import useStore from "../store";
 
 // User API axios instance
 export const userAxios = axios.create({
@@ -6,8 +7,14 @@ export const userAxios = axios.create({
 });
 
 // Spotify API axios instance
-export const spotifyAxios = axios.create({
-  withCredentials: false,
+export const spotifyAxios = axios.create();
+
+spotifyAxios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
+  const { user } = useStore.getState();
+  if (user.spotifyAccessToken) {
+    config.headers.Authorization = `Bearer ${user.spotifyAccessToken}`;
+  }
+  return config;
 });
 
 // Add response interceptor for error handling

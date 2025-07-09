@@ -9,10 +9,6 @@ const Slider: FC = () => {
   const [endPosition, setEndPosition] = useState<string>("-:--");
   const slider = useRef<HTMLInputElement>(null);
 
-  useEffect(() => {
-    console.log(spotifyPlayer.progress);
-  }, [spotifyPlayer.progress]);
-
   const setSliderBackground = (
     value: number,
     min: number,

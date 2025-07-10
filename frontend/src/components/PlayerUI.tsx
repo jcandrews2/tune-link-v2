@@ -170,10 +170,10 @@ const PlayerUI: FC = () => {
               : `rgba(248, 113, 113, ${Math.min(Math.abs(x) / 100, 0.4)})`
           ),
         }}
-        className='border border-gray-700 rounded-lg p-8 bg-[#121212] cursor-grab active:cursor-grabbing select-none'
+        className='border border-gray-700 rounded-lg p-8 bg-[#121212] cursor-grab active:cursor-grabbing select-none w-[400px]'
       >
         <div className='relative z-10 select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
-          <div className='w-[18.75rem] mx-auto'>
+          <div className=' mx-auto'>
             <Cover />
             {spotifyPlayer.currentTrack && (
               <div className='relative py-2 z-10 text-left'>

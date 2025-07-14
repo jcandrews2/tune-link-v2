@@ -3,9 +3,9 @@ import useStore from "../store";
 import { getDislikedSongs, getLikedSongs, getTopArtists } from "../api/userApi";
 import { getTrackDetails, getArtistDetails } from "../api/spotifyApi";
 import type { Song, Artist } from "../types";
-import SongCard from "../components/charts/SongCard";
-import ArtistCard from "../components/charts/ArtistCard";
-import ChartSection from "../components/charts/ChartSection";
+import SongCard from "../components/SongCard";
+import ArtistCard from "../components/ArtistCard";
+import Chart from "../components/Chart";
 
 type SectionType = "liked" | "disliked" | "artists";
 type ItemDetailsType = {
@@ -14,7 +14,7 @@ type ItemDetailsType = {
   details: any;
 };
 
-const Charts: FC = () => {
+const ChartsPage: FC = () => {
   const { user, setUser } = useStore();
   const [expandedItems, setExpandedItems] = useState<{
     [K in SectionType]?: string;
@@ -170,10 +170,10 @@ const Charts: FC = () => {
     <div id='mini-player-portal' className='h-full'>
       <div className='container mx-auto h-full flex flex-col p-4 gap-4'>
         <div className='flex gap-4 h-[332px]'>
-          <ChartSection title='Disliked Songs'>
+          <Chart title='Disliked Songs'>
             {user.dislikedSongs?.map((song: Song) => (
               <SongCard
-                key={`${song.name}-${song.artist.name}`}
+                key={`${song.name}-${song.artist}`}
                 song={song}
                 isExpanded={expandedItems.disliked === song.spotifyId}
                 isLoading={loadingItemId === song.spotifyId}
@@ -182,9 +182,9 @@ const Charts: FC = () => {
                 onArtistClick={handleArtistClick}
               />
             ))}
-          </ChartSection>
+          </Chart>
 
-          <ChartSection title='Top Artists' className='h-[567.5px]'>
+          <Chart title='Artists' className='h-[567.5px]'>
             {user.topArtists?.map((artist, index) => (
               <ArtistCard
                 key={artist.spotifyId}
@@ -198,12 +198,12 @@ const Charts: FC = () => {
                 }
               />
             ))}
-          </ChartSection>
+          </Chart>
 
-          <ChartSection title='Liked Songs'>
+          <Chart title='Liked Songs'>
             {user.likedSongs?.map((song: Song) => (
               <SongCard
-                key={`${song.name}-${song.artist.name}`}
+                key={`${song.name}-${song.artist}`}
                 song={song}
                 isExpanded={expandedItems.liked === song.spotifyId}
                 isLoading={loadingItemId === song.spotifyId}
@@ -212,11 +212,11 @@ const Charts: FC = () => {
                 onArtistClick={handleArtistClick}
               />
             ))}
-          </ChartSection>
+          </Chart>
         </div>
       </div>
     </div>
   );
 };
 
-export default Charts;
+export default ChartsPage;

@@ -26,7 +26,7 @@ const PlayerCore: FC = () => {
 
     window.onSpotifyWebPlaybackSDKReady = () => {
       const player = new window.Spotify.Player({
-        name: "tune link",
+        name: "Vibesbased",
         getOAuthToken: (cb: (token: string) => void) => {
           if (user.spotifyAccessToken) {
             cb(user.spotifyAccessToken);
@@ -65,6 +65,7 @@ const PlayerCore: FC = () => {
 
           setSpotifyPlayer({
             currentTrack: state.track_window.current_track,
+            nextTrack: state.track_window.next_tracks[0],
             isPaused: state.paused,
             position: state.position,
             isActive: true,
@@ -73,6 +74,7 @@ const PlayerCore: FC = () => {
         } else {
           setSpotifyPlayer({
             currentTrack: state.track_window.current_track,
+            nextTrack: state.track_window.next_tracks[0],
             isPaused: state.paused,
             position: state.position,
             isActive: true,
@@ -168,12 +170,6 @@ const PlayerCore: FC = () => {
           (track) => `spotify:track:${track.spotifyId}`
         );
 
-        console.log("Attempting to play with data:", {
-          deviceId: spotifyPlayer.deviceID,
-          spotifyUris,
-          firstSong: user.recommendedSongs[0],
-        });
-
         await playTracks(spotifyPlayer.deviceID, spotifyUris);
       } catch (err) {
         console.error("Error starting playback:", {
@@ -182,13 +178,6 @@ const PlayerCore: FC = () => {
         });
       }
     };
-
-    console.log("useEffect for recommendations triggered", {
-      deviceId: spotifyPlayer.deviceID,
-      recommendedSongsLength: user.recommendedSongs?.length,
-      hasPlayer: !!spotifyPlayer.player,
-      hasToken: !!user.spotifyAccessToken,
-    });
 
     if (user.recommendedSongs?.length > 0) {
       console.log("Playing recommendations");

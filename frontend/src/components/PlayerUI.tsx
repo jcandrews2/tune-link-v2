@@ -8,8 +8,8 @@ import { useSpring, animated } from "@react-spring/web";
 import { useDrag } from "@use-gesture/react";
 import { handleLike, handleDislike } from "../utils/userUtils";
 import { useLocation } from "react-router-dom";
-import { getDominantColor } from "../utils/playerUtils";
 import MarqueeText from "./MarqueeText";
+import Loading from "./Loading";
 
 const PlayerUI: FC = () => {
   const { user, spotifyPlayer, setUser, setSpotifyPlayer } = useStore();
@@ -24,69 +24,81 @@ const PlayerUI: FC = () => {
   });
 
   // Player card animation
-  const [{ x, y, rotate, scale }, api] = useSpring(() => ({
+  const [{ x, y, rotate, opacity, scale }, api] = useSpring(() => ({
     x: 0,
     y: 0,
     rotate: 0,
+    opacity: 1,
     scale: 1,
-    config: { tension: 300, friction: 20 },
+    config: { mass: 1, tension: 120, friction: 120 },
   }));
 
   const bind = useDrag(
-    async ({
-      active,
-      movement: [mx, my],
-      direction: [xDir],
-      cancel,
-      tap,
-      first,
-      memo,
-      offset: [ox, oy],
-      event,
-    }) => {
-      // Check if the event target is or is within the slider container
+    async ({ active, movement: [mx], event }) => {
       const isSliderInteraction = (event.target as HTMLElement).closest(
         ".slider-container"
       );
-      if (isSliderInteraction) {
-        cancel();
-        return;
-      }
+      if (isSliderInteraction) return;
 
-      if (tap) return;
+      const absX = Math.abs(mx);
+      const dir = mx > 0 ? 1 : -1;
+      const SWIPE_THRESHOLD = 200;
 
-      if (isHomePage) {
-        // Home page swipe logic
-        const trigger = Math.abs(mx) > 150;
-        if (active && trigger) {
-          cancel();
-          if (mx > 0) {
-            await handleLike(spotifyPlayer, user, setUser);
-          } else {
-            await handleDislike(spotifyPlayer, user, setUser);
-          }
-          return;
+      if (active) {
+        api.start({
+          x: mx,
+          rotate: mx / 20,
+          scale: 1 - absX / 400,
+          opacity: 1 - absX / 300,
+          immediate: true,
+        });
+      } else if (absX > SWIPE_THRESHOLD) {
+        api.start({
+          x: dir * window.innerWidth * 1,
+          opacity: 0.5,
+          rotate: dir * 45,
+          scale: 0.7,
+          immediate: false,
+          config: { tension: 300, friction: 30 },
+        });
+
+        // Perform action
+        if (dir > 0) {
+          await handleLike(spotifyPlayer, user, setUser);
+        } else {
+          await handleDislike(spotifyPlayer, user, setUser);
         }
 
+        api.set({
+          x: 0,
+          rotate: 0,
+          scale: 0.8,
+          opacity: 0.5,
+        });
+
         api.start({
-          x: active ? mx : 0,
-          rotate: active ? mx / 20 : 0,
-          scale: active ? 1.05 : 1,
-          immediate: active,
-          config: { tension: 300, friction: active ? 10 : 20 },
+          scale: 1,
+          opacity: 1,
+          immediate: false,
+          config: { tension: 300, friction: 20 },
         });
       } else {
-        // Mini player dragging logic
-        setMiniPlayerPosition({ x: ox, y: oy });
+        // If not swiped far enough, bounce back
+        api.start({
+          x: 0,
+          rotate: 0,
+          scale: 1,
+          opacity: 1,
+          immediate: false,
+          config: { tension: 300, friction: 20 },
+        });
       }
     },
     {
-      from: () =>
-        isHomePage ? [0, 0] : [miniPlayerPosition.x, miniPlayerPosition.y],
-      bounds: isHomePage
-        ? { left: -200, right: 200, top: 0, bottom: 0 }
-        : undefined,
-      rubberband: true,
+      from: () => [0, 0],
+      filterTaps: true,
+      preventScroll: true,
+      preventDefault: true,
     }
   );
 
@@ -101,7 +113,6 @@ const PlayerUI: FC = () => {
     }
   }, [location]);
 
-  // Simplified player content for non-home pages
   const miniPlayerContent = (
     <>
       <animated.div
@@ -115,10 +126,10 @@ const PlayerUI: FC = () => {
           touchAction: "none",
           cursor: "grab",
         }}
-        className='w-[300px]'
+        className='w-[300px] h-[192.5px]'
       >
-        <div className='w-full p-4 border border-gray-700 rounded-lg bg-black'>
-          {spotifyPlayer.currentTrack && (
+        <div className='w-full h-full p-4 border border-gray-700 rounded-lg bg-black'>
+          {spotifyPlayer.currentTrack ? (
             <>
               <div className=''>
                 <MarqueeText
@@ -137,6 +148,10 @@ const PlayerUI: FC = () => {
                 <MediaControls />
               </div>
             </>
+          ) : (
+            <div className='flex items-center justify-center h-full'>
+              <Loading />
+            </div>
           )}
         </div>
         <div
@@ -154,27 +169,74 @@ const PlayerUI: FC = () => {
   );
 
   const playerContent = (
-    <div className='mx-auto select-none'>
+    <div className='mx-auto select-none relative'>
+      {/* Bottom Card */}
+      <animated.div
+        style={{
+          scale: 0.875,
+          opacity: 0.5,
+          position: "absolute",
+          zIndex: 0,
+        }}
+        className='border border-gray-700 rounded-lg p-8 bg-black w-[400px]'
+      >
+        <div className='relative select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
+          <div className=' mx-auto'>
+            <Cover isTopCard={false} />
+            {spotifyPlayer.nextTrack && (
+              <div className='relative py-2 z-10 text-left'>
+                <MarqueeText
+                  text={spotifyPlayer.nextTrack.name}
+                  className='text-xl font-bold text-white'
+                />
+                <MarqueeText
+                  text={spotifyPlayer.nextTrack.artists[0].name}
+                  className='font-light text-gray-300'
+                />
+              </div>
+            )}
+          </div>
+          <div className='flex flex-col items-start w-full py-2 slider-container'>
+            <SliderUI />
+          </div>
+          <MediaControls />
+        </div>
+      </animated.div>
+
+      {/* Top Card */}
       <animated.div
         {...bind()}
         style={{
           x,
           y,
           rotate,
+          opacity,
           scale,
           touchAction: "none",
           position: "relative",
-          backgroundColor: x.to((x: number) =>
-            x > 0
-              ? `rgba(74, 222, 128, ${Math.min(Math.abs(x) / 100, 0.4)})`
-              : `rgba(248, 113, 113, ${Math.min(Math.abs(x) / 100, 0.4)})`
-          ),
+          zIndex: 1,
         }}
-        className='border border-gray-700 rounded-lg p-8 bg-[#121212] cursor-grab active:cursor-grabbing select-none w-[400px]'
+        className='border border-gray-700 rounded-lg p-8 cursor-grab bg-black active:cursor-grabbing select-none w-[400px]'
       >
-        <div className='relative z-10 select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
+        {/* Swipe indicator overlay */}
+        <animated.div
+          style={{
+            position: "absolute",
+            inset: 0,
+            borderRadius: "0.5rem",
+            backgroundColor: x.to((x) =>
+              Math.abs(x) < 1
+                ? "transparent"
+                : x > 0
+                  ? `rgba(74, 222, 128, ${Math.min(Math.abs(x) / 100, 0.4)})`
+                  : `rgba(248, 113, 113, ${Math.min(Math.abs(x) / 100, 0.4)})`
+            ),
+          }}
+        />
+
+        <div className='relative select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
           <div className=' mx-auto'>
-            <Cover />
+            <Cover isTopCard={true} />
             {spotifyPlayer.currentTrack && (
               <div className='relative py-2 z-10 text-left'>
                 <MarqueeText
@@ -197,7 +259,7 @@ const PlayerUI: FC = () => {
     </div>
   );
 
-  if (user.recommendedSongs.length === 0) {
+  if (user.recommendedSongs.length === 0 && isHomePage) {
     return portalContainer
       ? createPortal(
           <div className='mx-auto select-none'>

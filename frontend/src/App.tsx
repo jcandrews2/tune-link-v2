@@ -6,7 +6,7 @@ import {
   Navigate,
 } from "react-router-dom";
 import HomePage from "./pages/HomePage";
-import Charts from "./pages/Charts";
+import ChartsPage from "./pages/ChartsPage";
 import ProfilePage from "./pages/ProfilePage";
 import WelcomePage from "./pages/WelcomePage";
 import Navbar from "./components/Navbar";
@@ -48,7 +48,7 @@ const App: FC = () => {
       <Layout>
         <div className='flex flex-col min-h-screen bg-black'>
           <Navbar />
-          <div className='flex-grow text-white p-8'>
+          <div className='flex-grow text-white p-4'>
             <Routes>
               <Route path='/welcome' element={<WelcomePage />} />
               <Route
@@ -57,7 +57,7 @@ const App: FC = () => {
               />
               <Route
                 path='/charts'
-                element={<ProtectedRoute element={<Charts />} />}
+                element={<ProtectedRoute element={<ChartsPage />} />}
               />
               <Route
                 path='/profile'

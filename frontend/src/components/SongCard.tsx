@@ -1,7 +1,7 @@
-import React from "react";
-import type { Song } from "../../types";
-import MarqueeText from "../MarqueeText";
-import Loading from "../Loading";
+import React, { useEffect } from "react";
+import type { Song } from "../types";
+import MarqueeText from "./MarqueeText";
+import Loading from "./Loading";
 import ExpandedDetails from "./ExpandedDetails";
 
 interface SongCardProps {
@@ -21,6 +21,10 @@ const SongCard: React.FC<SongCardProps> = ({
   onCardClick,
   onArtistClick,
 }) => {
+  useEffect(() => {
+    console.log(song);
+  }, [song]);
+
   return (
     <div
       className={`border border-gray-700 rounded p-4 hover:border-white transition-colors cursor-pointer relative ${
@@ -31,13 +35,13 @@ const SongCard: React.FC<SongCardProps> = ({
       <div className='flex-1 min-w-0 overflow-hidden'>
         <MarqueeText text={song.name} className='font-medium' />
         <div
-          className='text-gray-400 hover:underline cursor-pointer'
+          className='text-gray-400 cursor-pointer inline-block hover:text-white hover:border-b hover:border-white'
           onClick={(e) => {
             e.stopPropagation();
-            onArtistClick(song.artist.spotifyId, song.artist.name);
+            onArtistClick(song.artistSpotifyId, song.artist);
           }}
         >
-          <MarqueeText text={song.artist.name} className='text-sm' />
+          <MarqueeText text={song.artist} className='text-sm' />
         </div>
 
         {isExpanded && (

@@ -8,13 +8,22 @@ export default {
         poppins: ["Poppins", "sans-serif"],
       },
       keyframes: {
+        fadeIn: {
+          "0%": { opacity: "0" },
+          "100%": { opacity: "1" },
+        },
         marquee: {
-          "0%": { transform: "translateX(0%)" },
-          "100%": { transform: "translateX(-20%)" },
+          "0%, 25%": {
+            transform: "translateX(0%)",
+          },
+          "75%, 100%": {
+            transform: "translateX(calc(-1 * var(--marquee-distance, 20%)))",
+          },
         },
       },
       animation: {
-        marquee: "marquee 5s linear infinite alternate",
+        fadeIn: "fadeIn 1s ease-in-out",
+        marquee: "marquee 4s ease-in-out infinite alternate",
       },
     },
   },

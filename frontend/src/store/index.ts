@@ -23,6 +23,7 @@ const useStore = create<Store>((set) => ({
     player: null,
     deviceID: null,
     currentTrack: null,
+    nextTrack: null,
     isActive: false,
     isPaused: true,
     isDragging: false,

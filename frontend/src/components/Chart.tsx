@@ -1,17 +1,13 @@
 import React from "react";
 import type { ReactNode } from "react";
 
-interface ChartSectionProps {
+interface ChartProps {
   title: string;
   children: ReactNode;
   className?: string;
 }
 
-const ChartSection: React.FC<ChartSectionProps> = ({
-  title,
-  children,
-  className = "",
-}) => {
+const Chart: React.FC<ChartProps> = ({ title, children, className = "" }) => {
   return (
     <div className={`w-1/3 ${className}`}>
       <div className='w-full py-4 pl-4 pr-2 border border-gray-700 rounded-lg h-full flex flex-col'>
@@ -26,4 +22,4 @@ const ChartSection: React.FC<ChartSectionProps> = ({
   );
 };
 
-export default ChartSection;
+export default Chart;

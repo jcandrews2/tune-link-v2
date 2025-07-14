@@ -14,7 +14,7 @@ export interface Artist {
 export interface Song {
   id: string;
   name: string;
-  artist: Artist;
+  artist: string;
   duration: string;
   albumArt?: string;
   previewUrl?: string;
@@ -42,6 +42,7 @@ export interface SpotifyPlayer {
   player?: any;
   deviceID?: any;
   currentTrack?: any;
+  nextTrack?: any;
   isPaused?: boolean;
   position?: number;
   isActive?: boolean;

@@ -14,12 +14,22 @@ const MarqueeText: FC<MarqueeTextProps> = ({
   const containerRef = useRef<HTMLDivElement>(null);
   const textRef = useRef<HTMLDivElement>(null);
   const [shouldAnimate, setShouldAnimate] = useState(false);
+  const [style, setStyle] = useState<React.CSSProperties>({});
 
   useLayoutEffect(() => {
     if (containerRef.current && textRef.current) {
       const containerWidth = containerRef.current.offsetWidth;
       const textWidth = textRef.current.offsetWidth;
-      setShouldAnimate(textWidth >= containerWidth);
+      setShouldAnimate(textWidth > containerWidth);
+
+      if (textWidth > containerWidth) {
+        // Calculate the translation percentage based on the difference
+        const translateX =
+          ((textWidth - containerWidth) / containerWidth) * 100;
+        setStyle({
+          "--marquee-distance": `${translateX}%`,
+        } as React.CSSProperties);
+      }
     }
   }, [text]);
 
@@ -31,7 +41,10 @@ const MarqueeText: FC<MarqueeTextProps> = ({
     >
       <div
         ref={textRef}
-        className={`${shouldAnimate ? "animate-marquee" : "truncate"} inline-block whitespace-nowrap`}
+        style={style}
+        className={`${
+          shouldAnimate ? "animate-marquee" : ""
+        } inline-block whitespace-nowrap truncate`}
       >
         {text}
       </div>

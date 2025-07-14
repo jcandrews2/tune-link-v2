@@ -1,7 +1,7 @@
 import React from "react";
-import type { Artist } from "../../types";
-import MarqueeText from "../MarqueeText";
-import Loading from "../Loading";
+import type { Artist } from "../types";
+import MarqueeText from "./MarqueeText";
+import Loading from "./Loading";
 import ExpandedDetails from "./ExpandedDetails";
 
 interface ArtistCardProps {

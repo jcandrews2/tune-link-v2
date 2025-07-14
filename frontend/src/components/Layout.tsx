@@ -7,8 +7,6 @@ const Layout: FC<LayoutProps> = ({ children }) => {
     <>
       {location.pathname !== "/welcome" && <PlayerCore />}
       {children}
-      <div id='player-portal' />
-      <div id='mini-player-portal' />
     </>
   );
 };

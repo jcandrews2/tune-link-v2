@@ -23,7 +23,8 @@ export default {
       },
       animation: {
         fadeIn: "fadeIn 1s ease-in-out",
-        marquee: "marquee 4s ease-in-out infinite alternate",
+        marquee:
+          "marquee var(--marquee-duration, 4s) ease-in-out infinite alternate",
       },
     },
   },

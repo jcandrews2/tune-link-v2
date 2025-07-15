@@ -168,7 +168,7 @@ const ChartsPage: FC = () => {
 
   return (
     <div id='mini-player-portal' className='h-full'>
-      <div className='container mx-auto h-full flex flex-col p-4 gap-4'>
+      <div className='container mx-auto h-full flex flex-col gap-4'>
         <div className='flex gap-4 h-[332px]'>
           <Chart title='Disliked Songs'>
             {user.dislikedSongs?.map((song: Song) => (

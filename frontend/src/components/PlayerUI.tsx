@@ -24,7 +24,7 @@ const PlayerUI: FC = () => {
   });
 
   // Player card animation
-  const [{ x, y, rotate, opacity, scale }, api] = useSpring(() => ({
+  const [topCardSpring, topCardApi] = useSpring(() => ({
     x: 0,
     y: 0,
     rotate: 0,
@@ -33,69 +33,74 @@ const PlayerUI: FC = () => {
     config: { mass: 1, tension: 120, friction: 120 },
   }));
 
+  const [bottomCardSpring, bottomCardApi] = useSpring(() => ({
+    opacity: 0.75,
+    scale: 0.75,
+    config: { mass: 1, tension: 120, friction: 120 },
+  }));
+
   const bind = useDrag(
-    async ({ active, movement: [mx], event }) => {
+    async ({ active, movement: [mx], event, offset: [ox, oy] }) => {
       const isSliderInteraction = (event.target as HTMLElement).closest(
         ".slider-container"
       );
       if (isSliderInteraction) return;
 
-      const absX = Math.abs(mx);
-      const dir = mx > 0 ? 1 : -1;
-      const SWIPE_THRESHOLD = 200;
+      if (isHomePage) {
+        const absX = Math.abs(mx);
+        const dir = mx > 0 ? 1 : -1;
+        const SWIPE_THRESHOLD = 150;
 
-      if (active) {
-        api.start({
-          x: mx,
-          rotate: mx / 20,
-          scale: 1 - absX / 400,
-          opacity: 1 - absX / 300,
-          immediate: true,
-        });
-      } else if (absX > SWIPE_THRESHOLD) {
-        api.start({
-          x: dir * window.innerWidth * 1,
-          opacity: 0.5,
-          rotate: dir * 45,
-          scale: 0.7,
-          immediate: false,
-          config: { tension: 300, friction: 30 },
-        });
+        if (active) {
+          topCardApi.start({
+            x: mx,
+            rotate: mx / 20,
+            scale: 1,
+            opacity: 1,
+            immediate: true,
+          });
 
-        // Perform action
-        if (dir > 0) {
-          await handleLike(spotifyPlayer, user, setUser);
-        } else {
-          await handleDislike(spotifyPlayer, user, setUser);
+          bottomCardApi.start({
+            opacity: Math.min(1, 0.75 + (absX / (SWIPE_THRESHOLD * 2)) * 0.25),
+            scale: Math.min(1, 0.75 + (absX / (SWIPE_THRESHOLD * 2)) * 0.25),
+            immediate: true,
+          });
+        } else if (absX > SWIPE_THRESHOLD) {
+          topCardApi.start({
+            x: mx,
+            rotate: mx * 15,
+            opacity: 1,
+            scale: 1,
+            immediate: false,
+          });
+
+          // Perform action
+          if (dir > 0) {
+            await handleLike(spotifyPlayer, user, setUser);
+          } else {
+            await handleDislike(spotifyPlayer, user, setUser);
+          }
+
+          topCardApi.set({
+            x: 0,
+            rotate: 0,
+            scale: 1,
+            opacity: 1,
+          });
+
+          setSpotifyPlayer({
+            currentTrack: spotifyPlayer.nextTrack,
+          });
         }
-
-        api.set({
-          x: 0,
-          rotate: 0,
-          scale: 0.8,
-          opacity: 0.5,
-        });
-
-        api.start({
-          scale: 1,
-          opacity: 1,
-          immediate: false,
-          config: { tension: 300, friction: 20 },
-        });
       } else {
-        // If not swiped far enough, bounce back
-        api.start({
-          x: 0,
-          rotate: 0,
-          scale: 1,
-          opacity: 1,
-          immediate: false,
-          config: { tension: 300, friction: 20 },
+        setMiniPlayerPosition({
+          x: ox,
+          y: oy,
         });
       }
     },
     {
-      from: () => [0, 0],
+      from: () => [miniPlayerPosition.x, miniPlayerPosition.y],
       filterTaps: true,
       preventScroll: true,
       preventDefault: true,
@@ -106,7 +111,6 @@ const PlayerUI: FC = () => {
     if (isHomePage) {
       const container = document.getElementById("player-portal");
       setPortalContainer(container);
-      api.start({ x: 0, y: 0 });
     } else {
       const container = document.getElementById("mini-player-portal");
       setPortalContainer(container);
@@ -171,19 +175,20 @@ const PlayerUI: FC = () => {
   const playerContent = (
     <div className='mx-auto select-none relative'>
       {/* Bottom Card */}
-      <animated.div
-        style={{
-          scale: 0.875,
-          opacity: 0.5,
-          position: "absolute",
-          zIndex: 0,
-        }}
-        className='border border-gray-700 rounded-lg p-8 bg-black w-[400px]'
-      >
-        <div className='relative select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
-          <div className=' mx-auto'>
-            <Cover isTopCard={false} />
-            {spotifyPlayer.nextTrack && (
+      {spotifyPlayer.nextTrack && (
+        <animated.div
+          {...bind()}
+          style={{
+            scale: bottomCardSpring.scale,
+            opacity: bottomCardSpring.opacity,
+            position: "absolute",
+            zIndex: 0,
+          }}
+          className='border border-gray-700 rounded-lg p-8 bg-black w-[400px]'
+        >
+          <div className='relative select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
+            <div className=' mx-auto'>
+              <Cover isTopCard={false} />
               <div className='relative py-2 z-10 text-left'>
                 <MarqueeText
                   text={spotifyPlayer.nextTrack.name}
@@ -194,24 +199,24 @@ const PlayerUI: FC = () => {
                   className='font-light text-gray-300'
                 />
               </div>
-            )}
+            </div>
+            <div className='flex flex-col items-start w-full py-2 slider-container'>
+              <SliderUI />
+            </div>
+            <MediaControls />
           </div>
-          <div className='flex flex-col items-start w-full py-2 slider-container'>
-            <SliderUI />
-          </div>
-          <MediaControls />
-        </div>
-      </animated.div>
+        </animated.div>
+      )}
 
       {/* Top Card */}
       <animated.div
         {...bind()}
         style={{
-          x,
-          y,
-          rotate,
-          opacity,
-          scale,
+          x: topCardSpring.x,
+          y: topCardSpring.y,
+          rotate: topCardSpring.rotate,
+          opacity: topCardSpring.opacity,
+          scale: topCardSpring.scale,
           touchAction: "none",
           position: "relative",
           zIndex: 1,
@@ -224,7 +229,7 @@ const PlayerUI: FC = () => {
             position: "absolute",
             inset: 0,
             borderRadius: "0.5rem",
-            backgroundColor: x.to((x) =>
+            backgroundColor: topCardSpring.x.to((x) =>
               Math.abs(x) < 1
                 ? "transparent"
                 : x > 0

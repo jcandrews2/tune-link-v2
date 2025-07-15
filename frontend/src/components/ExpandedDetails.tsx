@@ -69,11 +69,9 @@ const ExpandedDetails: React.FC<ExpandedDetailsProps> = ({
             </p>
             <div className='flex flex-wrap gap-2 mt-2'>
               {itemDetails.details.genres.length > 0 && (
-                <MarqueeText
-                  key={itemDetails.details.genres[0]}
-                  text={itemDetails.details.genres[0]}
-                  className='px-2 py-1 text-xs bg-gray-900 rounded-full w-[30px]'
-                />
+                <p className='px-2 py-1 text-xs bg-gray-900 rounded-full'>
+                  {itemDetails.details.genres[0]}
+                </p>
               )}
             </div>
           </div>

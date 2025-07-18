@@ -41,7 +41,7 @@ const ProfilePage: FC = () => {
       className='flex flex-col items-center justify-center h-full gap-8'
     >
       <div
-        className={`w-48 h-auto rounded-full ${!user.profilePicture ? "border border-gray-700" : ""}`}
+        className={`w-68 h-auto rounded-full ${!user.profilePicture ? "border border-gray-700" : ""}`}
       >
         {user.profilePicture ? (
           <img

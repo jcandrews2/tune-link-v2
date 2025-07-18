@@ -4,6 +4,14 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Make all elements unselectable */
+* {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
+}
+
 @layer base {
   body {
     overflow: hidden;

@@ -58,7 +58,7 @@ const RequestsBox: FC = () => {
   };
 
   return (
-    <div className='w-full p-4 border border-gray-700 rounded-lg h-[332px] flex flex-col bg-black'>
+    <div className='w-full p-4 border border-gray-700 rounded-lg h-[366px] flex flex-col bg-black'>
       <h2 className='text-xl font-semibold text-white mb-4'>Make Request</h2>
       <form onSubmit={handleSubmit} className='flex flex-col flex-1'>
         <div className='relative flex-1 mb-4'>

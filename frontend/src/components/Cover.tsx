@@ -24,19 +24,22 @@ const Cover: FC<{ isTopCard: boolean }> = ({ isTopCard }) => {
             src={
               isTopCard
                 ? spotifyPlayer.currentTrack?.album.images[0].url
-                : spotifyPlayer.nextTrack?.album.images[0].url
+                : spotifyPlayer.nextTrack?.album.images[0].url ||
+                  spotifyPlayer.currentTrack?.album.images[0].url
             }
             className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm w-full h-full'
             alt='Cover'
             onLoad={handleGetImageColor}
           />
-          <div
-            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] animate-fadeIn w-full h-full'
-            key={spotifyPlayer.animationKey}
-            style={{
-              backgroundColor: spotifyPlayer.dominantColor || "transparent",
-            }}
-          />
+          {isTopCard && (
+            <div
+              className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] animate-fadeIn w-full h-full'
+              key={spotifyPlayer.animationKey}
+              style={{
+                backgroundColor: spotifyPlayer.dominantColor || "transparent",
+              }}
+            />
+          )}
         </>
       ) : (
         <div className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] bg-gray-800 w-full h-full'>

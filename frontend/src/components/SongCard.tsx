@@ -21,10 +21,6 @@ const SongCard: React.FC<SongCardProps> = ({
   onCardClick,
   onArtistClick,
 }) => {
-  useEffect(() => {
-    console.log(song);
-  }, [song]);
-
   return (
     <div
       className={`border border-gray-700 rounded p-4 hover:border-white transition-colors cursor-pointer relative ${

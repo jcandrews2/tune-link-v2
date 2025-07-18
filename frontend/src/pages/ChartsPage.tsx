@@ -169,11 +169,11 @@ const ChartsPage: FC = () => {
   return (
     <div id='mini-player-portal' className='h-full'>
       <div className='container mx-auto h-full flex flex-col gap-4'>
-        <div className='flex gap-4 h-[332px]'>
+        <div className='flex gap-4 h-[366px]'>
           <Chart title='Disliked Songs'>
             {user.dislikedSongs?.map((song: Song) => (
               <SongCard
-                key={`${song.name}-${song.artist}`}
+                key={song.spotifyId}
                 song={song}
                 isExpanded={expandedItems.disliked === song.spotifyId}
                 isLoading={loadingItemId === song.spotifyId}
@@ -184,7 +184,7 @@ const ChartsPage: FC = () => {
             ))}
           </Chart>
 
-          <Chart title='Artists' className='h-[567.5px]'>
+          <Chart title='Artists' className='h-[600px]'>
             {user.topArtists?.map((artist, index) => (
               <ArtistCard
                 key={artist.spotifyId}
@@ -203,7 +203,7 @@ const ChartsPage: FC = () => {
           <Chart title='Liked Songs'>
             {user.likedSongs?.map((song: Song) => (
               <SongCard
-                key={`${song.name}-${song.artist}`}
+                key={song.spotifyId}
                 song={song}
                 isExpanded={expandedItems.liked === song.spotifyId}
                 isLoading={loadingItemId === song.spotifyId}

@@ -27,7 +27,7 @@ const MarqueeText: FC<MarqueeTextProps> = ({
         const translateX = textWidth - containerWidth;
 
         const BASE_SPEED = 25;
-        const duration = translateX / BASE_SPEED;
+        const duration = Math.max(translateX / BASE_SPEED, 4);
 
         setStyle({
           "--marquee-distance": `${translateX}px`,

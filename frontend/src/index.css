@@ -17,8 +17,24 @@
     overflow: hidden;
     height: 100%;
     margin: 0;
-    @apply font-poppins;
+    @apply font-poppins bg-black;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+  }
+
+  #root {
+    height: 100vh;
+  }
+}
+
+@layer utilities {
+  .animate-morph {
+    animation: morph 15s ease-in-out infinite;
+  }
+  .animate-morph-delay {
+    animation: morph 15s ease-in-out infinite 5s;
+  }
+  .animate-morph-delay-2 {
+    animation: morph 15s ease-in-out infinite 10s;
   }
 }

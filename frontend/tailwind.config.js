@@ -4,29 +4,24 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        kirang: ['"Kirang Haerang"', "cursive"],
+        kirang: ["Kirang Haerang", "cursive"],
         poppins: ["Poppins", "sans-serif"],
       },
-      keyframes: {
-        fadeIn: {
-          "0%": { opacity: "0" },
-          "100%": { opacity: "1" },
-        },
-        marquee: {
-          "0%, 25%": {
-            transform: "translateX(0%)",
-          },
-          "75%, 100%": {
-            transform: "translateX(calc(-1 * var(--marquee-distance, 20%)))",
-          },
-        },
-      },
       animation: {
-        fadeIn: "fadeIn 1s ease-in-out",
-        marquee:
-          "marquee var(--marquee-duration, 4s) ease-in-out infinite alternate",
+        "spin-slow": "spin 20s linear infinite",
+        morph: "morph 15s ease-in-out infinite",
+        "morph-delay": "morph 15s ease-in-out infinite 5s",
+        "morph-delay-2": "morph 15s ease-in-out infinite 10s",
+      },
+      keyframes: {
+        morph: {
+          "0%, 100%": { transform: "rotate(0deg) scale(1)" },
+          "25%": { transform: "rotate(90deg) scale(1.1)" },
+          "50%": { transform: "rotate(180deg) scale(1)" },
+          "75%": { transform: "rotate(270deg) scale(0.9)" },
+        },
       },
     },
   },
-  plugins: [require("tailwind-scrollbar")],
+  plugins: [],
 };

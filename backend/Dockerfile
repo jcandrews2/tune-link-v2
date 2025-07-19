@@ -1,29 +1,28 @@
-# Build stage
-FROM maven:3.9-eclipse-temurin-21-alpine AS build
+# ---- Stage 1: Build the app with Maven ----
+FROM maven:3.9.6-eclipse-temurin-21-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
-# Copy pom.xml
+# Copy pom.xml and download dependencies first (leverage Docker cache)
 COPY pom.xml .
+RUN mvn dependency:go-offline -B
 
-# Copy source code
+# Copy the rest of the source code
 COPY src ./src
 
-# Build the application
+# Package the app
 RUN mvn clean package -DskipTests
 
-# Run stage
-FROM eclipse-temurin:21-jre-alpine
+# ---- Stage 2: Run the app ----
+FROM eclipse-temurin:21-jdk-alpine
 
-# Set working directory
 WORKDIR /app
 
-# Copy the built jar from build stage
-COPY --from=build /app/target/*.jar app.jar
+# Copy the packaged jar from the builder stage
+COPY --from=builder /app/target/tune-link-0.0.1-SNAPSHOT.jar app.jar
 
-# Expose port 5050
-EXPOSE 5050
+# Expose port
+EXPOSE 8080
 
-# Start the application
-CMD ["java", "-jar", "app.jar"]
+# Run the app
+ENTRYPOINT ["java", "-jar", "app.jar"]

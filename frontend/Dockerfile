@@ -1,19 +1,20 @@
-# Use Node.js LTS version
-FROM node:20-alpine
+FROM node:20-alpine AS builder
 
-# Set working directory
 WORKDIR /app
 
 # Copy package files
 COPY package*.json ./
 
 # Install dependencies
-RUN npm install
+RUN npm ci
 
-# Copy the rest of the application
+# Copy source code
 COPY . .
 
-# Expose port 3000
+# Build the app
+RUN npm run build
+
+# Expose the preview port
 EXPOSE 3000
 
 # Start the development server

@@ -4,8 +4,8 @@
   "version": "0.0.0",
   "type": "module",
   "scripts": {
-    "dev": "vite",
-    "build": "tsc -b && vite build",
+    "dev": "vite --host",
+    "build": "tsc -p config/tsconfig.json && vite build",
     "lint": "eslint .",
     "preview": "vite preview"
   },
@@ -31,7 +31,7 @@
     "globals": "^16.0.0",
     "postcss": "^8.5.4",
     "prettier": "^3.5.3",
-    "tailwind-scrollbar": "^4.0.2",
+    "tailwind-scrollbar": "^3.1.0",
     "tailwindcss": "^3.4.17",
     "typescript": "~5.8.3",
     "typescript-eslint": "^8.30.1",

@@ -1,69 +1,42 @@
-# RUN BACKEND
-# ./mvnw spring-boot:run
-
-# RUN THE DOCKER COMPOSE FILE
-# docker compose up -d
-
-# STOP ALL CONTAINERS
-# docker compose down -v
-
-# VIEW ALL DOCKER CONTAINERS FORMATTED
-# docker ps --format="$FORMAT"
-
-# ENTER POSTGRES CLI AND LOG IN
-# docker exec -it postgres psql -U tunelink -d postgres
-
-# docker logs postgres
 services:
-  # Frontend Service
-  # frontend:
-  #   container_name: frontend
-  #   build:
-  #     context: ./frontend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "3000:3000"
-  #   volumes:
-  #     - ./frontend:/app
-  #     - /app/node_modules
-  #   environment:
-  #     - VITE_API_URL=http://localhost:5050
-  #   depends_on:
-  #     - backend
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile
+    ports:
+      - "3000:3000"
+    environment:
+      - VITE_API_URL=http://localhost:5050
+    depends_on:
+      - backend
 
-  # # Backend Service
-  # backend:
-  #   container_name: backend
-  #   build:
-  #     context: ./backend
-  #     dockerfile: Dockerfile
-  #   ports:
-  #     - "5050:5050"
-  #   volumes:
-  #     - ./backend:/app
-  #     - ~/.m2:/root/.m2
-  #   environment:
-  #     - SPRING_DATASOURCE_URL=jdbc:postgresql://db:5432/postgres
-  #     - SPRING_DATASOURCE_USERNAME=tunelink
-  #     - SPRING_DATASOURCE_PASSWORD=tunelink
-  #   depends_on:
-  #     - db
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    ports:
+      - "5050:5050"
+    env_file:
+      - .env
+    environment:
+      - DATABASE_URL=jdbc:postgresql://db:5432/tunelink
+      - POSTGRES_USER=tunelink
+      - POSTGRES_PASSWORD=tunelink
+    depends_on:
+      - db
 
-  # PostgreSQL Database
   db:
-    container_name: postgres
     image: postgres:17-alpine
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=postgres
+      - POSTGRES_DB=tunelink
       - POSTGRES_USER=tunelink
       - POSTGRES_PASSWORD=tunelink
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped
 
-# Define volumes
 volumes:
   postgres_data:
     driver: local

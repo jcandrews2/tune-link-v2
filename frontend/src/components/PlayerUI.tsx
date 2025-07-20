@@ -49,8 +49,8 @@ const PlayerUI: FC = () => {
 
   // Get the first two cards
   const cards = user.recommendedSongs.slice(
-    currentIndex,
-    Math.min(currentIndex + 2, user.recommendedSongs.length)
+    0,
+    Math.min(2, user.recommendedSongs.length)
   );
 
   const [props, api] = useSprings(cards.length, (i) => ({
@@ -98,7 +98,6 @@ const PlayerUI: FC = () => {
         return;
       }
 
-      // Dragging animation for active card
       api.start((i) => {
         if (i !== 0) return;
 
@@ -127,6 +126,10 @@ const PlayerUI: FC = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    console.log("currentIndex", currentIndex);
+  }, [currentIndex]);
+
   const renderCard = (i: number) => (
     <div className='relative select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
       <div className='mx-auto'>
@@ -152,10 +155,14 @@ const PlayerUI: FC = () => {
           </div>
         )}
       </div>
-      <div className='flex flex-col items-start w-full py-2 slider-container'>
-        <SliderUI />
+      <div
+        className={`flex flex-col items-start w-full py-2 slider-container ${i === 1 ? "opacity-50" : ""}`}
+      >
+        <SliderUI disabled={i === 1} />
       </div>
-      <MediaControls disabled={!spotifyPlayer.currentTrack} />
+      <div className={i === 1 ? "opacity-50" : ""}>
+        <MediaControls disabled={i === 1 || !spotifyPlayer.currentTrack} />
+      </div>
     </div>
   );
 
@@ -166,7 +173,7 @@ const PlayerUI: FC = () => {
           const { x, y, rot, scale } = props[i];
           return (
             <animated.div
-              key={i}
+              key={spotifyPlayer.currentTrack?.spotifyId}
               className='absolute top-0 left-0 w-full'
               style={{
                 x,
@@ -175,7 +182,7 @@ const PlayerUI: FC = () => {
               }}
             >
               <animated.div
-                {...(i === 0 ? bind(i) : {})}
+                {...bind(i)}
                 style={{
                   transform: interpolate([rot, scale], trans),
                   touchAction: "none",
@@ -185,6 +192,7 @@ const PlayerUI: FC = () => {
                 {/* Glow overlay */}
                 <animated.div
                   className='absolute inset-0 pointer-events-none rounded-lg'
+                  key={spotifyPlayer.animationKey}
                   style={{
                     background: x.to((xVal) => {
                       const alpha = Math.min(Math.abs(xVal) / 200, 0.25);
@@ -207,7 +215,6 @@ const PlayerUI: FC = () => {
 
   const miniPlayerContent = (
     <animated.div
-      {...bind()}
       style={{
         position: "fixed",
         left: 76,
@@ -215,15 +222,14 @@ const PlayerUI: FC = () => {
         x: miniPlayerPosition.x,
         y: miniPlayerPosition.y,
         touchAction: "none",
-        cursor: "grab",
         zIndex: 50,
       }}
-      className='w-[300px] h-[192.5px] select-none [&_*]:select-none active:cursor-grabbing'
+      className='w-[300px] h-[200px] select-none [&_*]:select-none'
     >
       <div className='w-full h-full p-4 border border-gray-700 rounded-lg bg-black'>
         {spotifyPlayer.currentTrack ? (
-          <>
-            <div className=''>
+          <div className='h-full flex flex-col justify-center space-y-2'>
+            <div>
               <MarqueeText
                 text={spotifyPlayer.currentTrack.name}
                 className='text-md font-bold text-white'
@@ -239,7 +245,7 @@ const PlayerUI: FC = () => {
             <div className='w-full'>
               <MediaControls disabled={!spotifyPlayer.currentTrack} />
             </div>
-          </>
+          </div>
         ) : (
           <div className='flex items-center justify-center h-full'>
             <Loading />

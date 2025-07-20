@@ -180,7 +180,7 @@ const PlayerCore: FC = () => {
     };
 
     if (user.recommendedSongs?.length > 0) {
-      console.log("Playing recommendations");
+      console.log("Playing recommendations", user.recommendedSongs);
       playRecommendations();
     }
   }, [

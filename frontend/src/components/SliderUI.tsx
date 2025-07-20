@@ -72,9 +72,7 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
   };
 
   useEffect(() => {
-    if (!spotifyPlayer.isDragging && spotifyPlayer.currentTrack) {
-      setBackground(spotifyPlayer.progress || 0, 0, 100);
-    }
+    setBackground(spotifyPlayer.progress || 0, 0, 100);
   }, [spotifyPlayer.progress, spotifyPlayer.isDragging]);
 
   useEffect(() => {

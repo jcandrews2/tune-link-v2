@@ -10,12 +10,7 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(
-    name = "liked_tracks",
-    uniqueConstraints = {
-        @UniqueConstraint(columnNames = {"spotify_id", "user_id"})
-    }
-)
+@Table(name = "liked_tracks")
 public class LikedTrack extends Track {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)

@@ -3,6 +3,7 @@ package com.tunelink.backend.controller;
 import com.tunelink.backend.model.User;
 import com.tunelink.backend.service.UserService;
 import com.tunelink.backend.service.SpotifyService;
+import com.tunelink.backend.config.UrlProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;
@@ -26,16 +27,14 @@ public class SpotifyAuthController {
     @Value("${SPOTIFY_CLIENT_SECRET}")
     private String clientSecret;
 
-    private final String redirectUri = "http://localhost:5050/auth/callback";
-
-    private final String frontendUrl = "http://localhost:3000/";
-
     private final UserService userService;
     private final SpotifyService spotifyService;
+    private final UrlProperties urlProperties;
 
-    public SpotifyAuthController(UserService userService, SpotifyService spotifyService) {
+    public SpotifyAuthController(UserService userService, SpotifyService spotifyService, UrlProperties urlProperties) {
         this.userService = userService;
         this.spotifyService = spotifyService;
+        this.urlProperties = urlProperties;
     }
 
     @GetMapping("/login")
@@ -44,11 +43,11 @@ public class SpotifyAuthController {
         String scope = "streaming user-read-email user-read-private";
         
         String authUrl = UriComponentsBuilder
-            .fromHttpUrl("https://accounts.spotify.com/authorize")
+            .fromHttpUrl(urlProperties.getSpotifyAuthBase() + "/authorize")
             .queryParam("response_type", "code")
             .queryParam("client_id", clientId)
             .queryParam("scope", scope)
-            .queryParam("redirect_uri", redirectUri)
+            .queryParam("redirect_uri", urlProperties.getSpotifyAuthRedirect())
             .queryParam("state", state)
             .build()
             .toUriString();
@@ -95,12 +94,12 @@ public class SpotifyAuthController {
 
             return ResponseEntity.status(302)
                 .header(HttpHeaders.SET_COOKIE, cookie.toString())
-                .header("Location", frontendUrl)
+                .header("Location", urlProperties.getFrontendBase())
                 .build();
 
         } catch (Exception e) {
             return ResponseEntity.status(302)
-                .header("Location", "http://localhost:3000/?error=auth_failed")
+                .header("Location", urlProperties.getFrontendBase() + "?error=auth_failed")
                 .build();
         }
     }

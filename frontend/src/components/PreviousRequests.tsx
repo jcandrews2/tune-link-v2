@@ -42,9 +42,9 @@ const PreviousRequests: FC = () => {
       <h2 className='text-xl font-semibold text-white mb-4'>
         Previous Requests
       </h2>
-      <div className='flex-1 overflow-y-auto scrollbar-thin scrollbar-thumb-gray-700 scrollbar-track-transparent hover:scrollbar-thumb-gray-600 pr-2'>
+      <div className='flex-1 overflow-y-auto pr-2'>
         {user.previousRequests?.length === 0 ? (
-          <p className='text-gray-400 text-center'>No previous requests yet.</p>
+          <p className='text-gray-400 text-center'>No data yet.</p>
         ) : (
           <div className='space-y-4'>
             {user.previousRequests?.map((request) => (

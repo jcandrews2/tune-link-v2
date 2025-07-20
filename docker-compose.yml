@@ -6,7 +6,8 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VITE_API_URL=http://localhost:5050
+      - BACKEND_URL=http://localhost:5050
+      - SPOTIFY_API_URL=https://api.spotify.com/v1
     depends_on:
       - backend
 
@@ -15,7 +16,7 @@ services:
       context: ./backend
       dockerfile: Dockerfile
     ports:
-      - "5050:5050"
+      - "5050"
     env_file:
       - .env
     environment:

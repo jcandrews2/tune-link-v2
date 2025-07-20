@@ -42,7 +42,7 @@ const Cover: FC<{ isTopCard: boolean }> = ({ isTopCard }) => {
           )}
         </>
       ) : (
-        <div className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] bg-gray-800 w-full h-full'>
+        <div className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] bg-gray-900 w-full h-full'>
           <Loading />
         </div>
       )}

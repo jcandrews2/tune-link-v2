@@ -40,7 +40,7 @@ const MarqueeText: FC<MarqueeTextProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative block overflow-hidden w-full ${className}`}
+      className={`relative block overflow-hidden w-full flex items-center ${className}`}
       onClick={onClick}
     >
       <div

@@ -45,7 +45,7 @@ const SongCard: React.FC<SongCardProps> = ({
         )}
       </div>
       {isLoading && (
-        <div className='absolute inset-0 bg-black bg-opacity-50 flex items-center justify-center rounded'>
+        <div className='absolute inset-0 bg-opacity-50 flex items-center justify-center rounded'>
           <Loading />
         </div>
       )}

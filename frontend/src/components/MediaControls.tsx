@@ -6,13 +6,25 @@ import PlayIcon from "../images/play.png";
 import PauseIcon from "../images/pause.png";
 import { handleLike, handleDislike } from "../utils/userUtils";
 
-const MediaControls: FC = () => {
+interface MediaControlsProps {
+  disabled?: boolean;
+}
+
+const MediaControls: FC<MediaControlsProps> = ({ disabled = false }) => {
   const { spotifyPlayer, user, setUser } = useStore();
 
-  const onLike = () => handleLike(spotifyPlayer, user, setUser);
-  const onDislike = () => handleDislike(spotifyPlayer, user, setUser);
+  const onLike = () => {
+    if (disabled) return;
+    handleLike(spotifyPlayer, user, setUser);
+  };
+
+  const onDislike = () => {
+    if (disabled) return;
+    handleDislike(spotifyPlayer, user, setUser);
+  };
 
   const togglePlayback = (): void => {
+    if (disabled) return;
     if (spotifyPlayer.isPaused) {
       resume();
     } else {
@@ -32,47 +44,49 @@ const MediaControls: FC = () => {
     });
   };
 
+  const buttonClasses = `flex items-center justify-center ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-default"}`;
+  const imageClasses = `w-full h-auto transform ${disabled ? "" : "active:scale-95"}`;
+
   return (
     <div className='z-0 flex items-center justify-center w-full'>
       <button
         onClick={onDislike}
-        className='flex items-center justify-center cursor-default'
+        className={buttonClasses}
         data-testid='dislike-button'
+        disabled={disabled}
       >
         <img
           src={DislikeIcon}
           alt='Dislike'
-          className='w-full h-auto transform active:scale-95 max-w-10'
+          className={`${imageClasses} max-w-10`}
         />
       </button>
       <button
-        className='flex items-center justify-center cursor-default'
+        className={buttonClasses}
         onClick={togglePlayback}
+        disabled={disabled}
       >
         {!spotifyPlayer.isPaused ? (
           <img
             src={PauseIcon}
             alt='Pause'
-            className='w-full h-auto transform active:scale-95 max-w-24 px-4'
+            className={`${imageClasses} max-w-24 px-4`}
           />
         ) : (
           <img
             src={PlayIcon}
             alt='Play'
-            className='w-full h-auto transform active:scale-95 max-w-24 px-4'
+            className={`${imageClasses} max-w-24 px-4`}
           />
         )}
       </button>
       <button
         onClick={onLike}
-        className='flex items-center justify-center cursor-default'
+        className={buttonClasses}
         data-testid='like-button'
+        disabled={disabled}
       >
-        <img
-          src={LikeIcon}
-          alt='Like'
-          className='w-full h-auto transform active:scale-95 max-w-10'
-        />
+        <img src={LikeIcon} alt='Like' className={`${imageClasses} max-w-10`} />
       </button>
     </div>
   );

@@ -28,7 +28,7 @@ const Navbar: FC = () => {
 
           {!isWelcomePage && (
             <>
-              {/* Navigation Links - Centered */}
+              {/* Navigation Links */}
               <div className='flex items-center justify-center w-2/4'>
                 <div className='flex items-center space-x-8'>
                   <Link

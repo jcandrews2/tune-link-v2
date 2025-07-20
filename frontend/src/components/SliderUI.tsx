@@ -2,13 +2,18 @@ import React, { useState, useEffect, useRef, FC } from "react";
 import useStore from "../store";
 import { setTrackPosition } from "../api/spotifyApi";
 
-const SliderUI: FC = () => {
+interface SliderUIProps {
+  disabled?: boolean;
+}
+
+const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
   const { spotifyPlayer, setSpotifyPlayer } = useStore();
   const [startPosition, setStartPosition] = useState<string>("-:--");
   const [endPosition, setEndPosition] = useState<string>("-:--");
   const slider = useRef<HTMLInputElement>(null);
 
   function handleInput(event: React.ChangeEvent<HTMLInputElement>) {
+    if (disabled) return;
     const value = parseFloat(event.target.value);
     setSpotifyPlayer({
       progress: value,
@@ -21,15 +26,17 @@ const SliderUI: FC = () => {
   function setBackground(value: number, min: number, max: number) {
     const backgroundValue = ((value - min) / (max - min)) * 100;
     if (slider.current) {
-      slider.current.style.background = `linear-gradient(to right, white 0%, white ${backgroundValue}%, darkslategrey ${backgroundValue}%, darkslategrey 100%)`;
+      slider.current.style.background = `linear-gradient(to right, ${disabled ? "darkslategrey" : "white"} 0%, ${disabled ? "darkslategrey" : "white"} ${backgroundValue}%, darkslategrey ${backgroundValue}%, darkslategrey 100%)`;
     }
   }
 
   const handleMouseDown = (event: React.MouseEvent): void => {
+    if (disabled) return;
     setSpotifyPlayer({ isDragging: true });
   };
 
   const handleMouseUp = (): void => {
+    if (disabled) return;
     const position = Math.round(
       ((spotifyPlayer.progress || 0) / 100) *
         spotifyPlayer.currentTrack.duration_ms
@@ -53,37 +60,73 @@ const SliderUI: FC = () => {
   };
 
   const formatEndPosition = (): string => {
+    if (!spotifyPlayer.currentTrack) {
+      return "-:--";
+    }
+    const durationInSeconds = Math.floor(
+      spotifyPlayer.currentTrack.duration_ms / 1000
+    );
+    const minutes = Math.floor(durationInSeconds / 60);
+    const seconds = Math.floor(durationInSeconds % 60);
+    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+  };
+
+  useEffect(() => {
+    if (!spotifyPlayer.isDragging && spotifyPlayer.currentTrack) {
+      setBackground(spotifyPlayer.progress || 0, 0, 100);
+    }
+  }, [spotifyPlayer.progress, spotifyPlayer.isDragging]);
+
+  useEffect(() => {
     if (
       !spotifyPlayer.currentTrack ||
       typeof spotifyPlayer.position !== "number"
     ) {
-      return "-0:00";
-    }
-
-    const remainingTimeInSeconds = Math.floor(
-      (spotifyPlayer.currentTrack.duration_ms - spotifyPlayer.position) / 1000
-    );
-    const minutes = Math.floor(remainingTimeInSeconds / 60);
-    const seconds = Math.floor(remainingTimeInSeconds % 60);
-    return `-${minutes}:${seconds.toString().padStart(2, "0")}`;
-  };
-
-  // Update the background of the slider
-  useEffect(() => {
-    setBackground(spotifyPlayer.progress || 0, 0, 100);
-  }, [spotifyPlayer.progress]);
-
-  // Update track time displays
-  useEffect(() => {
-    if (!spotifyPlayer.currentTrack) {
       return;
     }
 
     const formattedStartPosition = formatStartPosition();
     const formattedEndPosition = formatEndPosition();
+
     setStartPosition(formattedStartPosition);
     setEndPosition(formattedEndPosition);
   }, [spotifyPlayer.position]);
+
+  if (disabled) {
+    return (
+      <div className='w-full cursor-default relative'>
+        <input
+          type='range'
+          step='0.01'
+          min='0'
+          max='100'
+          value={0}
+          disabled
+          className='w-full appearance-none bg-transparent cursor-not-allowed
+            [&::-webkit-slider-runnable-track]:w-full 
+            [&::-webkit-slider-thumb]:appearance-none 
+            [&::-webkit-slider-thumb]:h-3 
+            [&::-webkit-slider-thumb]:w-3 
+            [&::-webkit-slider-thumb]:rounded-full 
+            [&::-webkit-slider-thumb]:bg-white 
+            [&::-webkit-slider-thumb]:mt-[-4px] 
+            [&::-webkit-slider-runnable-track]:h-1 
+            [&::-webkit-slider-runnable-track]:rounded-full
+            [&::-webkit-slider-runnable-track]:rounded-full
+            [&::-moz-range-track]:w-full
+            [&::-moz-range-track]:rounded-full'
+          style={{
+            background:
+              "linear-gradient(to right, darkslategrey 0%, darkslategrey 100%)",
+          }}
+        />
+        <div className='flex justify-between w-full opacity-55 select-none'>
+          <p className='text-xs font-light text-gray-300'>-:--</p>
+          <p className='text-xs font-light text-gray-300'>-:--</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className='w-full cursor-default relative'>
@@ -93,7 +136,7 @@ const SliderUI: FC = () => {
         step='0.01'
         min='0'
         max='100'
-        value={spotifyPlayer.progress}
+        value={spotifyPlayer.progress || 0}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onInput={handleInput}

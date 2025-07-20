@@ -4,7 +4,6 @@ import com.tunelink.backend.model.*;
 import com.tunelink.backend.service.UserService;
 import com.tunelink.backend.service.OpenAIService;
 import com.tunelink.backend.service.SpotifyService;
-import com.tunelink.backend.exception.UserException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -54,7 +53,7 @@ public class UserController {
         try {
             userService.deleteUser(userId);
             return ResponseEntity.ok().build();
-        } catch (UserException e) {
+        } catch (Exception e) {
             return ResponseEntity.notFound().build();
         }
     }
@@ -77,7 +76,6 @@ public class UserController {
                 offset
             );
 
-            // Update user's recommendations using the new service method
             List<RecommendedTrack> savedTracks = userService.updateRecommendedTracks(user, recommendations);
             
             return ResponseEntity.ok(savedTracks);

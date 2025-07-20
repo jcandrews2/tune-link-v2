@@ -2,7 +2,6 @@ package com.tunelink.backend.service;
 
 import com.tunelink.backend.model.*;
 import com.tunelink.backend.repository.*;
-import com.tunelink.backend.exception.UserException;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -17,6 +16,7 @@ import java.util.stream.Collectors;
 import java.util.Map;
 import java.util.LinkedHashMap;
 import java.util.HashMap;
+import java.util.NoSuchElementException;
 
 @Service
 @Transactional
@@ -77,12 +77,12 @@ public class UserService {
 
     public User updateUser(User user) {
         if (user.getUserId() == null) {
-            throw new UserException("Cannot update user: userId is null.");
+            throw new NoSuchElementException("Cannot update user: userId is null.");
         }
         
         User existingUser = getUserByUserId(user.getUserId());
         if (existingUser == null) {
-            throw new UserException("Cannot update user: user not found with id " + user.getUserId());
+            throw new NoSuchElementException("Cannot update user: user not found with id " + user.getUserId());
         }
         
         user.setId(existingUser.getId());
@@ -92,7 +92,7 @@ public class UserService {
     public void deleteUser(String userId) {
         User user = getUserByUserId(userId);
         if (user == null) {
-            throw new UserException("User not found with id: " + userId);
+            throw new NoSuchElementException("User not found with id: " + userId);
         }
 
         userRepository.delete(user);
@@ -194,7 +194,7 @@ public class UserService {
     public List<Track> getLikedTracks(String userId) {
         User user = getUserByUserId(userId);
         if (user == null) {
-            throw new UserException("User not found with id: " + userId);
+            throw new NoSuchElementException("User not found with id: " + userId);
         }
 
         return likedTrackRepository.findByUser(user)
@@ -212,7 +212,7 @@ public class UserService {
     public List<Track> getDislikedTracks(String userId) {
         User user = getUserByUserId(userId);
         if (user == null) {
-            throw new UserException("User not found with id: " + userId);
+            throw new NoSuchElementException("User not found with id: " + userId);
         }
 
         return dislikedTrackRepository.findByUser(user)
@@ -230,7 +230,7 @@ public class UserService {
     public List<Map<String, String>> getTopArtists(String userId) { 
         User user = getUserByUserId(userId);
         if (user == null) {
-            throw new UserException("User not found with id: " + userId);
+            throw new NoSuchElementException("User not found with id: " + userId);
         }
 
         List<Object[]> topArtists = likedTrackRepository.getTopArtistsByUser(user);

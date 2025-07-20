@@ -1,6 +1,7 @@
 // URLs
-const BASE_URL = "http://localhost:5050";
-const SPOTIFY_API_URL = "https://api.spotify.com/v1";
+const BASE_URL = import.meta.env.BACKEND_URL || "http://localhost:5050";
+const SPOTIFY_API_URL =
+  import.meta.env.SPOTIFY_API_URL || "https://api.spotify.com/v1";
 
 // Endpoint configuration object
 export const endpoints = {
@@ -25,6 +26,8 @@ export const endpoints = {
     seek: (positionMs: number) =>
       `${SPOTIFY_API_URL}/me/player/seek?position_ms=${positionMs}`,
     transfer: `${SPOTIFY_API_URL}/me/player`,
+    transferPlayback: (deviceId: string) =>
+      `${SPOTIFY_API_URL}/me/player?device_ids[]=${deviceId}&play=true`,
   },
   spotify: {
     track: (id: string) => `${SPOTIFY_API_URL}/tracks/${id}`,

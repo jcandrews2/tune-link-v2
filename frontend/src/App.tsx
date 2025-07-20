@@ -18,7 +18,7 @@ import Layout from "./components/Layout";
 import Loading from "./components/Loading";
 
 const App: FC = () => {
-  const { setUser } = useStore();
+  const { setUser, spotifyPlayer } = useStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
@@ -40,13 +40,17 @@ const App: FC = () => {
   }, []);
 
   if (loading) {
-    return <Loading />;
+    return (
+      <div className='flex items-center justify-center h-screen'>
+        <Loading />
+      </div>
+    );
   }
 
   return (
     <Router>
       <Layout>
-        <div className='flex flex-col min-h-screen bg-black'>
+        <div className='flex flex-col min-h-screen'>
           <Navbar />
           <div className='flex-grow text-white p-4'>
             <Routes>

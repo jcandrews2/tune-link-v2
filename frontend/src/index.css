@@ -4,37 +4,18 @@
 @tailwind components;
 @tailwind utilities;
 
-/* Make all elements unselectable */
-* {
-  -webkit-user-select: none;
-  -moz-user-select: none;
-  -ms-user-select: none;
-  user-select: none;
-}
-
 @layer base {
+  * {
+    @apply select-none;
+  }
+
   body {
-    overflow: hidden;
-    height: 100%;
-    margin: 0;
-    @apply font-poppins bg-black;
+    @apply font-poppins bg-black h-full m-0 overflow-hidden;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
   }
 
-  #root {
-    height: 100vh;
-  }
-}
-
-@layer utilities {
-  .animate-morph {
-    animation: morph 15s ease-in-out infinite;
-  }
-  .animate-morph-delay {
-    animation: morph 15s ease-in-out infinite 5s;
-  }
-  .animate-morph-delay-2 {
-    animation: morph 15s ease-in-out infinite 10s;
+  div {
+    @apply scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-transparent hover:scrollbar-thumb-gray-800 scrollbar-track-transparent;
   }
 }

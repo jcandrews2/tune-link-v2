@@ -10,7 +10,8 @@ import type { SpotifyPlayer, User } from "../types";
 export const handleLike = async (
   spotifyPlayer: SpotifyPlayer,
   user: User,
-  setUser: (update: Partial<User>) => void
+  setUser: (update: Partial<User>) => void,
+  setSpotifyPlayer: (update: Partial<SpotifyPlayer>) => void
 ): Promise<void> => {
   console.log("handleLike");
   if (
@@ -23,6 +24,10 @@ export const handleLike = async (
   }
 
   try {
+    setSpotifyPlayer({
+      currentTrack: spotifyPlayer.nextTrack,
+    });
+
     const likedSong = user.recommendedSongs[0];
 
     setUser({

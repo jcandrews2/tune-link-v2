@@ -30,7 +30,7 @@ const ArtistCard: React.FC<ArtistCardProps> = ({
     >
       <div className='flex-1 min-w-0 overflow-hidden'>
         <MarqueeText text={artist.name} className='font-medium' />
-        <p className='text-sm text-gray-400'>#{index + 1}</p>
+        <MarqueeText text={`#${index + 1}`} className='text-sm text-gray-400' />
         {isExpanded && (
           <ExpandedDetails
             itemId={artist.spotifyId}

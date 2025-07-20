@@ -19,14 +19,14 @@ import Loading from "./Loading";
 const to = (i: number) => ({
   x: 0,
   y: 0,
-  scale: 1,
+  scale: i === 1 ? 0.9 : 1,
   rot: 0,
 });
 
 const from = (i: number) => ({
   x: 0,
   y: 0,
-  scale: 1,
+  scale: i === 1 ? 0.9 : 1,
   rot: 0,
 });
 
@@ -47,7 +47,7 @@ const PlayerUI: FC = () => {
     y: 0,
   });
 
-  // Get the first two cards
+  // Get the next two cards
   const cards = user.recommendedSongs.slice(
     0,
     Math.min(2, user.recommendedSongs.length)
@@ -78,40 +78,50 @@ const PlayerUI: FC = () => {
         }
         swipeLock.current = true;
 
-        setSpotifyPlayer({
-          currentTrack: spotifyPlayer.nextTrack,
-        });
-
         if (dir > 0) {
-          handleLike(spotifyPlayer, user, setUser);
+          handleLike(spotifyPlayer, user, setUser, setSpotifyPlayer);
         } else {
           handleDislike(spotifyPlayer, user, setUser);
         }
 
         cancel();
 
+        setCurrentIndex((prev) => prev + 1);
+
         setTimeout(() => {
           swipeLock.current = false;
         }, 300);
 
-        setCurrentIndex((prev) => prev + 1);
         return;
       }
-
       api.start((i) => {
-        if (i !== 0) return;
+        if (i === 0) {
+          const x = down ? mx : 0;
+          const rot = down ? mx / 25 : 0;
 
-        const x = down ? mx : 0;
-        const rot = mx / 100;
+          return {
+            x,
+            rot,
+            config: {
+              friction: 50,
+              tension: down ? 800 : 200,
+            },
+          };
+        }
 
-        return {
-          x,
-          rot,
-          config: {
-            friction: 50,
-            tension: down ? 800 : 200,
-          },
-        };
+        // Scale up the bottom card as top card moves
+        if (i === 1) {
+          const progress = Math.min(Math.abs(mx) / distanceThreshold, 1);
+          const scale = 0.9 + 0.1 * progress;
+
+          return {
+            scale,
+            config: {
+              friction: 50,
+              tension: down ? 800 : 200,
+            },
+          };
+        }
       });
     }
   );
@@ -126,33 +136,35 @@ const PlayerUI: FC = () => {
     }
   }, [location]);
 
-  useEffect(() => {
-    console.log("currentIndex", currentIndex);
-  }, [currentIndex]);
-
-  const renderCard = (i: number) => (
+  const renderCardDetails = (i: number) => (
     <div className='relative select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
       <div className='mx-auto'>
-        <Cover isTopCard={i === 0} />
-        {spotifyPlayer.currentTrack && (
-          <div className='relative py-2 z-10 text-left'>
-            <MarqueeText
-              text={
-                i === 0
-                  ? spotifyPlayer.currentTrack.name
-                  : spotifyPlayer.nextTrack?.name
-              }
-              className='text-xl font-bold text-white h-10'
-            />
-            <MarqueeText
-              text={
-                i === 0
-                  ? spotifyPlayer.currentTrack.artists[0].name
-                  : spotifyPlayer.nextTrack?.artists[0].name
-              }
-              className='font-light text-gray-400 h-6'
-            />
-          </div>
+        {i === 0 ? (
+          spotifyPlayer.currentTrack ? (
+            <>
+              <Cover />
+              <div className='relative py-2 z-10 text-left'>
+                <MarqueeText
+                  text={spotifyPlayer.currentTrack.name}
+                  className='text-xl font-bold text-white h-10'
+                />
+                <MarqueeText
+                  text={spotifyPlayer.currentTrack.artists[0].name}
+                  className='font-light text-gray-400 h-6'
+                />
+              </div>
+            </>
+          ) : (
+            <>
+              <Cover />
+              <div className='h-16 rounded bg-gray-900/50 w-full mt-4'></div>
+            </>
+          )
+        ) : (
+          <>
+            <div className='w-[334px] h-[334px] bg-gray-900/50 rounded-sm flex items-center justify-center'></div>
+            <div className='h-16 rounded bg-gray-900/50 w-full mt-4'></div>
+          </>
         )}
       </div>
       <div
@@ -169,8 +181,7 @@ const PlayerUI: FC = () => {
   const playerContent = (
     <div className='mx-auto select-none relative flex justify-center'>
       <div className='relative w-[400px]'>
-        {cards.map((_, i) => {
-          const { x, y, rot, scale } = props[i];
+        {props.map(({ x, y, rot, scale }, i) => {
           return (
             <animated.div
               key={spotifyPlayer.currentTrack?.spotifyId}
@@ -204,7 +215,7 @@ const PlayerUI: FC = () => {
                   }}
                 />
                 {/* Card content */}
-                <div className='relative z-10'>{renderCard(i)}</div>
+                <div className='relative z-10'>{renderCardDetails(i)}</div>
               </animated.div>
             </animated.div>
           );
@@ -226,7 +237,7 @@ const PlayerUI: FC = () => {
       }}
       className='w-[300px] h-[200px] select-none [&_*]:select-none'
     >
-      <div className='w-full h-full p-4 border border-gray-700 rounded-lg bg-black'>
+      <div className='w-full h-full p-6 border border-gray-700 rounded-lg bg-black'>
         {spotifyPlayer.currentTrack ? (
           <div className='h-full flex flex-col justify-center space-y-2'>
             <div>

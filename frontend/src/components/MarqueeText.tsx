@@ -40,7 +40,7 @@ const MarqueeText: FC<MarqueeTextProps> = ({
   return (
     <div
       ref={containerRef}
-      className={`relative block overflow-hidden w-full flex items-center ${className}`}
+      className={`relative block overflow-hidden w-full min-h-6 ${className}`}
       onClick={onClick}
     >
       <div
@@ -48,7 +48,7 @@ const MarqueeText: FC<MarqueeTextProps> = ({
         style={style}
         className={`${
           shouldAnimate ? "animate-marquee" : "truncate"
-        } inline-block whitespace-nowrap`}
+        } inline-block whitespace-nowrap absolute top-1/2 -translate-y-1/2`}
       >
         {text}
       </div>

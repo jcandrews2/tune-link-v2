@@ -30,16 +30,14 @@ const SongCard: React.FC<SongCardProps> = ({
     >
       <div className='flex-1 min-w-0 overflow-hidden'>
         <MarqueeText text={song.name} className='font-medium' />
-        <div
-          className='text-gray-400 cursor-pointer inline-block hover:text-white hover:border-b hover:border-white'
+        <MarqueeText
+          text={song.artist}
+          className='text-sm text-gray-400 hover:text-white cursor-pointer'
           onClick={(e) => {
             e.stopPropagation();
             onArtistClick(song.artistSpotifyId, song.artist);
           }}
-        >
-          <MarqueeText text={song.artist} className='text-sm' />
-        </div>
-
+        />
         {isExpanded && (
           <ExpandedDetails itemId={song.spotifyId} itemDetails={itemDetails} />
         )}

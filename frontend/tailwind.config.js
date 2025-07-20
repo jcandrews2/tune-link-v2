@@ -14,10 +14,11 @@ export default {
         },
         marquee: {
           "0%, 25%": {
-            transform: "translateX(0%)",
+            transform: "translateY(-50%) translateX(0%)",
           },
           "75%, 100%": {
-            transform: "translateX(calc(-1 * var(--marquee-distance, 20%)))",
+            transform:
+              "translateY(-50%) translateX(calc(-1 * var(--marquee-distance)))",
           },
         },
       },

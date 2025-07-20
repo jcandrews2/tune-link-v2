@@ -17,7 +17,6 @@ spotifyAxios.interceptors.request.use((config: InternalAxiosRequestConfig) => {
   return config;
 });
 
-// Add response interceptor for error handling
 const addErrorInterceptor = (axiosInstance: AxiosInstance) => {
   axiosInstance.interceptors.response.use(
     (response) => response,
@@ -28,6 +27,5 @@ const addErrorInterceptor = (axiosInstance: AxiosInstance) => {
   );
 };
 
-// Add interceptors to both instances
 addErrorInterceptor(userAxios);
 addErrorInterceptor(spotifyAxios);

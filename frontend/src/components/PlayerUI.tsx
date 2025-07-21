@@ -79,7 +79,7 @@ const PlayerUI: FC = () => {
         swipeLock.current = true;
 
         if (dir > 0) {
-          handleLike(spotifyPlayer, user, setUser, setSpotifyPlayer);
+          handleLike(spotifyPlayer, user, setUser);
         } else {
           handleDislike(spotifyPlayer, user, setUser);
         }
@@ -137,7 +137,7 @@ const PlayerUI: FC = () => {
   }, [location]);
 
   const renderCardDetails = (i: number) => (
-    <div className='relative select-none [&_*]:select-none [&_img]:pointer-events-none [&_img]:select-none'>
+    <div className='relative'>
       <div className='mx-auto'>
         {i === 0 ? (
           spotifyPlayer.currentTrack ? (
@@ -170,11 +170,10 @@ const PlayerUI: FC = () => {
       <div
         className={`flex flex-col items-start w-full py-2 slider-container ${i === 1 ? "opacity-50" : ""}`}
       >
-        <SliderUI disabled={i === 1} />
+        <SliderUI disabled={i === 1 || !spotifyPlayer.currentTrack} />
       </div>
-      <div className={i === 1 ? "opacity-50" : ""}>
-        <MediaControls disabled={i === 1 || !spotifyPlayer.currentTrack} />
-      </div>
+
+      <MediaControls disabled={i === 1 || !spotifyPlayer.currentTrack} />
     </div>
   );
 

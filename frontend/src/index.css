@@ -15,6 +15,15 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
+  img {
+    @apply select-none;
+    -webkit-user-drag: none;
+    -khtml-user-drag: none;
+    -moz-user-drag: none;
+    -o-user-drag: none;
+    user-drag: none;
+  }
+
   div {
     @apply scrollbar-thin scrollbar-thumb-gray-900 scrollbar-track-transparent hover:scrollbar-thumb-gray-800 scrollbar-track-transparent;
   }

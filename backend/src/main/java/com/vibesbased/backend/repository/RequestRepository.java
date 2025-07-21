@@ -1,6 +1,6 @@
-package com.tunelink.backend.repository;
+package com.vibesbased.backend.repository;
 
-import com.tunelink.backend.model.Request;
+import com.vibesbased.backend.model.Request;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 

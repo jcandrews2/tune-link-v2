@@ -19,7 +19,7 @@ FROM eclipse-temurin:21-jdk-alpine
 WORKDIR /app
 
 # Copy the packaged jar from the builder stage
-COPY --from=builder /app/target/tune-link-0.0.1-SNAPSHOT.jar app.jar
+COPY --from=builder /app/target/vibesbased-0.0.1-SNAPSHOT.jar app.jar
 
 # Expose port
 EXPOSE 8080

@@ -8,11 +8,11 @@
 		<version>3.2.3</version>
 		<relativePath/> <!-- lookup parent from repository -->
 	</parent>
-	<groupId>com.tunelink</groupId>
-	<artifactId>tune-link</artifactId>
+	<groupId>com.vibesbased</groupId>
+	<artifactId>backend</artifactId>
 	<version>0.0.1-SNAPSHOT</version>
-	<name>tune-link</name>
-	<description>Tune Link Backend</description>
+	<name>backend</name>
+	<description>Backend for VibesBased</description>
 	<url/>
 	<licenses>
 		<license/>

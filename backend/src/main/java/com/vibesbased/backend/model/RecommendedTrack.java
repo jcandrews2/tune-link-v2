@@ -1,4 +1,4 @@
-package com.tunelink.backend.model;
+package com.vibesbased.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;
@@ -10,8 +10,8 @@ import com.fasterxml.jackson.annotation.JsonBackReference;
 @Entity
 @NoArgsConstructor
 @EqualsAndHashCode(callSuper = true)
-@Table(name = "liked_tracks")
-public class LikedTrack extends Track {
+@Table(name = "recommended_tracks")
+public class RecommendedTrack extends Track {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
@@ -21,7 +21,7 @@ public class LikedTrack extends Track {
     @JsonBackReference
     private User user;
 
-    public LikedTrack(String name, String artist, String spotifyId, String artistSpotifyId, String album, User user) {
+    public RecommendedTrack(String name, String artist, String spotifyId, String artistSpotifyId, String album, User user) {
         super(name, artist, spotifyId, artistSpotifyId, album);
         this.user = user;
     }

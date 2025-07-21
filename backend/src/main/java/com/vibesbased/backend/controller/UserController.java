@@ -1,9 +1,9 @@
-package com.tunelink.backend.controller;
+package com.vibesbased.backend.controller;
 
-import com.tunelink.backend.model.*;
-import com.tunelink.backend.service.UserService;
-import com.tunelink.backend.service.OpenAIService;
-import com.tunelink.backend.service.SpotifyService;
+import com.vibesbased.backend.model.*;
+import com.vibesbased.backend.service.UserService;
+import com.vibesbased.backend.service.OpenAIService;
+import com.vibesbased.backend.service.SpotifyService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;

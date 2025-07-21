@@ -1,4 +1,4 @@
-package com.tunelink.backend.model;
+package com.vibesbased.backend.model;
 
 import jakarta.persistence.*;
 import lombok.Data;

@@ -1,3 +1,3 @@
-# Tune Link
+# Vibesbased
 
-## Music Recommendation Platform
+##  Music discovery made easy. Give us the vibe and we'll play you the music.

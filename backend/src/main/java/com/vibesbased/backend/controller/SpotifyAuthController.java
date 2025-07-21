@@ -1,9 +1,9 @@
-package com.tunelink.backend.controller;
+package com.vibesbased.backend.controller;
 
-import com.tunelink.backend.model.User;
-import com.tunelink.backend.service.UserService;
-import com.tunelink.backend.service.SpotifyService;
-import com.tunelink.backend.config.UrlProperties;
+import com.vibesbased.backend.model.User;
+import com.vibesbased.backend.service.UserService;
+import com.vibesbased.backend.service.SpotifyService;
+import com.vibesbased.backend.config.UrlProperties;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
 import org.springframework.web.bind.annotation.*;

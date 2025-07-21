@@ -1,39 +1,39 @@
 services:
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-    ports:
-      - "3000:3000"
-    environment:
-      - BACKEND_URL=http://localhost:5050
-      - SPOTIFY_API_URL=https://api.spotify.com/v1
-    depends_on:
-      - backend
+  # frontend:
+  #   build:
+  #     context: ./frontend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "3000:3000"
+  #   environment:
+  #     - BACKEND_URL=http://localhost:5050
+  #     - SPOTIFY_API_URL=https://api.spotify.com/v1
+  #   depends_on:
+  #     - backend
 
-  backend:
-    build:
-      context: ./backend
-      dockerfile: Dockerfile
-    ports:
-      - "5050"
-    env_file:
-      - .env
-    environment:
-      - DATABASE_URL=jdbc:postgresql://db:5432/tunelink
-      - POSTGRES_USER=tunelink
-      - POSTGRES_PASSWORD=tunelink
-    depends_on:
-      - db
+  # backend:
+  #   build:
+  #     context: ./backend
+  #     dockerfile: Dockerfile
+  #   ports:
+  #     - "5050"
+  #   env_file:
+  #     - .env
+  #   environment:
+  #     - DATABASE_URL=jdbc:postgresql://db:5432/vibesbased
+  #     - POSTGRES_USER=vibesbased
+  #     - POSTGRES_PASSWORD=vibesbased
+  #   depends_on:
+  #     - db
 
   db:
     image: postgres:17-alpine
     ports:
       - "5432:5432"
     environment:
-      - POSTGRES_DB=tunelink
-      - POSTGRES_USER=tunelink
-      - POSTGRES_PASSWORD=tunelink
+      - POSTGRES_DB=vibesbased
+      - POSTGRES_USER=vibesbased
+      - POSTGRES_PASSWORD=vibesbased
     volumes:
       - postgres_data:/var/lib/postgresql/data
     restart: unless-stopped

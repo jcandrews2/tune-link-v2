@@ -1,7 +1,7 @@
-package com.tunelink.backend.repository;
+package com.vibesbased.backend.repository;
 
-import com.tunelink.backend.model.DislikedTrack;
-import com.tunelink.backend.model.User;
+import com.vibesbased.backend.model.DislikedTrack;
+import com.vibesbased.backend.model.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 import java.util.List;

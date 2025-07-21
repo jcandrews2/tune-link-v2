@@ -1,4 +1,4 @@
-package com.tunelink.backend.service;
+package com.vibesbased.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.*;
@@ -14,7 +14,7 @@ import java.util.stream.Collectors;
 import org.json.JSONObject;
 import org.json.JSONArray;
 import org.springframework.web.util.UriComponentsBuilder;
-import com.tunelink.backend.model.Track;
+import com.vibesbased.backend.model.Track;
 import java.util.HashMap;
 
 @Service

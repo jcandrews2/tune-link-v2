@@ -1,7 +1,7 @@
-package com.tunelink.backend.service;
+package com.vibesbased.backend.service;
 
-import com.tunelink.backend.model.*;
-import com.tunelink.backend.repository.*;
+import com.vibesbased.backend.model.*;
+import com.vibesbased.backend.repository.*;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;

@@ -1,4 +1,4 @@
-package com.tunelink.backend.service;
+package com.vibesbased.backend.service;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;

@@ -82,7 +82,7 @@ const RequestsBox: FC = () => {
           disabled={isLoading || !requestText.trim()}
           className='w-full py-2 px-6 bg-white text-black rounded-full
                   disabled:bg-gray-600 disabled:cursor-not-allowed
-                  h-10 flex items-center justify-center'
+                  h-10 flex items-center justify-center active:scale-95'
         >
           {isLoading ? <Loading /> : "Submit"}
         </button>

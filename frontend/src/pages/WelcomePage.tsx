@@ -17,7 +17,7 @@ const WelcomePage: FC = () => {
         </h2>
         <button
           onClick={() => handleLogin()}
-          className='text-white py-4 px-8 rounded-full transition-all duration-300 transform bg-green-600'
+          className='text-white py-4 px-8 rounded-full transition-all duration-300 transform bg-green-600 active:scale-95'
         >
           Connect with Spotify
         </button>

@@ -63,12 +63,12 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
     if (!spotifyPlayer.currentTrack) {
       return "-:--";
     }
-    const durationInSeconds = Math.floor(
-      spotifyPlayer.currentTrack.duration_ms / 1000
-    );
-    const minutes = Math.floor(durationInSeconds / 60);
-    const seconds = Math.floor(durationInSeconds % 60);
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    const remainingTimeMs =
+      spotifyPlayer.currentTrack.duration_ms - (spotifyPlayer.position || 0);
+    const remainingSeconds = Math.floor(remainingTimeMs / 1000);
+    const minutes = Math.floor(remainingSeconds / 60);
+    const seconds = Math.floor(remainingSeconds % 60);
+    return `-${minutes}:${seconds.toString().padStart(2, "0")}`;
   };
 
   useEffect(() => {

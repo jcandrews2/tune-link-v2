@@ -306,8 +306,8 @@ const PlayerUI: FC = () => {
         className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] animate-fadeIn z-0'
         key={spotifyPlayer.animationKey}
         style={{
-          width: "300px",
-          height: "200px",
+          width: "250px",
+          height: "150px",
           zIndex: -1,
           backgroundColor: spotifyPlayer.dominantColor || "transparent",
         }}

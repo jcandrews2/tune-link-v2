@@ -17,7 +17,6 @@ import java.time.Duration;
 
 @RestController
 @RequestMapping("/auth")
-@CrossOrigin(origins = "${spring.web.cors.allowed-origins}")
 public class SpotifyAuthController {
     private static final Logger logger = LoggerFactory.getLogger(SpotifyAuthController.class);
 

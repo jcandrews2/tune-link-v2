@@ -16,13 +16,14 @@ import org.json.JSONArray;
 import org.springframework.web.util.UriComponentsBuilder;
 import com.vibesbased.backend.model.Track;
 import java.util.HashMap;
+import com.vibesbased.backend.config.UrlProperties;
 
 @Service
 public class SpotifyService {
     private static final Logger logger = LoggerFactory.getLogger(SpotifyService.class);
-    private static final String spotify_token_url = "https://accounts.spotify.com/api/token";
     
     private final RestTemplate restTemplate;
+    private final UrlProperties urlProperties;
 
     @Value("${SPOTIFY_CLIENT_ID}")
     private String clientId;
@@ -30,13 +31,11 @@ public class SpotifyService {
     @Value("${SPOTIFY_CLIENT_SECRET}")
     private String clientSecret;
 
-    private final String redirectUri = "http://localhost:5050/auth/callback";
-
-    public SpotifyService(RestTemplate restTemplate) {
+    public SpotifyService(RestTemplate restTemplate, UrlProperties urlProperties) {
         this.restTemplate = restTemplate;
+        this.urlProperties = urlProperties;
     }
 
-    // Goes to Spotify to exchange the authorization code for an access token
     public Map<String, Object> exchangeCodeForToken(String code) {
         // Create auth header
         String credentials = clientId + ":" + clientSecret;
@@ -50,13 +49,13 @@ public class SpotifyService {
         // Set up body parameters
         String requestBody = String.format(
             "code=%s&redirect_uri=%s&grant_type=authorization_code",
-            code, redirectUri
+            code, urlProperties.getSpotifyAuthRedirect()
         );
 
         // Make request to Spotify
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
         ResponseEntity<Map> response = restTemplate.exchange(
-            spotify_token_url,
+            urlProperties.getSpotifyAuthBase() + "/api/token",
             HttpMethod.POST,
             request,
             Map.class
@@ -69,7 +68,7 @@ public class SpotifyService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
         ResponseEntity<Map> userResponse = restTemplate.exchange(
-            "https://api.spotify.com/v1/me",
+            urlProperties.getSpotifyApiBase() + "/me",
             HttpMethod.GET,
             new HttpEntity<>(headers),
             Map.class
@@ -81,7 +80,7 @@ public class SpotifyService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.spotify.com/v1/search");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlProperties.getSpotifyApiBase() + "/search");
         builder.queryParam("q", q_string);
         builder.queryParam("type", "track");
         builder.queryParam("limit", 20);
@@ -131,7 +130,7 @@ public class SpotifyService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl("https://api.spotify.com/v1/search");
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlProperties.getSpotifyApiBase() + "/search");
         builder.queryParam("q", artistName);
         builder.queryParam("type", "artist");
         builder.queryParam("limit", 1);

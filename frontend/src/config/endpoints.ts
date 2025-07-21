@@ -1,5 +1,5 @@
 // URLs
-const BASE_URL = import.meta.env.BACKEND_URL || "http://localhost:5050";
+const BASE_URL = import.meta.env.VITE_BACKEND_URL || "http://localhost:5050";
 const SPOTIFY_API_URL =
   import.meta.env.SPOTIFY_API_URL || "https://api.spotify.com/v1";
 

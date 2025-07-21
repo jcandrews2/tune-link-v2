@@ -9,8 +9,8 @@ public class UrlProperties {
     private String frontendBase;
     private String spotifyAuthBase;
     private String spotifyAuthRedirect;
+    private String spotifyApiBase;
 
-    // Getters and setters
     public String getFrontendBase() {
         return frontendBase;
     }
@@ -33,5 +33,13 @@ public class UrlProperties {
 
     public void setSpotifyAuthRedirect(String spotifyAuthRedirect) {
         this.spotifyAuthRedirect = spotifyAuthRedirect;
+    }
+
+    public String getSpotifyApiBase() {
+        return spotifyApiBase;
+    }
+
+    public void setSpotifyApiBase(String spotifyApiBase) {
+        this.spotifyApiBase = spotifyApiBase;
     }
 } 

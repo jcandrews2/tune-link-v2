@@ -46,18 +46,21 @@ export const getAverageRGB = (imgEl: HTMLImageElement): RGB => {
 };
 
 /**
- * Get the dominant color from the current cover image
+ * Get the dominant color from an image URL
  */
-export const getDominantColor = async (): Promise<string | null> => {
-  const img = document.querySelector('img[alt="Cover"]') as HTMLImageElement;
-  if (!img) return null;
+export const getDominantColor = async (
+  imageUrl: string
+): Promise<string | null> => {
+  return new Promise((resolve) => {
+    const img = new Image();
+    img.crossOrigin = "Anonymous";
 
-  img.crossOrigin = "Anonymous";
+    img.onload = () => {
+      const rgb = getAverageRGB(img);
+      resolve(`rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`);
+    };
 
-  if (img.naturalWidth > 0 && img.naturalHeight > 0) {
-    const rgb = getAverageRGB(img);
-    return `rgb(${rgb.r}, ${rgb.g}, ${rgb.b})`;
-  }
-
-  return null;
+    img.onerror = () => resolve(null);
+    img.src = imageUrl;
+  });
 };

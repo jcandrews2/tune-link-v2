@@ -1,6 +1,5 @@
 import React, { useEffect, useState, FC, useRef } from "react";
 import { createPortal } from "react-dom";
-import Cover from "./Cover";
 import SliderUI from "./SliderUI";
 import MediaControls from "./MediaControls";
 import useStore from "../store";
@@ -15,6 +14,7 @@ import { handleLike, handleDislike } from "../utils/userUtils";
 import { useLocation } from "react-router-dom";
 import MarqueeText from "./MarqueeText";
 import Loading from "./Loading";
+import { getDominantColor } from "../utils/playerUtils";
 
 const to = (i: number) => ({
   x: 0,
@@ -136,13 +136,53 @@ const PlayerUI: FC = () => {
     }
   }, [location]);
 
+  useEffect(() => {
+    const updateColor = async () => {
+      if (spotifyPlayer.currentTrack) {
+        const imageUrl = spotifyPlayer.currentTrack.album.images[0].url;
+        const color = await getDominantColor(imageUrl);
+        setSpotifyPlayer({
+          dominantColor: color || undefined,
+          animationKey: (spotifyPlayer.animationKey ?? 0) + 1,
+        });
+      }
+    };
+    updateColor();
+  }, [spotifyPlayer.currentTrack?.id]);
+
+  const renderCover = () => (
+    <div className='relative w-full aspect-square z-0 select-none'>
+      {spotifyPlayer.isActive ? (
+        <>
+          <img
+            src={spotifyPlayer.currentTrack?.album.images[0].url}
+            className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm w-full h-full'
+            alt='Cover'
+            id='album-cover'
+          />
+          <div
+            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm blur-[50px] animate-fadeIn w-full h-full'
+            key={spotifyPlayer.animationKey}
+            style={{
+              backgroundColor: spotifyPlayer.dominantColor || "transparent",
+            }}
+          />
+        </>
+      ) : (
+        <div className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm bg-gray-900/50 w-full h-full'>
+          <Loading />
+        </div>
+      )}
+    </div>
+  );
+
   const renderCardDetails = (i: number) => (
     <div className='relative'>
       <div className='mx-auto'>
         {i === 0 ? (
           spotifyPlayer.currentTrack ? (
             <>
-              <Cover />
+              {renderCover()}
               <div className='relative py-2 z-10 text-left'>
                 <MarqueeText
                   text={spotifyPlayer.currentTrack.name}
@@ -156,7 +196,7 @@ const PlayerUI: FC = () => {
             </>
           ) : (
             <>
-              <Cover />
+              {renderCover()}
               <div className='h-16 rounded bg-gray-900/50 w-full mt-4'></div>
             </>
           )
@@ -199,7 +239,7 @@ const PlayerUI: FC = () => {
                 }}
                 className='border border-gray-700 rounded-lg p-8 cursor-grab bg-black active:cursor-grabbing select-none relative'
               >
-                {/* Glow overlay */}
+                {/* Green or red overlay */}
                 <animated.div
                   className='absolute inset-0 pointer-events-none rounded-lg'
                   key={spotifyPlayer.animationKey}
@@ -234,7 +274,7 @@ const PlayerUI: FC = () => {
         touchAction: "none",
         zIndex: 50,
       }}
-      className='w-[300px] h-[200px] select-none [&_*]:select-none'
+      className='w-[300px] h-[200px]'
     >
       <div className='w-full h-full p-6 border border-gray-700 rounded-lg bg-black'>
         {spotifyPlayer.currentTrack ? (
@@ -263,11 +303,11 @@ const PlayerUI: FC = () => {
         )}
       </div>
       <div
-        className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] fade-in z-0'
+        className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] animate-fadeIn z-0'
         key={spotifyPlayer.animationKey}
         style={{
-          width: "250px",
-          height: "60%",
+          width: "300px",
+          height: "200px",
           zIndex: -1,
           backgroundColor: spotifyPlayer.dominantColor || "transparent",
         }}

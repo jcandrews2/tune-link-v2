@@ -60,7 +60,7 @@ const Card: FC<CardProps> = ({
       // Reset lock after animation completes
       setTimeout(() => {
         swipeLocked.current = false;
-      }, 1000);
+      }, 1500);
     }
   };
 
@@ -162,13 +162,16 @@ const Card: FC<CardProps> = ({
         left: 0,
         right: 0,
       }}
+      dragElastic={0.7}
+      dragMomentum={false}
       onDragEnd={handleDragEnd}
       transition={{
         type: "spring",
-        stiffness: 300,
-        damping: 20,
+        stiffness: 400,
+        damping: 25,
+        mass: 0.8,
         scale: {
-          duration: 0.2,
+          duration: 0.15,
           ease: "easeOut",
         },
       }}
@@ -209,6 +212,10 @@ const PlayerUI: FC = () => {
   }, [location]);
 
   useEffect(() => {
+    console.log(currentIndex);
+  }, [currentIndex]);
+
+  useEffect(() => {
     const updateColor = async () => {
       if (spotifyPlayer.currentTrack) {
         const imageUrl = spotifyPlayer.currentTrack.album.images[0].url;
@@ -234,16 +241,18 @@ const PlayerUI: FC = () => {
   const playerContent = (
     <div className='mx-auto select-none relative flex justify-center'>
       <div className='relative w-[400px]'>
-        {cards.slice(currentIndex, currentIndex + 2).map((_, i) => (
-          <Card
-            key={`card-${currentIndex + i}`}
-            index={i}
-            isActive={i === 0}
-            currentTrack={i === 0 ? spotifyPlayer.currentTrack : null}
-            onSwipe={handleSwipe}
-            animationKey={spotifyPlayer.animationKey ?? 0}
-          />
-        ))}
+        {cards
+          .slice(0, Math.min(currentIndex + 2, cards.length))
+          .map((_, i) => (
+            <Card
+              key={`card-${currentIndex + i}`}
+              index={i}
+              isActive={i === 0}
+              currentTrack={i === 0 ? spotifyPlayer.currentTrack : null}
+              onSwipe={handleSwipe}
+              animationKey={spotifyPlayer.animationKey ?? 0}
+            />
+          ))}
       </div>
     </div>
   );

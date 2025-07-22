@@ -18,7 +18,7 @@ import Layout from "./components/Layout";
 import Loading from "./components/Loading";
 
 const App: FC = () => {
-  const { setUser, spotifyPlayer } = useStore();
+  const { setUser } = useStore();
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {

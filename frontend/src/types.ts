@@ -54,6 +54,16 @@ export interface SpotifyPlayer {
   animationKey?: number;
 }
 
+export interface Track {
+  id: string;
+  name: string;
+  artists: { name: string }[];
+  album: {
+    images: { url: string }[];
+  };
+  dominantColor?: string;
+}
+
 export interface Store {
   user: User;
   setUser: (updatedUser: Partial<User>) => void;

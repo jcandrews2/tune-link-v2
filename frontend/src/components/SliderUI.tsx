@@ -23,14 +23,17 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
     });
   }
 
-  function setBackground(value: number, min: number, max: number) {
+  const setBackground = (value: number, min: number, max: number) => {
     const backgroundValue = ((value - min) / (max - min)) * 100;
     if (slider.current) {
-      slider.current.style.background = `linear-gradient(to right, ${disabled ? "darkslategrey" : "white"} 0%, ${disabled ? "darkslategrey" : "white"} ${backgroundValue}%, darkslategrey ${backgroundValue}%, darkslategrey 100%)`;
+      slider.current.style.background = `linear-gradient(to right, ${
+        disabled ? "#111827" : "white"
+      } 0%, ${disabled ? "#111827" : "white"} ${backgroundValue}%,
+      #111827 ${backgroundValue}%, #111827 100%)`;
     }
-  }
+  };
 
-  const handleMouseDown = (event: React.MouseEvent): void => {
+  const handleMouseDown = (): void => {
     if (disabled) return;
     setSpotifyPlayer({ isDragging: true });
   };
@@ -45,35 +48,34 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
     setTrackPosition(position);
     setSpotifyPlayer({
       isDragging: false,
-      position: position,
+      position,
     });
   };
 
   const formatStartPosition = (): string => {
-    if (typeof spotifyPlayer.position !== "number") {
-      return "-:--";
-    }
-    const positionInSeconds = Math.floor(spotifyPlayer.position / 1000);
-    const minutes = Math.floor(positionInSeconds / 60);
-    const seconds = Math.floor(positionInSeconds % 60);
-    return `${minutes}:${seconds.toString().padStart(2, "0")}`;
+    if (typeof spotifyPlayer.position !== "number") return "-:--";
+    const seconds = Math.floor(spotifyPlayer.position / 1000);
+    const minutes = Math.floor(seconds / 60);
+    return `${minutes}:${(seconds % 60).toString().padStart(2, "0")}`;
   };
 
   const formatEndPosition = (): string => {
-    if (!spotifyPlayer.currentTrack) {
-      return "-:--";
-    }
-    const remainingTimeMs =
+    if (!spotifyPlayer.currentTrack) return "-:--";
+    const remainingMs =
       spotifyPlayer.currentTrack.duration_ms - (spotifyPlayer.position || 0);
-    const remainingSeconds = Math.floor(remainingTimeMs / 1000);
-    const minutes = Math.floor(remainingSeconds / 60);
-    const seconds = Math.floor(remainingSeconds % 60);
-    return `-${minutes}:${seconds.toString().padStart(2, "0")}`;
+    const seconds = Math.floor(remainingMs / 1000);
+    const minutes = Math.floor(seconds / 60);
+    return `-${minutes}:${(seconds % 60).toString().padStart(2, "0")}`;
   };
 
   useEffect(() => {
-    setBackground(spotifyPlayer.progress || 0, 0, 100);
-  }, [spotifyPlayer.progress, spotifyPlayer.isDragging]);
+    if (
+      !spotifyPlayer.currentTrack?.duration_ms ||
+      typeof spotifyPlayer.progress !== "number"
+    )
+      return;
+    setBackground(spotifyPlayer.progress, 0, 100);
+  }, [spotifyPlayer.progress, spotifyPlayer.currentTrack?.duration_ms]);
 
   useEffect(() => {
     if (
@@ -82,49 +84,24 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
     ) {
       return;
     }
+    setStartPosition(formatStartPosition());
+    setEndPosition(formatEndPosition());
+  }, [spotifyPlayer.position, spotifyPlayer.currentTrack?.id]);
 
-    const formattedStartPosition = formatStartPosition();
-    const formattedEndPosition = formatEndPosition();
-
-    setStartPosition(formattedStartPosition);
-    setEndPosition(formattedEndPosition);
-  }, [spotifyPlayer.position]);
-
-  if (disabled) {
-    return (
-      <div className='w-full cursor-default relative'>
-        <input
-          type='range'
-          step='0.01'
-          min='0'
-          max='100'
-          value={0}
-          disabled
-          className='w-full appearance-none bg-transparent cursor-not-allowed
-            [&::-webkit-slider-runnable-track]:w-full 
-            [&::-webkit-slider-thumb]:appearance-none 
-            [&::-webkit-slider-thumb]:h-3 
-            [&::-webkit-slider-thumb]:w-3 
-            [&::-webkit-slider-thumb]:rounded-full 
-            [&::-webkit-slider-thumb]:bg-white 
-            [&::-webkit-slider-thumb]:mt-[-4px] 
-            [&::-webkit-slider-runnable-track]:h-1 
-            [&::-webkit-slider-runnable-track]:rounded-full
-            [&::-webkit-slider-runnable-track]:rounded-full
-            [&::-moz-range-track]:w-full
-            [&::-moz-range-track]:rounded-full'
-          style={{
-            background:
-              "linear-gradient(to right, darkslategrey 0%, darkslategrey 100%)",
-          }}
-        />
-        <div className='flex justify-between w-full opacity-55 select-none'>
-          <p className='text-xs font-light text-gray-300'>-:--</p>
-          <p className='text-xs font-light text-gray-300'>-:--</p>
-        </div>
-      </div>
-    );
-  }
+  const sliderBaseClasses = `
+    w-full appearance-none bg-transparent
+    [&::-webkit-slider-runnable-track]:w-full 
+    [&::-webkit-slider-thumb]:appearance-none 
+    [&::-webkit-slider-thumb]:h-3 
+    [&::-webkit-slider-thumb]:w-3 
+    [&::-webkit-slider-thumb]:rounded-full 
+    [&::-webkit-slider-thumb]:bg-white 
+    [&::-webkit-slider-thumb]:mt-[-4px] 
+    [&::-webkit-slider-runnable-track]:h-1 
+    [&::-webkit-slider-runnable-track]:rounded-full 
+    [&::-moz-range-track]:w-full 
+    [&::-moz-range-track]:rounded-full
+  `;
 
   return (
     <div className='w-full cursor-default relative'>
@@ -134,27 +111,27 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
         step='0.01'
         min='0'
         max='100'
-        value={spotifyPlayer.progress || 0}
+        value={disabled ? 0 : spotifyPlayer.progress || 0}
         onMouseDown={handleMouseDown}
         onMouseUp={handleMouseUp}
         onInput={handleInput}
-        className='w-full appearance-none bg-transparent cursor-pointer
-          [&::-webkit-slider-runnable-track]:w-full 
-          [&::-webkit-slider-thumb]:appearance-none 
-          [&::-webkit-slider-thumb]:h-3 
-          [&::-webkit-slider-thumb]:w-3 
-          [&::-webkit-slider-thumb]:rounded-full 
-          [&::-webkit-slider-thumb]:bg-white 
-          [&::-webkit-slider-thumb]:mt-[-4px] 
-          [&::-webkit-slider-runnable-track]:h-1 
-          [&::-webkit-slider-runnable-track]:rounded-full
-          [&::-webkit-slider-runnable-track]:rounded-full
-          [&::-moz-range-track]:w-full
-          [&::-moz-range-track]:rounded-full'
+        disabled={disabled}
+        className={`${sliderBaseClasses} ${
+          disabled ? "cursor-not-allowed" : "cursor-pointer"
+        }`}
+        style={{
+          background: disabled
+            ? "linear-gradient(to right, #111827 0%, #111827 100%)"
+            : "linear-gradient(to right, white 0%, #111827 0%, #111827 100%)", // fallback
+        }}
       />
       <div className='flex justify-between w-full opacity-55 select-none'>
-        <p className='text-xs font-light text-gray-300'>{startPosition}</p>
-        <p className='text-xs font-light text-gray-300'>{endPosition}</p>
+        <p className='text-xs font-light text-gray-300'>
+          {disabled ? "-:--" : startPosition}
+        </p>
+        <p className='text-xs font-light text-gray-300'>
+          {disabled ? "-:--" : endPosition}
+        </p>
       </div>
     </div>
   );

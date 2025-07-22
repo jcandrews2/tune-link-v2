@@ -5,6 +5,7 @@ import DislikeIcon from "../images/dislike.png";
 import PlayIcon from "../images/play.png";
 import PauseIcon from "../images/pause.png";
 import { handleLike, handleDislike } from "../utils/userUtils";
+import VolumeControl from "./VolumeControl";
 
 interface MediaControlsProps {
   disabled?: boolean;
@@ -48,46 +49,52 @@ const MediaControls: FC<MediaControlsProps> = ({ disabled = false }) => {
   const imageClasses = `w-full h-auto transform ${disabled ? "" : "active:scale-95"}`;
 
   return (
-    <div className='z-0 flex items-center justify-center w-full'>
-      <button
-        onClick={onDislike}
-        className={buttonClasses}
-        data-testid='dislike-button'
-        disabled={disabled}
-      >
-        <img
-          src={DislikeIcon}
-          alt='Dislike'
-          className={`${imageClasses} max-w-10`}
-        />
-      </button>
-      <button
-        className={buttonClasses}
-        onClick={togglePlayback}
-        disabled={disabled}
-      >
-        {!spotifyPlayer.isPaused ? (
+    <div className='container mx-auto'>
+      <div className='z-0 flex items-center justify-center w-full'>
+        <button
+          onClick={onDislike}
+          className={buttonClasses}
+          data-testid='dislike-button'
+          disabled={disabled}
+        >
           <img
-            src={PauseIcon}
-            alt='Pause'
-            className={`${imageClasses} max-w-24 px-4`}
+            src={DislikeIcon}
+            alt='Dislike'
+            className={`${imageClasses} max-w-10`}
           />
-        ) : (
+        </button>
+        <button
+          className={buttonClasses}
+          onClick={togglePlayback}
+          disabled={disabled}
+        >
+          {!spotifyPlayer.isPaused ? (
+            <img
+              src={PauseIcon}
+              alt='Pause'
+              className={`${imageClasses} max-w-24 px-4`}
+            />
+          ) : (
+            <img
+              src={PlayIcon}
+              alt='Play'
+              className={`${imageClasses} max-w-24 px-4`}
+            />
+          )}
+        </button>
+        <button
+          onClick={onLike}
+          className={buttonClasses}
+          data-testid='like-button'
+          disabled={disabled}
+        >
           <img
-            src={PlayIcon}
-            alt='Play'
-            className={`${imageClasses} max-w-24 px-4`}
+            src={LikeIcon}
+            alt='Like'
+            className={`${imageClasses} max-w-10`}
           />
-        )}
-      </button>
-      <button
-        onClick={onLike}
-        className={buttonClasses}
-        data-testid='like-button'
-        disabled={disabled}
-      >
-        <img src={LikeIcon} alt='Like' className={`${imageClasses} max-w-10`} />
-      </button>
+        </button>
+      </div>
     </div>
   );
 };

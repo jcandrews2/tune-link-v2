@@ -41,7 +41,7 @@ const ProfilePage: FC = () => {
         <div id='mini-player-portal' className='w-1/3 mx-auto'>
           <div className='w-full h-[600px] flex flex-col items-center gap-8 p-8'>
             <div
-              className={`w-68 h-auto rounded-full ${!user.profilePicture ? "border border-gray-700" : ""}`}
+              className={`w-68 h-auto rounded-full ${!user.profilePicture ? "border border-white border-[1px]" : ""}`}
             >
               {user.profilePicture ? (
                 <img

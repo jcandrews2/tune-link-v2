@@ -36,30 +36,33 @@ const ProfilePage: FC = () => {
   };
 
   return (
-    <div
-      id='mini-player-portal'
-      className='flex flex-col items-center justify-center h-full gap-8'
-    >
-      <div
-        className={`w-68 h-auto rounded-full ${!user.profilePicture ? "border border-gray-700" : ""}`}
-      >
-        {user.profilePicture ? (
-          <img
-            className='w-full h-full rounded-full object-cover'
-            src={user.profilePicture}
-            alt='Profile Picture'
-          />
-        ) : (
-          <FiUser className='w-full h-full p-8' />
-        )}
+    <div className='flex flex-col flex-grow'>
+      <div className='flex gap-4 container mx-auto relative'>
+        <div id='mini-player-portal' className='w-1/3 mx-auto'>
+          <div className='w-full h-[600px] flex flex-col items-center gap-8 p-8'>
+            <div
+              className={`w-68 h-auto rounded-full ${!user.profilePicture ? "border border-gray-700" : ""}`}
+            >
+              {user.profilePicture ? (
+                <img
+                  className='w-full h-full rounded-full object-cover'
+                  src={user.profilePicture}
+                  alt='Profile Picture'
+                />
+              ) : (
+                <FiUser className='w-full h-full p-8' />
+              )}
+            </div>
+            <h1 className='text-2xl font-bold'>{user.userId}</h1>
+            <button
+              className='bg-white px-4 py-2 rounded-full text-black active:scale-95'
+              onClick={logout}
+            >
+              Logout
+            </button>
+          </div>
+        </div>
       </div>
-      <h1 className='text-2xl font-bold'>{user.userId}</h1>
-      <button
-        className='bg-white px-4 py-2 rounded-full text-black active:scale-95'
-        onClick={logout}
-      >
-        Logout
-      </button>
     </div>
   );
 };

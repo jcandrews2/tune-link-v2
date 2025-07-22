@@ -117,12 +117,12 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
         onInput={handleInput}
         disabled={disabled}
         className={`${sliderBaseClasses} ${
-          disabled ? "cursor-not-allowed" : "cursor-pointer"
+          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         }`}
         style={{
           background: disabled
             ? "linear-gradient(to right, #111827 0%, #111827 100%)"
-            : "linear-gradient(to right, white 0%, #111827 0%, #111827 100%)", // fallback
+            : "linear-gradient(to right, white 0%, #111827 0%, #111827 100%)",
         }}
       />
       <div className='flex justify-between w-full opacity-55 select-none'>

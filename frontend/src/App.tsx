@@ -52,7 +52,7 @@ const App: FC = () => {
       <Layout>
         <div className='flex flex-col min-h-screen'>
           <Navbar />
-          <div className='flex-grow text-white p-4'>
+          <div className='flex-grow text-white p-4 flex flex-col'>
             <Routes>
               <Route path='/welcome' element={<WelcomePage />} />
               <Route

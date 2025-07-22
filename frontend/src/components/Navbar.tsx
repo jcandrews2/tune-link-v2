@@ -63,10 +63,10 @@ const Navbar: FC = () => {
                   className={`
                     ${
                       isActive("/profile")
-                        ? "text-white"
-                        : "text-gray-700 hover:text-white"
+                        ? "text-white ring-1 ring-white"
+                        : "text-gray-700"
                     } 
-                     hover:outline hover:outline-gray-700 w-12 h-12 p-2 rounded-lg transition-colors duration-200`}
+                      hover:bg-gray-900 w-12 h-12 p-2 rounded-lg transition-colors duration-200`}
                 >
                   {user?.profilePicture ? (
                     <img

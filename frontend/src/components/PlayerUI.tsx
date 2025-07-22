@@ -9,7 +9,7 @@ import MarqueeText from "./MarqueeText";
 import Loading from "./Loading";
 import { getDominantColor } from "../utils/playerUtils";
 import { handleLike, handleDislike } from "../utils/userUtils";
-import { Track } from "../types";
+import { Track, SpotifyPlayer } from "../types";
 
 interface CardProps {
   index: number;
@@ -18,6 +18,7 @@ interface CardProps {
   onSwipe: (direction: number) => void;
   animationKey: number;
   disabled?: boolean;
+  spotifyPlayer: SpotifyPlayer;
 }
 
 const Card: FC<CardProps> = ({
@@ -27,6 +28,7 @@ const Card: FC<CardProps> = ({
   onSwipe,
   animationKey,
   disabled,
+  spotifyPlayer,
 }) => {
   const x = useMotionValue(0);
   const rotate = useTransform(
@@ -68,19 +70,20 @@ const Card: FC<CardProps> = ({
     <div className='relative w-full aspect-square z-0 select-none'>
       {currentTrack ? (
         <>
+          <div
+            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm blur-[50px] animate-fadeIn w-full h-full z-0'
+            key={animationKey}
+            style={{
+              backgroundColor: spotifyPlayer.dominantColor || "transparent",
+              animationDuration: "2s",
+            }}
+          />
           <img
             src={currentTrack.album.images[0].url}
             className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm w-full h-full animate-fadeIn'
             alt='Cover'
             id='album-cover'
             key={`cover-${currentTrack.id}-${animationKey}`}
-          />
-          <div
-            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm blur-[50px] animate-fadeIn w-full h-full'
-            key={animationKey}
-            style={{
-              backgroundColor: currentTrack.dominantColor || "transparent",
-            }}
           />
         </>
       ) : (
@@ -251,9 +254,60 @@ const PlayerUI: FC = () => {
               currentTrack={i === 0 ? spotifyPlayer.currentTrack : null}
               onSwipe={handleSwipe}
               animationKey={spotifyPlayer.animationKey ?? 0}
+              spotifyPlayer={spotifyPlayer}
             />
           ))}
       </div>
+    </div>
+  );
+
+  const miniPlayerContent = (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        bottom: 0,
+        touchAction: "none",
+        zIndex: 50,
+      }}
+      className='w-[300px] h-[200px] select-none [&_*]:select-none'
+    >
+      <div className='w-full h-full p-6 border border-gray-700 rounded-lg bg-black'>
+        {spotifyPlayer.currentTrack ? (
+          <div className='h-full flex flex-col justify-center space-y-2'>
+            <div>
+              <MarqueeText
+                text={spotifyPlayer.currentTrack.name}
+                className='text-md font-bold text-white'
+              />
+              <MarqueeText
+                text={spotifyPlayer.currentTrack.artists[0].name}
+                className='font-light text-gray-300'
+              />
+            </div>
+            <div className='w-full slider-container'>
+              <SliderUI />
+            </div>
+            <div className='w-full'>
+              <MediaControls disabled={!spotifyPlayer.currentTrack} />
+            </div>
+          </div>
+        ) : (
+          <div className='flex items-center justify-center h-full'>
+            <Loading />
+          </div>
+        )}
+      </div>
+      <div
+        className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] z-0 animate-fadeIn'
+        key={spotifyPlayer.animationKey}
+        style={{
+          width: "250px",
+          height: "150px",
+          zIndex: -1,
+          backgroundColor: spotifyPlayer.dominantColor || "transparent",
+        }}
+      />
     </div>
   );
 
@@ -269,6 +323,7 @@ const PlayerUI: FC = () => {
                 onSwipe={() => {}}
                 animationKey={0}
                 disabled={true}
+                spotifyPlayer={spotifyPlayer}
               />
             </div>
           </div>,
@@ -279,11 +334,7 @@ const PlayerUI: FC = () => {
 
   return portalContainer
     ? createPortal(
-        isHomePage ? (
-          playerContent
-        ) : (
-          <div>Mini player temporarily disabled</div>
-        ),
+        isHomePage ? playerContent : miniPlayerContent,
         portalContainer
       )
     : null;

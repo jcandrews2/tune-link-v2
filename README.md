@@ -6,7 +6,6 @@
 [![Stargazers][stars-shield]][stars-url]
 [![Issues][issues-shield]][issues-url]
 [![MIT License][license-shield]][license-url]
-[![LinkedIn][linkedin-shield]][linkedin-url]
 
 <!-- PROJECT LOGO -->
 <br />
@@ -193,8 +192,5 @@ npm start</code></pre>
 
 [license-shield]: https://img.shields.io/github/license/jcandrews2/vibesbased.svg?style=for-the-badge
 [license-url]: https://github.com/jcandrews2/vibesbased/blob/main/LICENSE
-
-[linkedin-shield]: https://img.shields.io/badge/-LinkedIn-black.svg?style=for-the-badge&logo=linkedin&colorB=555
-[linkedin-url]: https://linkedin.com/in/jcandrews2
 
 [product-screenshot]: images/vibesbased-front-page.jpg

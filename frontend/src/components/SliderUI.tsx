@@ -126,10 +126,10 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
         }}
       />
       <div className='flex justify-between w-full opacity-55 select-none'>
-        <p className='text-xs font-light text-gray-300'>
+        <p className='text-xs font-light text-gray-400'>
           {disabled ? "-:--" : startPosition}
         </p>
-        <p className='text-xs font-light text-gray-300'>
+        <p className='text-xs font-light text-gray-400'>
           {disabled ? "-:--" : endPosition}
         </p>
       </div>

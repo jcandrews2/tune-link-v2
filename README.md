@@ -110,47 +110,58 @@ The project is an attempt to offer a more intuitive and mood-aware way to explor
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-
-
 <!-- GETTING STARTED -->
-## Getting Started
+<h2>Getting Started</h2>
 
-This is an example of how you may give instructions on setting up your project locally.
-To get a local copy up and running follow these simple example steps.
+<p>Follow these steps to set up and run <strong>Vibesbased</strong> locally for development.</p>
 
-### Prerequisites
+<h3>Prerequisites</h3>
+<ul>
+  <li><a href="https://nodejs.org/" target="_blank" rel="noopener noreferrer">Node.js</a> (v16 or later) and npm</li>
+  <li><a href="https://adoptium.net/" target="_blank" rel="noopener noreferrer">Java JDK</a> (version 11 or later)</li>
+  <li>PostgreSQL database (locally installed or accessible remotely)</li>
+</ul>
 
-This is an example of how to list things you need to use the software and how to install them.
-* npm
-  ```sh
-  npm install npm@latest -g
-  ```
-
-### Installation
-
-_Below is an example of how you can instruct your audience on installing and setting up your app. This template doesn't rely on any external dependencies or services._
-
-1. Get a free API Key at [https://example.com](https://example.com)
-2. Clone the repo
-   ```sh
-   git clone https://github.com/github_username/repo_name.git
-   ```
-3. Install NPM packages
-   ```sh
-   npm install
-   ```
-4. Enter your API in `config.js`
-   ```js
-   const API_KEY = 'ENTER YOUR API';
-   ```
-5. Change git remote url to avoid accidental pushes to base project
-   ```sh
-   git remote set-url origin github_username/repo_name
-   git remote -v # confirm the changes
-   ```
+<h3>Installation & Setup</h3>
+<ol>
+  <li>
+    Clone the repository<br />
+    <pre><code>git clone https://github.com/jcandrews2/vibesbased.git
+cd vibesbased</code></pre>
+  </li>
+  <li>
+    Configure environment variables<br />
+    Create a <code>.env</code> file inside the backend directory (<code>/backend</code>) with your API keys and database connection string:<br />
+    <pre><code>SPOTIFY_CLIENT_ID=your_spotify_client_id
+SPOTIFY_CLIENT_SECRET=your_spotify_client_secret
+LASTFM_API_KEY=your_lastfm_api_key
+OPENAI_API_KEY=your_openai_api_key
+DATABASE_URL=jdbc:postgresql://localhost:5432/vibesbaseddb</code></pre>
+  </li>
+  <li>
+    Start your PostgreSQL database<br />
+    Ensure your PostgreSQL server is running and you have created a database named <code>vibesbaseddb</code>.
+  </li>
+  <li>
+    Build and run the backend<br />
+    <pre><code>cd backend
+./mvnw clean install
+./mvnw spring-boot:run</code></pre>
+  </li>
+  <li>
+    Install dependencies and start the frontend<br />
+    Open a new terminal window and run:<br />
+    <pre><code>cd frontend
+npm install
+npm start</code></pre>
+  </li>
+  <li>
+    Access the app<br />
+    Open your browser and go to <a href="http://localhost:3000" target="_blank" rel="noopener noreferrer">http://localhost:3000</a>
+  </li>
+</ol>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 <!-- LICENSE -->
 ## License
@@ -165,7 +176,6 @@ Distributed under the MIT License. See `LICENSE` for more information.
 James Andrews - jcandrews2@icloud.com
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/jcandrews2/vibesbased.svg?style=for-the-badge

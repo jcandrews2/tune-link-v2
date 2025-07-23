@@ -177,14 +177,14 @@ npm start</code></pre>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
-<h3>License</h3>
+<h2>License</h2>
 
 <p>Distributed under the MIT License. See <code>LICENSE</code> for more information.</p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
-<h3>Contact</h3>
+<h2>Contact</h2>
 
 <p>James Andrews - <a href="mailto:jcandrews2@icloud.com">jcandrews2@icloud.com</a></p>
 

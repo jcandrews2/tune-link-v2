@@ -1,7 +1,5 @@
 <a id="readme-top"></a>
 
-
-
 <!-- PROJECT SHIELDS -->
 [![Contributors][contributors-shield]][contributors-url]
 [![Forks][forks-shield]][forks-url]
@@ -10,13 +8,11 @@
 [![Unlicense License][license-shield]][license-url]
 [![LinkedIn][linkedin-shield]][linkedin-url]
 
-
-
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
   <a href="https://github.com/othneildrew/Best-README-Template">
-    <img src="frontend/src/images/vibesbased-logo.jpg" alt="Vibesbased Logo" width="80" height="80">
+    <img src="frontend/src/images/vibesbased-logo.jpg" alt="Vibesbased Logo" width="300" height="auto">
   </a>
 
   <h3 align="center">Vibesbased</h3>
@@ -24,10 +20,10 @@
   <p align="center">
     A music discovery application based on vibes. 
     <br />
-    <a href="https://github.com/jcandrews2/vibesbased"><strong>Explore the docs »</strong></a>
+    <a href="https://vibesbased.site"><strong>Go to website »</strong></a>
     <br />
     <br />
-    <a href="https://vibesbased.site">Go to website.</a>
+    <a href="https://github.com/jcandrews2/vibesbased"></a>
     &middot;
     <a href="https://github.com/jcandrews2/vibesbased/issues/new?labels=bug&template=bug-report---.md">Report Bug</a>
     &middot;

@@ -10,6 +10,7 @@ public class UrlProperties {
     private String spotifyAuthBase;
     private String spotifyAuthRedirect;
     private String spotifyApiBase;
+    private String lastfmApiBase;
 
     public String getFrontendBase() {
         return frontendBase;
@@ -41,5 +42,13 @@ public class UrlProperties {
 
     public void setSpotifyApiBase(String spotifyApiBase) {
         this.spotifyApiBase = spotifyApiBase;
+    }
+
+    public String getLastfmApiBase() {
+        return lastfmApiBase;
+    }
+
+    public void setLastfmApiBase(String lastfmApiBase) {
+        this.lastfmApiBase = lastfmApiBase;
     }
 } 

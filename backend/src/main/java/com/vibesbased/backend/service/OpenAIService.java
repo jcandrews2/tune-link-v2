@@ -15,6 +15,7 @@ import java.nio.charset.StandardCharsets;
 import java.io.IOException;
 import java.util.Map;
 import java.util.HashMap;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 @Service
 public class OpenAIService {
@@ -22,6 +23,7 @@ public class OpenAIService {
     private static final Logger logger = LoggerFactory.getLogger(OpenAIService.class);
     private final OpenAIClient client;
     private final String promptTemplate;
+    private final ObjectMapper objectMapper;
 
     public OpenAIService(@Value("${OPENAI_API_KEY}") String apiKey) throws IOException {
         logger.info("Initializing OpenAI Service with API key: {}", apiKey != null ? "present" : "null");
@@ -31,6 +33,7 @@ public class OpenAIService {
         
         Resource resource = new ClassPathResource("openai_prompt.txt");
         this.promptTemplate = new String(resource.getInputStream().readAllBytes(), StandardCharsets.UTF_8);
+        this.objectMapper = new ObjectMapper();
     }
 
     public Map<String, Object> getSearchQuery(String userRequest) {
@@ -43,33 +46,18 @@ public class OpenAIService {
             ChatCompletion chatCompletion = client.chat().completions().create(params);
             String output = chatCompletion.choices().get(0).message().content().orElse("");
             
-            // Log ChatGPT's response to the terminal
             logger.info("ChatGPT Response: {}", output);
             
-            // Split the response into lines
-            String[] lines = output.split("\n");
-            Map<String, Object> result = new HashMap<>();
+            // Parse the JSON response directly
+            return objectMapper.readValue(output, Map.class);
             
-            // First line is always the q_string
-            result.put("q_string", lines[0].trim());
-            
-            // Second line is the offset if it exists, default to 0 if not
-            int offset = 0;
-            if (lines.length > 1) {
-                try {
-                    offset = Integer.parseInt(lines[1].trim());
-                } catch (NumberFormatException e) {
-                    logger.warn("Could not parse offset from second line: {}", lines[1]);
-                }
-            }
-            result.put("offset", offset);
-            
-            return result;
         } catch (Exception e) {
             logger.error("Error while getting search query from OpenAI API", e);
+            // Fallback to a simple track search
             Map<String, Object> fallback = new HashMap<>();
-            fallback.put("q_string", "");
-            fallback.put("offset", 0);
+            fallback.put("endpoint", "spotify");
+            fallback.put("query", userRequest);
+            fallback.put("type", "track");
             return fallback;
         }
     }

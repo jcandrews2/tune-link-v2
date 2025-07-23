@@ -27,6 +27,7 @@ services:
   #     - FRONTEND_BASE_URL=http://localhost:3000
   #     - SPOTIFY_AUTH_URL=https://accounts.spotify.com
   #     - SPOTIFY_AUTH_REDIRECT=http://localhost:5050/auth/callback
+  #     - LASTFM_API_URL=http://ws.audioscrobbler.com/2.0
   #   depends_on:
   #     - db
 

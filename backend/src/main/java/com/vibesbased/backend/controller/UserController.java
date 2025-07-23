@@ -4,6 +4,7 @@ import com.vibesbased.backend.model.*;
 import com.vibesbased.backend.service.UserService;
 import com.vibesbased.backend.service.OpenAIService;
 import com.vibesbased.backend.service.SpotifyService;
+import com.vibesbased.backend.service.LastFMService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,6 +15,8 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Map;
+import java.util.ArrayList;
+import java.util.Random;
 
 @RestController
 @RequestMapping("/user")
@@ -22,12 +25,15 @@ public class UserController {
     private final UserService userService;
     private final OpenAIService openAIService;
     private final SpotifyService spotifyService;
+    private final LastFMService lastFMService;
+    private final Random random = new Random();
 
     @Autowired
-    public UserController(UserService userService, OpenAIService openAIService, SpotifyService spotifyService) {
+    public UserController(UserService userService, OpenAIService openAIService, SpotifyService spotifyService, LastFMService lastFMService) {
         this.userService = userService;
         this.openAIService = openAIService;
         this.spotifyService = spotifyService;
+        this.lastFMService = lastFMService;
     }
 
     @GetMapping("/me")
@@ -67,18 +73,55 @@ public class UserController {
         }
         try {
             Map<String, Object> searchParams = openAIService.getSearchQuery(request);
-            String q_string = (String) searchParams.get("q_string");
-            int offset = (int) searchParams.get("offset");
-            
-            List<Track> recommendations = spotifyService.getRecommendations(
-                user.getSpotifyAccessToken(), 
-                q_string,
-                offset
-            );
+            String endpoint = (String) searchParams.get("endpoint");
+            List<Track> recommendations;
+
+            if ("lastfm".equals(endpoint)) {
+                String tag = (String) searchParams.get("tag");
+                // Apply random offset to LastFM search
+                List<Map<String, String>> lastFmTracks = lastFMService.getTracksByTag(tag, random.nextInt(51));
+                recommendations = new ArrayList<>();
+                for (Map<String, String> track : lastFmTracks) {
+                    String query = track.get("artist") + " " + track.get("name");
+                    List<Track> spotifyTracks = spotifyService.searchTracks(
+                        user.getSpotifyAccessToken(),
+                        query,
+                        1,
+                        0  // No offset for Spotify search
+                    );
+                    if (!spotifyTracks.isEmpty()) {
+                        recommendations.add(spotifyTracks.get(0));
+                    }
+                }
+            } else {
+                String query = (String) searchParams.get("query");
+                String type = (String) searchParams.get("type");
+                String year = (String) searchParams.get("year");
+                
+                if ("artist".equals(type)) {
+                    recommendations = spotifyService.getArtistTopTracks(
+                        user.getSpotifyAccessToken(),
+                        query
+                    );
+                } else if ("album".equals(type)) {
+                    recommendations = spotifyService.getAlbumTracks(
+                        user.getSpotifyAccessToken(),
+                        query
+                    );
+                } else {
+                    recommendations = spotifyService.searchTracks(
+                        user.getSpotifyAccessToken(),
+                        query,
+                        20,
+                        0,  // No offset for direct track searches
+                        year
+                    );
+                }
+            }
 
             List<RecommendedTrack> savedTracks = userService.updateRecommendedTracks(user, recommendations);
-            
             return ResponseEntity.ok(savedTracks);
+            
         } catch (Exception e) { 
             logger.error("Error getting recommendations", e);
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR)

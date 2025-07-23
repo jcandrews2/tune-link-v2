@@ -29,10 +29,10 @@ const SongCard: React.FC<SongCardProps> = ({
       onClick={onCardClick}
     >
       <div className='flex-1 min-w-0 overflow-hidden'>
-        <MarqueeText text={song.name} className='font-medium' />
+        <MarqueeText text={song.name} className='font-semibold' />
         <MarqueeText
           text={song.artist}
-          className='text-sm text-gray-400 hover:text-white cursor-pointer'
+          className='text-sm text-gray-400 font-light hover:text-white cursor-pointer'
           onClick={(e) => {
             e.stopPropagation();
             onArtistClick(song.artistSpotifyId, song.artist);

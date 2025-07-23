@@ -129,7 +129,7 @@ const Card: FC<CardProps> = ({
           />
           <MarqueeText
             text={currentTrack.artists[0].name}
-            className='font-light text-gray-400 h-6'
+            className='text-gray-400 h-6 font-light'
           />
         </motion.div>
       </>
@@ -216,10 +216,8 @@ const PlayerUI: FC = () => {
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {
-      // Only handle shortcuts if we have an active player and track
       if (!spotifyPlayer.player || !spotifyPlayer.currentTrack) return;
 
-      // Don't trigger if user is typing in an input
       if (
         event.target instanceof HTMLInputElement ||
         event.target instanceof HTMLTextAreaElement
@@ -228,7 +226,7 @@ const PlayerUI: FC = () => {
       }
 
       if (event.code === "Space") {
-        event.preventDefault(); // Prevent page scroll
+        event.preventDefault();
         if (spotifyPlayer.isPaused) {
           spotifyPlayer.player.resume();
         } else {
@@ -244,10 +242,6 @@ const PlayerUI: FC = () => {
     spotifyPlayer.currentTrack,
     spotifyPlayer.isPaused,
   ]);
-
-  useEffect(() => {
-    console.log(currentIndex);
-  }, [currentIndex]);
 
   useEffect(() => {
     const updateColor = async () => {
@@ -313,7 +307,7 @@ const PlayerUI: FC = () => {
               />
               <MarqueeText
                 text={spotifyPlayer.currentTrack.artists[0].name}
-                className='font-light text-gray-300'
+                className='text-gray-400 font-light'
               />
             </div>
             <div className='w-full slider-container'>

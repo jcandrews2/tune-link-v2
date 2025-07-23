@@ -59,7 +59,7 @@ const PreviousRequests: FC = () => {
                   </div>
                 ) : null}
                 <p className='text-white mb-1'>{request.text}</p>
-                <p className='text-sm text-gray-400'>
+                <p className='text-sm text-gray-400 font-light'>
                   {new Date(request.timestamp).toLocaleDateString()} at{" "}
                   {new Date(request.timestamp).toLocaleTimeString()}
                 </p>

@@ -4,7 +4,7 @@ export default {
   theme: {
     extend: {
       fontFamily: {
-        kirang: ['"Kirang Haerang"', "cursive"],
+        kirang: ["Kirang Haerang", "sans-serif"],
         poppins: ["Poppins", "sans-serif"],
       },
       keyframes: {

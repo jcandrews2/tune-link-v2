@@ -45,8 +45,12 @@ const MediaControls: FC<MediaControlsProps> = ({ disabled = false }) => {
     });
   };
 
-  const buttonClasses = `flex items-center justify-center ${disabled ? "opacity-50 cursor-not-allowed" : "cursor-default"}`;
-  const imageClasses = `w-full h-auto transform ${disabled ? "" : "active:scale-95"}`;
+  const buttonClasses = `flex items-center justify-center ${
+    disabled ? "opacity-50 cursor-not-allowed" : "cursor-pointer"
+  }`;
+  const imageClasses = `w-full h-auto transform ${
+    disabled ? "" : "active:scale-95"
+  }`;
 
   return (
     <div className='container mx-auto'>

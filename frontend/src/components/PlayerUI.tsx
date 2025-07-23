@@ -215,6 +215,37 @@ const PlayerUI: FC = () => {
   }, [location]);
 
   useEffect(() => {
+    const handleKeyPress = (event: KeyboardEvent) => {
+      // Only handle shortcuts if we have an active player and track
+      if (!spotifyPlayer.player || !spotifyPlayer.currentTrack) return;
+
+      // Don't trigger if user is typing in an input
+      if (
+        event.target instanceof HTMLInputElement ||
+        event.target instanceof HTMLTextAreaElement
+      ) {
+        return;
+      }
+
+      if (event.code === "Space") {
+        event.preventDefault(); // Prevent page scroll
+        if (spotifyPlayer.isPaused) {
+          spotifyPlayer.player.resume();
+        } else {
+          spotifyPlayer.player.pause();
+        }
+      }
+    };
+
+    window.addEventListener("keydown", handleKeyPress);
+    return () => window.removeEventListener("keydown", handleKeyPress);
+  }, [
+    spotifyPlayer.player,
+    spotifyPlayer.currentTrack,
+    spotifyPlayer.isPaused,
+  ]);
+
+  useEffect(() => {
     console.log(currentIndex);
   }, [currentIndex]);
 

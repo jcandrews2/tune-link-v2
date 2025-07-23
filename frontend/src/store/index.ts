@@ -26,7 +26,7 @@ const useStore = create<Store>((set) => ({
     nextTrack: null,
     isActive: false,
     isPaused: true,
-    isDragging: false,
+    isDraggingSlider: false,
     position: 0,
     progress: 0,
     dominantColor: "",

@@ -49,7 +49,7 @@ export interface SpotifyPlayer {
   areRecommendationsLoading?: boolean;
   areRecommendationsInitialized?: boolean;
   progress?: number;
-  isDragging?: boolean;
+  isDraggingSlider?: boolean;
   dominantColor?: string;
   animationKey?: number;
 }

@@ -112,12 +112,22 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
         min='0'
         max='100'
         value={disabled ? 0 : spotifyPlayer.progress || 0}
-        onMouseDown={handleMouseDown}
-        onMouseUp={handleMouseUp}
+        onMouseDown={(e) => {
+          e.stopPropagation();
+          if (disabled) return;
+          setSpotifyPlayer({ isDraggingSlider: true });
+          handleMouseDown();
+        }}
+        onMouseUp={(e) => {
+          e.stopPropagation();
+          if (disabled) return;
+          setSpotifyPlayer({ isDraggingSlider: false });
+          handleMouseUp();
+        }}
         onInput={handleInput}
         disabled={disabled}
         className={`${sliderBaseClasses} ${
-          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
+          disabled ? "cursor-not-allowed opacity-50" : ""
         }`}
         style={{
           background: disabled

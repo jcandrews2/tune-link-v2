@@ -106,7 +106,7 @@ const Card: FC<CardProps> = ({
             key={`card-cover-${index}`}
           ></div>
           <div
-            className='h-16 rounded bg-gray-900/50 w-full mt-4'
+            className='h-16 rounded-sm bg-gray-900/50 w-full mt-4'
             key={`card-details-${index}`}
           ></div>
         </>
@@ -160,7 +160,7 @@ const Card: FC<CardProps> = ({
       initial={{
         scale: 0.95,
       }}
-      drag={isActive && !disabled ? "x" : false}
+      drag={isActive && !disabled && !spotifyPlayer.isDragging ? "x" : false}
       dragConstraints={{
         left: 0,
         right: 0,
@@ -286,6 +286,40 @@ const PlayerUI: FC = () => {
     </div>
   );
 
+  const miniPlayerEmptyState = (
+    <div
+      style={{
+        position: "absolute",
+        left: 0,
+        bottom: 0,
+        touchAction: "none",
+        zIndex: 50,
+      }}
+      className='w-[300px] h-[200px] select-none [&_*]:select-none'
+    >
+      <div className='w-full h-full p-6 border border-gray-700 rounded-lg bg-black'>
+        <div className='h-full flex flex-col justify-center space-y-2'>
+          <div className='h-16 rounded-sm bg-gray-900/50 w-full'></div>
+          <div className='w-full slider-container'>
+            <SliderUI disabled={true} />
+          </div>
+          <div className='w-full'>
+            <MediaControls disabled={true} />
+          </div>
+        </div>
+      </div>
+      <div
+        className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] z-0'
+        style={{
+          width: "250px",
+          height: "150px",
+          zIndex: -1,
+          backgroundColor: "transparent",
+        }}
+      />
+    </div>
+  );
+
   const miniPlayerContent = (
     <div
       style={{
@@ -336,22 +370,26 @@ const PlayerUI: FC = () => {
     </div>
   );
 
-  if (user.recommendedSongs.length === 0 && isHomePage) {
+  if (user.recommendedSongs.length === 0) {
     return portalContainer
       ? createPortal(
-          <div className='mx-auto select-none relative flex justify-center'>
-            <div className='relative w-[400px]'>
-              <Card
-                index={0}
-                isActive={true}
-                currentTrack={null}
-                onSwipe={() => {}}
-                animationKey={0}
-                disabled={true}
-                spotifyPlayer={spotifyPlayer}
-              />
+          isHomePage ? (
+            <div className='mx-auto select-none relative flex justify-center'>
+              <div className='relative w-[400px]'>
+                <Card
+                  index={0}
+                  isActive={true}
+                  currentTrack={null}
+                  onSwipe={() => {}}
+                  animationKey={0}
+                  disabled={true}
+                  spotifyPlayer={spotifyPlayer}
+                />
+              </div>
             </div>
-          </div>,
+          ) : (
+            miniPlayerEmptyState
+          ),
           portalContainer
         )
       : null;

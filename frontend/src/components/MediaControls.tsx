@@ -5,7 +5,6 @@ import DislikeIcon from "../images/dislike.png";
 import PlayIcon from "../images/play.png";
 import PauseIcon from "../images/pause.png";
 import { handleLike, handleDislike } from "../utils/userUtils";
-import VolumeControl from "./VolumeControl";
 
 interface MediaControlsProps {
   disabled?: boolean;

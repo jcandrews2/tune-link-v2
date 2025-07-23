@@ -16,7 +16,6 @@ const Navbar: FC = () => {
     <nav className=''>
       <div className='container mx-auto px-4'>
         <div className='flex items-center h-16'>
-          {/* Logo and Brand */}
           <div className='w-1/4'>
             <Link
               to='/'

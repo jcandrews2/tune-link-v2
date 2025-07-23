@@ -66,7 +66,7 @@ const RequestsBox: FC = () => {
             value={requestText}
             onChange={handleChange}
             onKeyDown={handleKeyDown}
-            placeholder='I want to hear old indie rock songs with heavy guitar riffs.'
+            placeholder='Play some chill summery songs to relax to on the beach.'
             maxLength={100}
             className='w-full h-full p-3 text-white rounded-lg resize-none 
                      border border-gray-600 focus:border-white focus:outline-none

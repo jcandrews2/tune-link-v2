@@ -15,7 +15,7 @@
     <img src="frontend/src/images/vibesbased-logo.jpg" alt="Vibesbased Logo" width="300" height="auto">
   </a>
 
-  <h3 align="center">Vibesbased</h3>
+  <h1 align="center">Vibesbased</h1>
 
   <p align="center">
     A music discovery application based on vibes. 
@@ -59,7 +59,7 @@
 
 
 <!-- ABOUT THE PROJECT -->
-## About The Project
+<h2>About The Project</h2>
 
 [![Product Name Screen Shot][product-screenshot]](https://example.com)
 
@@ -71,22 +71,45 @@ The project is an attempt to offer a more intuitive and mood-aware way to explor
 
 
 
-### Built With
+<h3>Built With</h3>
 
-Web API and Web Playback SDK
-Tag, Track, Album, Artist
-Responses
+<h4>APIs & SDKs</h4>
+<ul>
+  <li>
+    <strong>Spotify Web API & Web Playback SDK</strong><br />
+    Used to fetch user data and handle music streaming.
+  </li>
+  <li>
+    <strong>Last.fm API</strong><br />
+    Pulled songs from endpoints Tag, Track, Album, Artist to recommend.
+  </li>
+  <li>
+    <strong>OpenAI API (Completions endpoint)</strong><br />
+    Used to reason for appropriate tags and endpoints given user requests.
+  </li>
+</ul>
 
-This section should list any major frameworks/libraries used to bootstrap your project. Leave any add-ons/plugins for the acknowledgements section. Here are a few examples.
+<h4>Technologies</h4>
+<p>This project combines a full-stack architecture and cloud deployment setup:</p>
+<ul>
+  <li><strong>Frontend:</strong> React, TypeScript, HTML, Tailwind CSS</li>
+  <li><strong>Backend:</strong> Java, Spring Boot</li>
+  <li><strong>Infrastructure:</strong> Docker, AWS EC2</li>
+  <li><strong>Database:</strong> PostgreSQL</li>
+</ul>
 
-* [![Next][Next.js]][Next-url]
-* [![React][React.js]][React-url]
-* [![Vue][Vue.js]][Vue-url]
-* [![Angular][Angular.io]][Angular-url]
-* [![Svelte][Svelte.dev]][Svelte-url]
-* [![Laravel][Laravel.com]][Laravel-url]
-* [![Bootstrap][Bootstrap.com]][Bootstrap-url]
-* [![JQuery][JQuery.com]][JQuery-url]
+![React](https://img.shields.io/badge/Frontend-React-blue?style=for-the-badge&logo=react)
+![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
+![TailwindCSS](https://img.shields.io/badge/Styling-TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss)
+![Spring Boot](https://img.shields.io/badge/Backend-SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
+![Java](https://img.shields.io/badge/Language-Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
+![Docker](https://img.shields.io/badge/DevOps-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
+![AWS EC2](https://img.shields.io/badge/Hosting-AWS%20EC2-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
+![OpenAI](https://img.shields.io/badge/API-OpenAI-black?style=for-the-badge&logo=openai)
+![Spotify](https://img.shields.io/badge/API-Spotify-1DB954?style=for-the-badge&logo=spotify)
+![Last.fm](https://img.shields.io/badge/API-Last.fm-D51007?style=for-the-badge&logo=last.fm&logoColor=white)
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 

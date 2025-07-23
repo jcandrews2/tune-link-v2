@@ -164,18 +164,19 @@ npm start</code></pre>
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- LICENSE -->
-## License
+<h3>License</h3>
 
-Distributed under the MIT License. See `LICENSE` for more information.
+<p>Distributed under the MIT License. See <code>LICENSE</code> for more information.</p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
 <!-- CONTACT -->
-## Contact
+<h3>Contact</h3>
 
-James Andrews - jcandrews2@icloud.com
+<p>James Andrews - <a href="mailto:jcandrews2@icloud.com">jcandrews2@icloud.com</a></p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
+
 
 <!-- MARKDOWN LINKS & IMAGES -->
 [contributors-shield]: https://img.shields.io/github/contributors/jcandrews2/vibesbased.svg?style=for-the-badge

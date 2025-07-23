@@ -1,11 +1,22 @@
 <a id="readme-top"></a>
 
-<!-- PROJECT SHIELDS -->
-[![Contributors][contributors-shield]][contributors-url]
-[![Forks][forks-shield]][forks-url]
-[![Stargazers][stars-shield]][stars-url]
-[![Issues][issues-shield]][issues-url]
-[![MIT License][license-shield]][license-url]
+<p align="center">
+  <a href="https://github.com/jcandrews2/vibesbased/graphs/contributors">
+    <img src="https://img.shields.io/github/contributors/jcandrews2/vibesbased.svg?style=for-the-badge" alt="Contributors">
+  </a>
+  <a href="https://github.com/jcandrews2/vibesbased/network/members">
+    <img src="https://img.shields.io/github/forks/jcandrews2/vibesbased.svg?style=for-the-badge" alt="Forks">
+  </a>
+  <a href="https://github.com/jcandrews2/vibesbased/stargazers">
+    <img src="https://img.shields.io/github/stars/jcandrews2/vibesbased.svg?style=for-the-badge" alt="Stargazers">
+  </a>
+  <a href="https://github.com/jcandrews2/vibesbased/issues">
+    <img src="https://img.shields.io/github/issues/jcandrews2/vibesbased.svg?style=for-the-badge" alt="Issues">
+  </a>
+  <a href="https://github.com/jcandrews2/vibesbased/blob/main/LICENSE">
+    <img src="https://img.shields.io/github/license/jcandrews2/vibesbased.svg?style=for-the-badge" alt="License">
+  </a>
+</p>
 
 <!-- PROJECT LOGO -->
 <br />
@@ -94,18 +105,21 @@ The project is an attempt to offer a more intuitive and mood-aware way to explor
   <li><strong>Database:</strong> PostgreSQL</li>
 </ul>
 
-![React](https://img.shields.io/badge/Frontend-React-blue?style=for-the-badge&logo=react)
-![TypeScript](https://img.shields.io/badge/Language-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white)
-![HTML](https://img.shields.io/badge/Markup-HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white)
-![TailwindCSS](https://img.shields.io/badge/Styling-TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss)
-![Spring Boot](https://img.shields.io/badge/Backend-SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white)
-![Java](https://img.shields.io/badge/Language-Java-ED8B00?style=for-the-badge&logo=java&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/Database-PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white)
-![Docker](https://img.shields.io/badge/DevOps-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white)
-![AWS EC2](https://img.shields.io/badge/Hosting-AWS%20EC2-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white)
-![OpenAI](https://img.shields.io/badge/API-OpenAI-black?style=for-the-badge&logo=openai)
-![Spotify](https://img.shields.io/badge/API-Spotify-1DB954?style=for-the-badge&logo=spotify)
-![Last.fm](https://img.shields.io/badge/API-Last.fm-D51007?style=for-the-badge&logo=last.fm&logoColor=white)
+<p align="center">
+  <img src="https://img.shields.io/badge/Frontend-React-blue?style=for-the-badge&logo=react" alt="React" />
+  <img src="https://img.shields.io/badge/Language-TypeScript-3178C6?style=for-the-badge&logo=typescript&logoColor=white" alt="TypeScript" />
+  <img src="https://img.shields.io/badge/Markup-HTML5-E34F26?style=for-the-badge&logo=html5&logoColor=white" alt="HTML5" />
+  <img src="https://img.shields.io/badge/Styling-TailwindCSS-06B6D4?style=for-the-badge&logo=tailwindcss" alt="TailwindCSS" />
+  <img src="https://img.shields.io/badge/Backend-SpringBoot-6DB33F?style=for-the-badge&logo=springboot&logoColor=white" alt="Spring Boot" />
+  <img src="https://img.shields.io/badge/Language-Java-ED8B00?style=for-the-badge&logo=java&logoColor=white" alt="Java" />
+  <img src="https://img.shields.io/badge/Database-PostgreSQL-316192?style=for-the-badge&logo=postgresql&logoColor=white" alt="PostgreSQL" />
+  <img src="https://img.shields.io/badge/DevOps-Docker-2496ED?style=for-the-badge&logo=docker&logoColor=white" alt="Docker" />
+  <img src="https://img.shields.io/badge/Hosting-AWS%20EC2-FF9900?style=for-the-badge&logo=amazonaws&logoColor=white" alt="AWS EC2" />
+  <img src="https://img.shields.io/badge/API-OpenAI-black?style=for-the-badge&logo=openai" alt="OpenAI" />
+  <img src="https://img.shields.io/badge/API-Spotify-1DB954?style=for-the-badge&logo=spotify" alt="Spotify" />
+  <img src="https://img.shields.io/badge/API-Last.fm-D51007?style=for-the-badge&logo=last.fm&logoColor=white" alt="Last.fm" />
+</p>
+
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
@@ -175,22 +189,5 @@ npm start</code></pre>
 <p>James Andrews - <a href="mailto:jcandrews2@icloud.com">jcandrews2@icloud.com</a></p>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
-
-
-<!-- MARKDOWN LINKS & IMAGES -->
-[contributors-shield]: https://img.shields.io/github/contributors/jcandrews2/vibesbased.svg?style=for-the-badge
-[contributors-url]: https://github.com/jcandrews2/vibesbased/graphs/contributors
-
-[forks-shield]: https://img.shields.io/github/forks/jcandrews2/vibesbased.svg?style=for-the-badge
-[forks-url]: https://github.com/jcandrews2/vibesbased/network/members
-
-[stars-shield]: https://img.shields.io/github/stars/jcandrews2/vibesbased.svg?style=for-the-badge
-[stars-url]: https://github.com/jcandrews2/vibesbased/stargazers
-
-[issues-shield]: https://img.shields.io/github/issues/jcandrews2/vibesbased.svg?style=for-the-badge
-[issues-url]: https://github.com/jcandrews2/vibesbased/issues
-
-[license-shield]: https://img.shields.io/github/license/jcandrews2/vibesbased.svg?style=for-the-badge
-[license-url]: https://github.com/jcandrews2/vibesbased/blob/main/LICENSE
 
 [product-screenshot]: images/vibesbased-front-page.jpg

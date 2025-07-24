@@ -127,7 +127,7 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
         onInput={handleInput}
         disabled={disabled}
         className={`${sliderBaseClasses} ${
-          disabled ? "cursor-not-allowed opacity-50" : ""
+          disabled ? "cursor-not-allowed opacity-50" : "cursor-pointer"
         }`}
         style={{
           background: disabled

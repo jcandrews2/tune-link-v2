@@ -21,7 +21,7 @@
 <!-- PROJECT LOGO -->
 <br />
 <div align="center">
-  <a href="https://github.com/othneildrew/Best-README-Template">
+  <a href="https://github.com/jcandrews2/vibesbased">
     <img src="frontend/src/images/vibesbased-logo.jpg" alt="Vibesbased Logo" width="300" height="auto">
   </a>
 
@@ -190,4 +190,4 @@ npm start</code></pre>
 
 <p align="right">(<a href="#readme-top">back to top</a>)</p>
 
-[product-screenshot]: images/vibesbased-front-page.jpg
+[product-screenshot]: frontend/src/images/vibesbased-front-page.jpg

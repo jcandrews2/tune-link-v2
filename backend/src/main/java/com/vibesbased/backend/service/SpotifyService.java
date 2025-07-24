@@ -76,16 +76,29 @@ public class SpotifyService {
         return userResponse.getBody();
     }
 
-    public List<Track> getRecommendations(String accessToken, String q_string, int offset) {
+    public List<Track> search(String accessToken, String query, String type, Map<String, String> filters, int limit, int offset) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
 
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlProperties.getSpotifyApiBase() + "/search");
-        builder.queryParam("q", q_string);
-        builder.queryParam("type", "track");
-        builder.queryParam("limit", 20);
-        builder.queryParam("offset", offset);
+        // Build the query string with filters
+        StringBuilder queryBuilder = new StringBuilder(query);
+        if (filters != null) {
+            filters.forEach((key, value) -> {
+                if (value != null && !value.isEmpty()) {
+                    queryBuilder.append(" ").append(key).append(":").append(value);
+                }
+            });
+        }
+
+        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlProperties.getSpotifyApiBase() + "/search")
+            .queryParam("q", queryBuilder.toString())
+            .queryParam("type", type)
+            .queryParam("limit", limit)
+            .queryParam("offset", offset)
+            .queryParam("market", "US");
+
         String uri = builder.build().toUriString();
+        logger.debug("Spotify search URI: {}", uri);
 
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<Map> response = restTemplate.exchange(
@@ -99,89 +112,39 @@ public class SpotifyService {
         
         if (response.getBody() != null) {
             Map<String, Object> responseBody = response.getBody();
-            Map<String, Object> tracksObj = (Map<String, Object>) responseBody.get("tracks");
-            List<Map<String, Object>> items = (List<Map<String, Object>>) tracksObj.get("items");
             
-            for (Map<String, Object> item : items) {
-                String id = (String) item.get("id");
-                String name = (String) item.get("name");
-                
-                Map<String, Object> album = (Map<String, Object>) item.get("album");
-                String albumName = (String) album.get("name");
-                
-                List<Map<String, Object>> artists = (List<Map<String, Object>>) item.get("artists");
-                String artistName = "Unknown Artist";
-                String artistId = "";
-                
-                if (!artists.isEmpty()) {
-                    Map<String, Object> firstArtist = artists.get(0);
-                    artistName = (String) firstArtist.get("name");
-                    artistId = (String) firstArtist.get("id");
+            if (type.equals("track")) {
+                Map<String, Object> tracksObj = (Map<String, Object>) responseBody.get("tracks");
+                List<Map<String, Object>> items = (List<Map<String, Object>>) tracksObj.get("items");
+                for (Map<String, Object> item : items) {
+                    tracks.add(convertToTrack(item));
                 }
-                
-                tracks.add(new Track(name, artistName, id, artistId, albumName));
+            } else if (type.equals("album")) {
+                Map<String, Object> albumsObj = (Map<String, Object>) responseBody.get("albums");
+                List<Map<String, Object>> items = (List<Map<String, Object>>) albumsObj.get("items");
+                if (!items.isEmpty()) {
+                    String albumId = (String) items.get(0).get("id");
+                    tracks.addAll(getAlbumTracksById(accessToken, albumId));
+                }
+            } else if (type.equals("artist")) {
+                Map<String, Object> artistsObj = (Map<String, Object>) responseBody.get("artists");
+                List<Map<String, Object>> items = (List<Map<String, Object>>) artistsObj.get("items");
+                if (!items.isEmpty()) {
+                    String artistId = (String) items.get(0).get("id");
+                    tracks.addAll(getArtistTracksById(accessToken, artistId));
+                }
             }
         }
 
         return tracks;
     }
 
-    public List<Map<String, String>> searchArtists(String accessToken, String artistName) {
+    private List<Track> getAlbumTracksById(String accessToken, String albumId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlProperties.getSpotifyApiBase() + "/search");
-        builder.queryParam("q", artistName);
-        builder.queryParam("type", "artist");
-        builder.queryParam("limit", 1);
-        String uri = builder.build().toUriString();
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<Map> response = restTemplate.exchange(
-            uri,
-            HttpMethod.GET,
-            requestEntity,
-            Map.class
-        );
-
-        List<Map<String, String>> artists = new ArrayList<>();
         
-        if (response.getBody() != null) {
-            Map<String, Object> responseBody = response.getBody();
-            Map<String, Object> artistsObj = (Map<String, Object>) responseBody.get("artists");
-            List<Map<String, Object>> items = (List<Map<String, Object>>) artistsObj.get("items");
-            
-            for (Map<String, Object> item : items) {
-                String id = (String) item.get("id");
-                String name = (String) item.get("name");
-                
-                Map<String, String> artist = new HashMap<>();
-                artist.put("id", id);
-                artist.put("name", name);
-                artists.add(artist);
-            }
-        }
-
-        return artists;
-    }
-
-    public List<Track> searchTracks(String accessToken, String query, int limit, int offset, String year) {
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlProperties.getSpotifyApiBase() + "/search");
+        String uri = urlProperties.getSpotifyApiBase() + "/albums/" + albumId + "/tracks?limit=50&market=US";
         
-        // Add year filter if provided
-        if (year != null && !year.isEmpty()) {
-            query = query + " year:" + year;
-        }
-        
-        builder.queryParam("q", query);
-        builder.queryParam("type", "track");
-        builder.queryParam("limit", limit);
-        builder.queryParam("offset", offset);
-        String uri = builder.build().toUriString();
-
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<Map> response = restTemplate.exchange(
             uri,
@@ -193,10 +156,7 @@ public class SpotifyService {
         List<Track> tracks = new ArrayList<>();
         
         if (response.getBody() != null) {
-            Map<String, Object> responseBody = response.getBody();
-            Map<String, Object> tracksObj = (Map<String, Object>) responseBody.get("tracks");
-            List<Map<String, Object>> items = (List<Map<String, Object>>) tracksObj.get("items");
-            
+            List<Map<String, Object>> items = (List<Map<String, Object>>) response.getBody().get("items");
             for (Map<String, Object> item : items) {
                 tracks.add(convertToTrack(item));
             }
@@ -205,25 +165,12 @@ public class SpotifyService {
         return tracks;
     }
 
-    // Overload for backward compatibility
-    public List<Track> searchTracks(String accessToken, String query, int limit, int offset) {
-        return searchTracks(accessToken, query, limit, offset, null);
-    }
-
-    public List<Track> getArtistTopTracks(String accessToken, String artistQuery) {
-        // First search for the artist
-        List<Map<String, String>> artists = searchArtists(accessToken, artistQuery);
-        if (artists.isEmpty()) {
-            return new ArrayList<>();
-        }
-
-        // Get the first artist's top tracks
-        String artistId = artists.get(0).get("id");
+    private List<Track> getArtistTracksById(String accessToken, String artistId) {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
-
+        
         String uri = urlProperties.getSpotifyApiBase() + "/artists/" + artistId + "/top-tracks?market=US";
-
+        
         HttpEntity<String> requestEntity = new HttpEntity<>(headers);
         ResponseEntity<Map> response = restTemplate.exchange(
             uri,
@@ -238,54 +185,6 @@ public class SpotifyService {
             List<Map<String, Object>> items = (List<Map<String, Object>>) response.getBody().get("tracks");
             for (Map<String, Object> item : items) {
                 tracks.add(convertToTrack(item));
-            }
-        }
-
-        return tracks;
-    }
-
-    public List<Track> getAlbumTracks(String accessToken, String albumQuery) {
-        // First search for the album
-        HttpHeaders headers = new HttpHeaders();
-        headers.setBearerAuth(accessToken);
-
-        UriComponentsBuilder builder = UriComponentsBuilder.fromHttpUrl(urlProperties.getSpotifyApiBase() + "/search");
-        builder.queryParam("q", albumQuery);
-        builder.queryParam("type", "album");
-        builder.queryParam("limit", 1);
-        String searchUri = builder.build().toUriString();
-
-        HttpEntity<String> requestEntity = new HttpEntity<>(headers);
-        ResponseEntity<Map> searchResponse = restTemplate.exchange(
-            searchUri,
-            HttpMethod.GET,
-            requestEntity,
-            Map.class
-        );
-
-        List<Track> tracks = new ArrayList<>();
-
-        if (searchResponse.getBody() != null) {
-            Map<String, Object> albums = (Map<String, Object>) searchResponse.getBody().get("albums");
-            List<Map<String, Object>> items = (List<Map<String, Object>>) albums.get("items");
-            
-            if (!items.isEmpty()) {
-                String albumId = (String) items.get(0).get("id");
-                String uri = urlProperties.getSpotifyApiBase() + "/albums/" + albumId + "/tracks";
-
-                ResponseEntity<Map> tracksResponse = restTemplate.exchange(
-                    uri,
-                    HttpMethod.GET,
-                    requestEntity,
-                    Map.class
-                );
-
-                if (tracksResponse.getBody() != null) {
-                    List<Map<String, Object>> trackItems = (List<Map<String, Object>>) tracksResponse.getBody().get("items");
-                    for (Map<String, Object> item : trackItems) {
-                        tracks.add(convertToTrack(item));
-                    }
-                }
             }
         }
 

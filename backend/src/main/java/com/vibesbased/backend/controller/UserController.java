@@ -17,6 +17,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.ArrayList;
 import java.util.Random;
+import java.util.HashMap;
 
 @RestController
 @RequestMapping("/user")
@@ -78,16 +79,17 @@ public class UserController {
 
             if ("lastfm".equals(endpoint)) {
                 String tag = (String) searchParams.get("tag");
-                // Apply random offset to LastFM search
                 List<Map<String, String>> lastFmTracks = lastFMService.getTracksByTag(tag, random.nextInt(51));
                 recommendations = new ArrayList<>();
                 for (Map<String, String> track : lastFmTracks) {
                     String query = track.get("artist") + " " + track.get("name");
-                    List<Track> spotifyTracks = spotifyService.searchTracks(
+                    List<Track> spotifyTracks = spotifyService.search(
                         user.getSpotifyAccessToken(),
                         query,
+                        "track",
+                        new HashMap<>(),
                         1,
-                        0  // No offset for Spotify search
+                        0
                     );
                     if (!spotifyTracks.isEmpty()) {
                         recommendations.add(spotifyTracks.get(0));
@@ -98,25 +100,19 @@ public class UserController {
                 String type = (String) searchParams.get("type");
                 String year = (String) searchParams.get("year");
                 
-                if ("artist".equals(type)) {
-                    recommendations = spotifyService.getArtistTopTracks(
-                        user.getSpotifyAccessToken(),
-                        query
-                    );
-                } else if ("album".equals(type)) {
-                    recommendations = spotifyService.getAlbumTracks(
-                        user.getSpotifyAccessToken(),
-                        query
-                    );
-                } else {
-                    recommendations = spotifyService.searchTracks(
-                        user.getSpotifyAccessToken(),
-                        query,
-                        20,
-                        0,  // No offset for direct track searches
-                        year
-                    );
+                Map<String, String> filters = new HashMap<>();
+                if (year != null && !year.isEmpty()) {
+                    filters.put("year", year);
                 }
+                
+                recommendations = spotifyService.search(
+                    user.getSpotifyAccessToken(),
+                    query,
+                    type != null ? type : "track",
+                    filters,
+                    20,
+                    0
+                );
             }
 
             List<RecommendedTrack> savedTracks = userService.updateRecommendedTracks(user, recommendations);

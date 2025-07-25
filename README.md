@@ -89,7 +89,7 @@ The project is an attempt to offer a more intuitive and mood-aware way to explor
   </li>
   <li>
     <strong>Last.fm API</strong><br />
-    Pulled songs from endpoints Tag, Track, Album, Artist to recommend.
+    Pulls songs from tag.getTopTracks endpoint.
   </li>
   <li>
     <strong>OpenAI API (Completions endpoint)</strong><br />

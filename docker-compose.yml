@@ -6,7 +6,7 @@ services:
     ports:
       - "3000:3000"
     environment:
-      - VITE_BACKEND_URL=https://vibesbased.site
+      - VITE_BACKEND_URL=https://localhost
       - SPOTIFY_API_URL=https://api.spotify.com/v1
     depends_on:
       - backend
@@ -24,9 +24,9 @@ services:
       - DATABASE_URL=jdbc:postgresql://db:5432/vibesbased
       - POSTGRES_USER=vibesbased
       - POSTGRES_PASSWORD=vibesbased
-      - FRONTEND_BASE_URL=https://vibesbased.site
+      - FRONTEND_BASE_URL=https://localhost
       - SPOTIFY_AUTH_URL=https://accounts.spotify.com
-      - SPOTIFY_AUTH_REDIRECT=https://vibesbased.site/auth/callback
+      - SPOTIFY_AUTH_REDIRECT=https://localhost/auth/callback
     depends_on:
       - db
 
@@ -43,16 +43,19 @@ services:
     restart: unless-stopped
 
   caddy:
-    image: caddy:2
+    image: caddy:2.10.0-alpine
     ports:
       - "80:80"
       - "443:443"
     volumes:
       - ./Caddyfile:/etc/caddy/Caddyfile
       - caddy_data:/data
+      - caddy_config:/config
 
 volumes:
   postgres_data:
     driver: local
   caddy_data:
+    driver: local
+  caddy_config:
     driver: local

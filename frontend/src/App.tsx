@@ -51,7 +51,7 @@ const App: FC = () => {
   return (
     <Router>
       <Layout>
-        <ScreenSizeWarning />
+        {/* <ScreenSizeWarning /> */}
         <div className='flex flex-col min-h-screen'>
           <Navbar />
           <div className='flex-grow text-white p-4 flex flex-col'>

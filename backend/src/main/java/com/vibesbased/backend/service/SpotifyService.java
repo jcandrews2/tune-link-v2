@@ -37,22 +37,18 @@ public class SpotifyService {
     }
 
     public Map<String, Object> exchangeCodeForToken(String code) {
-        // Create auth header
         String credentials = clientId + ":" + clientSecret;
         String encodedCredentials = Base64.getEncoder().encodeToString(credentials.getBytes());
         
-        // Set up headers
         HttpHeaders headers = new HttpHeaders();
         headers.set("Authorization", "Basic " + encodedCredentials);
         headers.setContentType(MediaType.APPLICATION_FORM_URLENCODED);
 
-        // Set up body parameters
         String requestBody = String.format(
             "code=%s&redirect_uri=%s&grant_type=authorization_code",
             code, urlProperties.getSpotifyAuthRedirect()
         );
 
-        // Make request to Spotify
         HttpEntity<String> request = new HttpEntity<>(requestBody, headers);
         ResponseEntity<Map> response = restTemplate.exchange(
             urlProperties.getSpotifyAuthBase() + "/api/token",
@@ -80,8 +76,12 @@ public class SpotifyService {
         HttpHeaders headers = new HttpHeaders();
         headers.setBearerAuth(accessToken);
 
-        // Build the query string with filters
-        StringBuilder queryBuilder = new StringBuilder(query);
+        if (type == null || type.trim().isEmpty()) {
+            type = "track"; 
+        }
+        type = type.toLowerCase().trim(); 
+
+        StringBuilder queryBuilder = new StringBuilder(query != null ? query : "");
         if (filters != null) {
             filters.forEach((key, value) -> {
                 if (value != null && !value.isEmpty()) {

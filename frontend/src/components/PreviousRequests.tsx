@@ -38,7 +38,7 @@ const PreviousRequests: FC = () => {
   };
 
   return (
-    <div className='w-full py-4 pl-4 pr-2 border border-gray-700 rounded-lg h-[366px] flex flex-col bg-black'>
+    <div className='w-full py-4 pl-4 pr-2 border border-gray-700 rounded-lg flex flex-col bg-black h-full'>
       <h2 className='text-xl font-semibold text-white mb-4'>
         Previous Requests
       </h2>

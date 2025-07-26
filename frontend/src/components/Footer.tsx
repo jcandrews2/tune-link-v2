@@ -12,7 +12,7 @@ const Footer: FC = () => {
       <div className='container mx-auto px-4'>
         <div className='flex items-center h-20 gap-8'>
           <div className='flex items-center'>
-            <img src={logo} alt='Spotify Logo' className='w-auto h-12' />
+            <img src={logo} alt='Spotify Logo' className='w-auto h-10' />
           </div>
           <div className='flex-grow' />
           {isWelcomePage ? (

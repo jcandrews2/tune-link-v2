@@ -10,7 +10,7 @@ import Loading from "./Loading";
 const RequestsBox: FC = () => {
   const [requestText, setRequestText] = useState("");
   const [isLoading, setIsLoading] = useState(false);
-  const { user, setUser, setSpotifyPlayer } = useStore();
+  const { user, setUser } = useStore();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -58,7 +58,7 @@ const RequestsBox: FC = () => {
   };
 
   return (
-    <div className='w-full p-4 border border-gray-700 rounded-lg h-[366px] flex flex-col bg-black'>
+    <div className='w-full h-full p-4 border border-gray-700 rounded-lg flex flex-col bg-black'>
       <h2 className='text-xl font-semibold text-white mb-4'>Make Request</h2>
       <form onSubmit={handleSubmit} className='flex flex-col flex-1'>
         <div className='relative flex-1 mb-4'>

@@ -6,7 +6,6 @@ import useStore from "../store";
 import { motion, useMotionValue, useTransform } from "framer-motion";
 import { useLocation } from "react-router-dom";
 import MarqueeText from "./MarqueeText";
-import Loading from "./Loading";
 import { getDominantColor } from "../utils/playerUtils";
 import { handleLike, handleDislike } from "../utils/userUtils";
 import { Track, SpotifyPlayer } from "../types";
@@ -43,7 +42,6 @@ const Card: FC<CardProps> = ({
 
   useEffect(() => {
     if (currentTrack && isActive) {
-      // Small delay to ensure the card has scaled up before showing content
       const timer = setTimeout(() => {
         setShouldShowContent(true);
       }, 200);
@@ -68,10 +66,10 @@ const Card: FC<CardProps> = ({
 
   const renderCover = () => (
     <div className='relative w-full aspect-square z-0 select-none'>
-      {currentTrack ? (
+      {currentTrack && (
         <>
           <div
-            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm blur-[50px] animate-fadeIn w-full h-full z-0'
+            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm blur-[50px] animate-fadeIn aspect-square z-0'
             key={animationKey}
             style={{
               backgroundColor: spotifyPlayer.dominantColor || "transparent",
@@ -80,29 +78,22 @@ const Card: FC<CardProps> = ({
           />
           <img
             src={currentTrack.album.images[0].url}
-            className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm w-full h-full animate-fadeIn'
+            className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm aspect-square animate-fadeIn'
             alt='Cover'
             id='album-cover'
             key={`cover-${currentTrack.id}-${animationKey}`}
           />
         </>
-      ) : (
-        <div
-          className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm bg-gray-900/50 w-full h-full'
-          key={`loading-${animationKey}`}
-        >
-          <Loading />
-        </div>
       )}
     </div>
   );
 
-  const renderCardContent = () => {
-    if (!isActive || !shouldShowContent) {
+  const renderBlankCardContent = () => {
+    if (!isActive || !shouldShowContent || !currentTrack) {
       return (
         <>
           <div
-            className='w-[334px] h-[334px] bg-gray-900/50 rounded-sm flex items-center justify-center'
+            className='aspect-square bg-gray-900/50 rounded-sm flex items-center justify-center'
             key={`card-cover-${index}`}
           ></div>
           <div
@@ -137,7 +128,7 @@ const Card: FC<CardProps> = ({
       <>
         {renderCover()}
         <div
-          className='h-16 rounded bg-gray-900/50 w-full mt-4'
+          className='h-16 rounded-sm bg-gray-900/50 w-[100px] mt-4'
           key={`placeholder-${index}-${animationKey}`}
         ></div>
       </>
@@ -160,7 +151,9 @@ const Card: FC<CardProps> = ({
       initial={{
         scale: 0.95,
       }}
-      drag={isActive && !disabled && !spotifyPlayer.isDragging ? "x" : false}
+      drag={
+        isActive && !disabled && !spotifyPlayer.isDraggingSlider ? "x" : false
+      }
       dragConstraints={{
         left: 0,
         right: 0,
@@ -180,7 +173,7 @@ const Card: FC<CardProps> = ({
       }}
     >
       <div className='border border-gray-700 rounded-lg p-8 cursor-grab bg-black active:cursor-grabbing select-none relative'>
-        <div className='mx-auto'>{renderCardContent()}</div>
+        <div className='mx-auto'>{renderBlankCardContent()}</div>
         <div
           className={`flex flex-col items-start w-full py-2 slider-container ${!isActive ? "opacity-50" : ""}`}
         >
@@ -267,9 +260,9 @@ const PlayerUI: FC = () => {
   };
 
   const playerContent = (
-    <div className='mx-auto select-none relative flex justify-center'>
-      <div className='relative w-[400px]'>
-        {cards
+    <div className='relative w-full h-full'>
+      {user.recommendedSongs.length > 0 ? (
+        cards
           .slice(0, Math.min(currentIndex + 2, cards.length))
           .map((_, i) => (
             <Card
@@ -281,42 +274,19 @@ const PlayerUI: FC = () => {
               animationKey={spotifyPlayer.animationKey ?? 0}
               spotifyPlayer={spotifyPlayer}
             />
-          ))}
-      </div>
-    </div>
-  );
-
-  const miniPlayerEmptyState = (
-    <div
-      style={{
-        position: "absolute",
-        left: 0,
-        bottom: 0,
-        touchAction: "none",
-        zIndex: 50,
-      }}
-      className='w-[300px] h-[200px] select-none [&_*]:select-none'
-    >
-      <div className='w-full h-full p-6 border border-gray-700 rounded-lg bg-black'>
-        <div className='h-full flex flex-col justify-center space-y-2'>
-          <div className='h-16 rounded-sm bg-gray-900/50 w-full'></div>
-          <div className='w-full slider-container'>
-            <SliderUI disabled={true} />
-          </div>
-          <div className='w-full'>
-            <MediaControls disabled={true} />
-          </div>
-        </div>
-      </div>
-      <div
-        className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-[25px] blur-[50px] z-0'
-        style={{
-          width: "250px",
-          height: "150px",
-          zIndex: -1,
-          backgroundColor: "transparent",
-        }}
-      />
+          ))
+      ) : (
+        <Card
+          key='empty-card'
+          index={0}
+          isActive={true}
+          currentTrack={null}
+          onSwipe={() => {}}
+          animationKey={0}
+          disabled={true}
+          spotifyPlayer={spotifyPlayer}
+        />
+      )}
     </div>
   );
 
@@ -332,7 +302,7 @@ const PlayerUI: FC = () => {
       className='w-[300px] h-[200px] select-none [&_*]:select-none'
     >
       <div className='w-full h-full p-6 border border-gray-700 rounded-lg bg-black'>
-        {spotifyPlayer.currentTrack ? (
+        {user.recommendedSongs.length > 0 && spotifyPlayer.currentTrack ? (
           <div className='h-full flex flex-col justify-center space-y-2'>
             <div>
               <MarqueeText
@@ -352,8 +322,14 @@ const PlayerUI: FC = () => {
             </div>
           </div>
         ) : (
-          <div className='flex items-center justify-center h-full'>
-            <Loading />
+          <div className='h-full flex flex-col justify-center space-y-2'>
+            <div className='h-16 rounded-sm bg-gray-900/50 w-full' />
+            <div className='w-full slider-container'>
+              <SliderUI disabled={true} />
+            </div>
+            <div className='w-full'>
+              <MediaControls disabled={true} />
+            </div>
           </div>
         )}
       </div>
@@ -369,31 +345,6 @@ const PlayerUI: FC = () => {
       />
     </div>
   );
-
-  if (user.recommendedSongs.length === 0) {
-    return portalContainer
-      ? createPortal(
-          isHomePage ? (
-            <div className='mx-auto select-none relative flex justify-center'>
-              <div className='relative w-[400px]'>
-                <Card
-                  index={0}
-                  isActive={true}
-                  currentTrack={null}
-                  onSwipe={() => {}}
-                  animationKey={0}
-                  disabled={true}
-                  spotifyPlayer={spotifyPlayer}
-                />
-              </div>
-            </div>
-          ) : (
-            miniPlayerEmptyState
-          ),
-          portalContainer
-        )
-      : null;
-  }
 
   return portalContainer
     ? createPortal(

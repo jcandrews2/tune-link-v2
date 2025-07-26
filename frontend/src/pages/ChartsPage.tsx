@@ -134,7 +134,7 @@ const ChartsPage: FC = () => {
     }
   };
 
-  const handleArtistClick = async (artistId: string, artistName: string) => {
+  const handleArtistClick = async (artistId: string) => {
     try {
       setLoadingItemId(artistId);
 
@@ -170,7 +170,7 @@ const ChartsPage: FC = () => {
     <div className='flex flex-col flex-grow'>
       <div
         id='mini-player-portal'
-        className='flex flex-col xl:flex-row justify-center items-start gap-4 mx-auto container'
+        className='flex flex-col xl:flex-row justify-center items-start gap-4 mx-auto container relative'
       >
         <Chart
           title='Disliked Songs'
@@ -201,9 +201,7 @@ const ChartsPage: FC = () => {
               isExpanded={expandedItems.artists === artist.spotifyId}
               isLoading={loadingItemId === artist.spotifyId}
               itemDetails={itemDetails[artist.spotifyId]}
-              onCardClick={() =>
-                handleArtistClick(artist.spotifyId, artist.name)
-              }
+              onCardClick={() => handleArtistClick(artist.spotifyId)}
             />
           ))}
         </Chart>

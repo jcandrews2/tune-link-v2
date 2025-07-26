@@ -26,8 +26,10 @@ const HomePage: FC = () => {
         <div className='h-full w-full max-h-[600px] flex items-center justify-center p-4'>
           <div
             id='player-portal'
-            className='w-full h-full flex justify-center'
-          />
+            className='aspect-[2/3] max-h-[600px] flex items-center justify-center'
+          >
+            {/* Player will be portalled here */}
+          </div>
         </div>
         <div className='h-full w-full max-h-[600px] flex items-center justify-center p-4'>
           <PreviousRequests />

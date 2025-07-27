@@ -65,7 +65,7 @@ const Card: FC<CardProps> = ({
   };
 
   const renderCover = () => (
-    <div className='relative w-full aspect-square z-0 select-none'>
+    <div className='relative aspect-square z-0'>
       {currentTrack && (
         <>
           <div
@@ -88,7 +88,7 @@ const Card: FC<CardProps> = ({
     </div>
   );
 
-  const renderBlankCardContent = () => {
+  const renderCardContent = () => {
     if (!isActive || !shouldShowContent || !currentTrack) {
       return (
         <>
@@ -137,7 +137,7 @@ const Card: FC<CardProps> = ({
 
   return (
     <motion.div
-      className='absolute top-0 left-0 w-full'
+      className='absolute top-0 left-0 w-full h-full'
       style={{
         x,
         rotate,
@@ -172,14 +172,9 @@ const Card: FC<CardProps> = ({
         },
       }}
     >
-      <div className='border border-gray-700 rounded-lg p-8 cursor-grab bg-black active:cursor-grabbing select-none relative'>
-        <div className='mx-auto'>{renderBlankCardContent()}</div>
-        <div
-          className={`flex flex-col items-start w-full py-2 slider-container ${!isActive ? "opacity-50" : ""}`}
-        >
-          <SliderUI disabled={!isActive || !currentTrack} />
-        </div>
-
+      <div className='border border-gray-700 rounded-lg p-4 xl:p-8 cursor-grab bg-black active:cursor-grabbing relative w-full max-w-[350px] mx-auto'>
+        <div className='mx-auto'>{renderCardContent()}</div>
+        <SliderUI disabled={!isActive || !currentTrack} />
         <MediaControls disabled={!isActive || !currentTrack} />
       </div>
     </motion.div>

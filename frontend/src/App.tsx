@@ -52,9 +52,9 @@ const App: FC = () => {
     <Router>
       <Layout>
         {/* <ScreenSizeWarning /> */}
-        <div className='flex flex-col min-h-screen'>
+        <div className='flex flex-col h-screen'>
           <Navbar />
-          <div className='flex-grow text-white p-4 flex flex-col'>
+          <div className='flex-grow text-white xl:p-4 flex flex-col h-full w-full'>
             <Routes>
               <Route path='/welcome' element={<WelcomePage />} />
               <Route

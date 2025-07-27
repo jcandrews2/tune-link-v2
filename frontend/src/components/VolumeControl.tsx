@@ -46,7 +46,7 @@ const VolumeControl: FC = () => {
   };
 
   return (
-    <div className='flex items-center justify-center gap-2'>
+    <div className='hidden md:flex items-center justify-center gap-2'>
       <button
         onClick={toggleMute}
         className='active:scale-95'

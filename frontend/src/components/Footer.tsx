@@ -9,12 +9,12 @@ const Footer: FC = () => {
 
   return (
     <nav>
-      <div className='container mx-auto px-4'>
-        <div className='flex items-center h-20 gap-8'>
-          <div className='flex items-center'>
+      <div className='container mx-auto py-2 px-4 h-12 xl:h-16'>
+        <div className='flex items-center h-full'>
+          <div className='flex items-center md:flex-none flex-1 md:flex-initial justify-center md:justify-start'>
             <img src={logo} alt='Spotify Logo' className='w-auto h-10' />
           </div>
-          <div className='flex-grow' />
+          <div className='hidden md:block flex-grow' />
           {isWelcomePage ? (
             <p className='text-white text-lg'>
               {new Date().getFullYear()} Vibesbased.

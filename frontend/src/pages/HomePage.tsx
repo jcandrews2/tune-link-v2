@@ -18,20 +18,20 @@ const HomePage: FC = () => {
   }, []);
 
   const mobileContent = (
-    <div className='w-full max-h-[600px]'>
+    <div className='w-full h-full'>
       <Carousel titles={["Make Request", "Player", "Previous Requests"]}>
-        <div className='h-full w-full max-h-[600px] flex items-center justify-center p-4'>
+        <div className='h-full w-full flex items-center justify-center'>
           <RequestsBox />
         </div>
-        <div className='h-full w-full max-h-[600px] flex items-center justify-center p-4'>
+        <div className='h-full w-full flex items-center justify-center'>
           <div
             id='player-portal'
-            className='aspect-[2/3] max-h-[600px] flex items-center justify-center'
+            className='flex items-center justify-center h-full w-full'
           >
             {/* Player will be portalled here */}
           </div>
         </div>
-        <div className='h-full w-full max-h-[600px] flex items-center justify-center p-4'>
+        <div className='h-full w-full flex items-center justify-center'>
           <PreviousRequests />
         </div>
       </Carousel>
@@ -56,7 +56,7 @@ const HomePage: FC = () => {
   );
 
   return (
-    <div className='w-full'>
+    <div className='w-full h-full'>
       {isLargeScreen ? desktopContent : mobileContent}
     </div>
   );

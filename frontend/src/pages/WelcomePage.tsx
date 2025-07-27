@@ -8,7 +8,7 @@ const WelcomePage: FC = () => {
 
   return (
     <div className='flex flex-col items-center justify-center text-white'>
-      <h1 className='text-8xl font-bold p-4'>Welcome to</h1>
+      <h1 className='text-8xl font-bold p-4'>Welcome</h1>
       <img src={VibesbasedLogo} alt='Vibesbased Logo' className='w-64 h-auto' />
       <h2 className='text-xl mb-12 p-4 text-center text-gray-300 max-w-2xl'>
         Music discovery made easy. <br />

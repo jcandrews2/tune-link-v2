@@ -13,18 +13,21 @@ const Carousel: React.FC<CarouselProps> = ({ children, titles }) => {
   };
 
   return (
-    <div className='relative w-full flex flex-col gap-4'>
+    <div className='relative w-full h-full flex flex-col gap-4'>
       {/* Main carousel content */}
-      <div className='relative overflow-hidden rounded-lg'>
+      <div className='relative w-full h-full overflow-hidden rounded-lg'>
         <div
-          className='w-full transition-transform duration-300 ease-in-out'
+          className='w-full h-full transition-transform duration-300 ease-in-out'
           style={{
             transform: `translateX(-${currentIndex * 100}%)`,
             display: "flex",
           }}
         >
           {children.map((child, index) => (
-            <div key={index} className='w-full flex-shrink-0 max-h-[600px]'>
+            <div
+              key={index}
+              className='w-full h-full flex-shrink-0 max-h-[600px]'
+            >
               {child}
             </div>
           ))}

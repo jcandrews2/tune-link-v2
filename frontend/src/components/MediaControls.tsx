@@ -53,7 +53,7 @@ const MediaControls: FC<MediaControlsProps> = ({ disabled = false }) => {
 
   return (
     <div className='container mx-auto'>
-      <div className='z-0 flex items-center justify-center w-full'>
+      <div className='z-0 flex items-center justify-center'>
         <button
           onClick={onDislike}
           className={buttonClasses}

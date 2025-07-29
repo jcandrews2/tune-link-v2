@@ -2,16 +2,17 @@ import React, { FC, useEffect, useState } from "react";
 import useStore from "../store";
 import { getDislikedSongs, getLikedSongs, getTopArtists } from "../api/userApi";
 import { getTrackDetails, getArtistDetails } from "../api/spotifyApi";
-import type { Song, Artist } from "../types";
+import type { Song } from "../types";
 import SongCard from "../components/SongCard";
 import ArtistCard from "../components/ArtistCard";
 import Chart from "../components/Chart";
+import Carousel from "../components/Carousel";
 
 type SectionType = "liked" | "disliked" | "artists";
-type ItemDetailsType = {
-  id: string;
-  type: "track" | "artist";
-  details: any;
+type ItemType = "track" | "artist";
+type ItemDetails = {
+  type: ItemType;
+  details: Record<string, unknown>;
 };
 
 const ChartsPage: FC = () => {
@@ -19,7 +20,9 @@ const ChartsPage: FC = () => {
   const [expandedItems, setExpandedItems] = useState<{
     [K in SectionType]?: string;
   }>({});
-  const [itemDetails, setItemDetails] = useState<{ [key: string]: any }>({});
+  const [itemDetails, setItemDetails] = useState<{
+    [key: string]: ItemDetails;
+  }>({});
   const [loadingItemId, setLoadingItemId] = useState<string | null>(null);
 
   useEffect(() => {
@@ -43,14 +46,18 @@ const ChartsPage: FC = () => {
 
         // Set and fetch details for default expanded items
         const defaultExpanded: { [K in SectionType]?: string } = {};
-        const detailsPromises: Promise<ItemDetailsType>[] = [];
+        const detailsPromises: Promise<{
+          id: string;
+          type: ItemType;
+          details: Record<string, unknown>;
+        }>[] = [];
 
         if (likedSongsData?.[0]) {
           defaultExpanded.liked = likedSongsData[0].spotifyId;
           detailsPromises.push(
             getTrackDetails(likedSongsData[0].spotifyId).then((details) => ({
               id: likedSongsData[0].spotifyId,
-              type: "track" as const,
+              type: "track",
               details,
             }))
           );
@@ -60,7 +67,7 @@ const ChartsPage: FC = () => {
           detailsPromises.push(
             getTrackDetails(dislikedSongsData[0].spotifyId).then((details) => ({
               id: dislikedSongsData[0].spotifyId,
-              type: "track" as const,
+              type: "track",
               details,
             }))
           );
@@ -70,7 +77,7 @@ const ChartsPage: FC = () => {
           detailsPromises.push(
             getArtistDetails(topArtistsData[0].spotifyId).then((details) => ({
               id: topArtistsData[0].spotifyId,
-              type: "artist" as const,
+              type: "artist",
               details,
             }))
           );
@@ -80,7 +87,7 @@ const ChartsPage: FC = () => {
 
         // Fetch all default expanded items' details
         const results = await Promise.all(detailsPromises);
-        const newDetails: { [key: string]: any } = {};
+        const newDetails: { [key: string]: ItemDetails } = {};
         results.forEach((result) => {
           newDetails[result.id] = {
             type: result.type,
@@ -168,14 +175,59 @@ const ChartsPage: FC = () => {
 
   return (
     <div className='flex flex-col flex-grow'>
+      {/* Mobile View with Carousel */}
+      <div className='xl:hidden w-full h-full p-4'>
+        <Carousel titles={["Disliked Songs", "Artists", "Liked Songs"]}>
+          <Chart title='Disliked Songs' className='w-full h-full'>
+            {user.dislikedSongs?.map((song: Song) => (
+              <SongCard
+                key={song.spotifyId}
+                song={song}
+                isExpanded={expandedItems.disliked === song.spotifyId}
+                isLoading={loadingItemId === song.spotifyId}
+                itemDetails={itemDetails[song.spotifyId]}
+                onCardClick={() => handleTrackClick(song, "disliked")}
+                onArtistClick={handleArtistClick}
+              />
+            ))}
+          </Chart>
+
+          <Chart title='Artists' className='w-full h-full'>
+            {user.topArtists?.map((artist, index) => (
+              <ArtistCard
+                key={artist.spotifyId}
+                artist={artist}
+                index={index}
+                isExpanded={expandedItems.artists === artist.spotifyId}
+                isLoading={loadingItemId === artist.spotifyId}
+                itemDetails={itemDetails[artist.spotifyId]}
+                onCardClick={() => handleArtistClick(artist.spotifyId)}
+              />
+            ))}
+          </Chart>
+
+          <Chart title='Liked Songs' className='w-full h-full'>
+            {user.likedSongs?.map((song: Song) => (
+              <SongCard
+                key={song.spotifyId}
+                song={song}
+                isExpanded={expandedItems.liked === song.spotifyId}
+                isLoading={loadingItemId === song.spotifyId}
+                itemDetails={itemDetails[song.spotifyId]}
+                onCardClick={() => handleTrackClick(song, "liked")}
+                onArtistClick={handleArtistClick}
+              />
+            ))}
+          </Chart>
+        </Carousel>
+      </div>
+
+      {/* Desktop View */}
       <div
         id='mini-player-portal'
-        className='flex flex-col xl:flex-row justify-center items-start gap-4 mx-auto container relative'
+        className='hidden xl:flex flex-row justify-center items-start gap-4 mx-auto container relative'
       >
-        <Chart
-          title='Disliked Songs'
-          className='w-full xl:w-1/3 relative z-0 h-[366px]'
-        >
+        <Chart title='Disliked Songs' className='w-1/3 relative z-0 h-[366px]'>
           {user.dislikedSongs?.map((song: Song) => (
             <SongCard
               key={song.spotifyId}
@@ -191,7 +243,7 @@ const ChartsPage: FC = () => {
 
         <Chart
           title='Artists'
-          className='w-full xl:w-1/3 flex justify-center z-10 h-[600px]'
+          className='w-1/3 flex justify-center z-10 h-[600px]'
         >
           {user.topArtists?.map((artist, index) => (
             <ArtistCard
@@ -206,10 +258,7 @@ const ChartsPage: FC = () => {
           ))}
         </Chart>
 
-        <Chart
-          title='Liked Songs'
-          className='w-full xl:w-1/3 relative z-0 h-[366px]'
-        >
+        <Chart title='Liked Songs' className='w-1/3 relative z-0 h-[366px]'>
           {user.likedSongs?.map((song: Song) => (
             <SongCard
               key={song.spotifyId}

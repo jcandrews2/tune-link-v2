@@ -137,7 +137,7 @@ const Card: FC<CardProps> = ({
 
   return (
     <motion.div
-      className='absolute top-0 left-0 w-full h-full'
+      className='absolute top-0 left-0 w-full h-max'
       style={{
         x,
         rotate,
@@ -172,7 +172,7 @@ const Card: FC<CardProps> = ({
         },
       }}
     >
-      <div className='border border-gray-700 rounded-lg p-4 xl:p-8 cursor-grab bg-black active:cursor-grabbing relative w-full max-w-[350px] mx-auto'>
+      <div className='border border-gray-700 rounded-lg p-4 xl:p-8 cursor-grab bg-black active:cursor-grabbing relative mx-auto'>
         <div className='mx-auto'>{renderCardContent()}</div>
         <SliderUI disabled={!isActive || !currentTrack} />
         <MediaControls disabled={!isActive || !currentTrack} />

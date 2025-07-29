@@ -16,7 +16,6 @@ import ProtectedRoute from "./components/ProtectedRoute";
 import Footer from "./components/Footer";
 import Layout from "./components/Layout";
 import Loading from "./components/Loading";
-import ScreenSizeWarning from "./components/ScreenSizeWarning";
 
 const App: FC = () => {
   const { setUser } = useStore();
@@ -47,14 +46,12 @@ const App: FC = () => {
       </div>
     );
   }
-
   return (
     <Router>
       <Layout>
-        {/* <ScreenSizeWarning /> */}
         <div className='flex flex-col h-screen'>
           <Navbar />
-          <div className='flex-grow text-white xl:p-4 flex flex-col h-full w-full'>
+          <div className='text-white xl:p-4 h-full w-full'>
             <Routes>
               <Route path='/welcome' element={<WelcomePage />} />
               <Route

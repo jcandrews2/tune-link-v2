@@ -15,7 +15,7 @@ const Navbar: FC = () => {
   };
 
   return (
-    <nav className='relative'>
+    <nav>
       <div className='container flex items-center mx-auto px-4 py-2 h-12 xl:h-16'>
         {/* Logo */}
         <div className='w-1/4'>

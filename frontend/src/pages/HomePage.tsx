@@ -1,41 +1,29 @@
-import React, { FC, useState, useEffect } from "react";
+import React, { FC, useEffect } from "react";
 import RequestsBox from "../components/RequestsBox";
 import PreviousRequests from "../components/PreviousRequests";
 import Carousel from "../components/Carousel";
+import { useDocumentSize } from "../hooks/useDocumentSize";
 
 const HomePage: FC = () => {
-  const [isLargeScreen, setIsLargeScreen] = useState(window.innerWidth >= 1280);
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(min-width: 1280px)");
-
-    const handleResize = (e: MediaQueryListEvent) => {
-      setIsLargeScreen(e.matches);
-    };
-
-    mediaQuery.addEventListener("change", handleResize);
-    return () => mediaQuery.removeEventListener("change", handleResize);
-  }, []);
+  const { width } = useDocumentSize();
 
   const mobileContent = (
-    <div className='w-full h-full'>
-      <Carousel titles={["Make Request", "Player", "Previous Requests"]}>
-        <div className='h-full w-full flex items-center justify-center'>
-          <RequestsBox />
+    <Carousel titles={["Make Request", "Player", "Previous Requests"]}>
+      <div className='h-full w-full flex items-center justify-center'>
+        <RequestsBox />
+      </div>
+      <div className='h-full w-full flex items-center justify-center'>
+        <div
+          id='player-portal'
+          className='flex items-center justify-center h-full w-full max-w-[350px] xl-max-width-1/3'
+        >
+          {/* Player will be portalled here */}
         </div>
-        <div className='h-full w-full flex items-center justify-center'>
-          <div
-            id='player-portal'
-            className='flex items-center justify-center h-full w-full'
-          >
-            {/* Player will be portalled here */}
-          </div>
-        </div>
-        <div className='h-full w-full flex items-center justify-center'>
-          <PreviousRequests />
-        </div>
-      </Carousel>
-    </div>
+      </div>
+      <div className='h-full w-full flex items-center justify-center'>
+        <PreviousRequests />
+      </div>
+    </Carousel>
   );
 
   const desktopContent = (
@@ -55,11 +43,7 @@ const HomePage: FC = () => {
     </div>
   );
 
-  return (
-    <div className='w-full h-full'>
-      {isLargeScreen ? desktopContent : mobileContent}
-    </div>
-  );
+  return width >= 1280 ? desktopContent : mobileContent;
 };
 
 export default HomePage;

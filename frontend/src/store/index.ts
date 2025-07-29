@@ -32,6 +32,7 @@ const useStore = create<Store>((set) => ({
     dominantColor: "",
     animationKey: 0,
   },
+
   setSpotifyPlayer: (updatedSpotifyPlayer) =>
     set((state) => ({
       spotifyPlayer: { ...state.spotifyPlayer, ...updatedSpotifyPlayer },

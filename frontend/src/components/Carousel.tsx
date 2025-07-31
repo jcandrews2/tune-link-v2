@@ -28,7 +28,7 @@ const Carousel: React.FC<CarouselProps> = ({ children, titles }) => {
 
   return (
     <motion.div
-      className='w-full h-full flex flex-col overflow-x-hidden'
+      className='w-full h-full flex flex-col overflow-hidden'
       drag='x'
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}

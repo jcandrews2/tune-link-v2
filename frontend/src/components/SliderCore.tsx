@@ -1,4 +1,4 @@
-import React, { useEffect, FC } from "react";
+import { useEffect, FC } from "react";
 import useStore from "../store";
 
 const SliderCore: FC = () => {
@@ -11,7 +11,7 @@ const SliderCore: FC = () => {
     if (
       !spotifyPlayer.isPaused &&
       spotifyPlayer.currentTrack &&
-      !spotifyPlayer.isDragging
+      !spotifyPlayer.isDraggingSlider
     ) {
       interval = setInterval(() => {
         const currentProgress = spotifyPlayer.progress || 0;
@@ -34,7 +34,7 @@ const SliderCore: FC = () => {
     spotifyPlayer.isPaused,
     spotifyPlayer.currentTrack?.id,
     spotifyPlayer.progress,
-    spotifyPlayer.isDragging,
+    spotifyPlayer.isDraggingSlider,
   ]);
 
   return null;

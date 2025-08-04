@@ -137,46 +137,55 @@ const Card: FC<CardProps> = ({
 
   return (
     <motion.div
-      className='absolute top-0 left-0 w-full h-max'
-      style={{
-        x,
-        rotate,
-        opacity,
-        scale,
-        zIndex: 100 - index,
-      }}
-      animate={{
-        scale: isActive ? 1 : 0.95,
-      }}
-      initial={{
-        scale: 0.95,
-      }}
-      drag={
-        isActive && !disabled && !spotifyPlayer.isDraggingSlider ? "x" : false
-      }
-      dragConstraints={{
-        left: 0,
-        right: 0,
-      }}
-      dragElastic={0.7}
-      dragMomentum={false}
-      onDragEnd={handleDragEnd}
-      transition={{
-        type: "spring",
-        stiffness: 400,
-        damping: 25,
-        mass: 0.8,
-        scale: {
-          duration: 0.15,
-          ease: "easeOut",
-        },
-      }}
+      className='absolute top-0 left-1/2 -translate-x-1/2 
+        w-[18rem]
+        xs:w-[22rem]
+        sm:w-[38rem]
+        md:w-[40rem]
+        xl:w-full
+        h-full'
+      style={{ zIndex: 100 - index }}
     >
-      <div className='border border-gray-700 rounded-lg p-4 xl:p-8 cursor-grab bg-black active:cursor-grabbing relative mx-auto'>
-        <div className='mx-auto'>{renderCardContent()}</div>
-        <SliderUI disabled={!isActive || !currentTrack} />
-        <MediaControls disabled={!isActive || !currentTrack} />
-      </div>
+      <motion.div
+        style={{
+          x,
+          rotate,
+          opacity,
+          scale,
+        }}
+        animate={{
+          scale: isActive ? 1 : 0.95,
+        }}
+        initial={{
+          scale: 0.95,
+        }}
+        drag={
+          isActive && !disabled && !spotifyPlayer.isDraggingSlider ? "x" : false
+        }
+        dragConstraints={{
+          left: 0,
+          right: 0,
+        }}
+        dragElastic={0.7}
+        dragMomentum={false}
+        onDragEnd={handleDragEnd}
+        transition={{
+          type: "spring",
+          stiffness: 400,
+          damping: 25,
+          mass: 0.8,
+          scale: {
+            duration: 0.15,
+            ease: "easeOut",
+          },
+        }}
+      >
+        <div className='border border-gray-700 rounded-lg p-4 xl:p-8 cursor-grab bg-black active:cursor-grabbing relative mx-auto'>
+          <div className='mx-auto'>{renderCardContent()}</div>
+          <SliderUI disabled={!isActive || !currentTrack} />
+          <MediaControls disabled={!isActive || !currentTrack} />
+        </div>
+      </motion.div>
     </motion.div>
   );
 };

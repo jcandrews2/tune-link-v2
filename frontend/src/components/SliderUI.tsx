@@ -35,7 +35,7 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
 
   const handleMouseDown = (): void => {
     if (disabled) return;
-    setSpotifyPlayer({ isDragging: true });
+    setSpotifyPlayer({ isDraggingSlider: true });
   };
 
   const handleMouseUp = (): void => {
@@ -47,7 +47,7 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
 
     setTrackPosition(position);
     setSpotifyPlayer({
-      isDragging: false,
+      isDraggingSlider: false,
       position,
     });
   };
@@ -119,6 +119,18 @@ const SliderUI: FC<SliderUIProps> = ({ disabled = false }) => {
           handleMouseDown();
         }}
         onMouseUp={(e) => {
+          e.stopPropagation();
+          if (disabled) return;
+          setSpotifyPlayer({ isDraggingSlider: false });
+          handleMouseUp();
+        }}
+        onTouchStart={(e) => {
+          e.stopPropagation();
+          if (disabled) return;
+          setSpotifyPlayer({ isDraggingSlider: true });
+          handleMouseDown();
+        }}
+        onTouchEnd={(e) => {
           e.stopPropagation();
           if (disabled) return;
           setSpotifyPlayer({ isDraggingSlider: false });

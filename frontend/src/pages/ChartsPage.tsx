@@ -7,6 +7,7 @@ import SongCard from "../components/SongCard";
 import ArtistCard from "../components/ArtistCard";
 import Chart from "../components/Chart";
 import Carousel from "../components/Carousel";
+import { useDocumentSize } from "../hooks/useDocumentSize";
 
 type SectionType = "liked" | "disliked" | "artists";
 type ItemType = "track" | "artist";
@@ -17,6 +18,7 @@ type ItemDetails = {
 
 const ChartsPage: FC = () => {
   const { user, setUser } = useStore();
+  const { width } = useDocumentSize();
   const [expandedItems, setExpandedItems] = useState<{
     [K in SectionType]?: string;
   }>({});
@@ -173,61 +175,10 @@ const ChartsPage: FC = () => {
     }
   };
 
-  return (
-    <div className='flex flex-col flex-grow'>
-      {/* Mobile View with Carousel */}
-      <div className='xl:hidden w-full h-full p-4'>
-        <Carousel titles={["Disliked Songs", "Artists", "Liked Songs"]}>
-          <Chart title='Disliked Songs' className='w-full h-full'>
-            {user.dislikedSongs?.map((song: Song) => (
-              <SongCard
-                key={song.spotifyId}
-                song={song}
-                isExpanded={expandedItems.disliked === song.spotifyId}
-                isLoading={loadingItemId === song.spotifyId}
-                itemDetails={itemDetails[song.spotifyId]}
-                onCardClick={() => handleTrackClick(song, "disliked")}
-                onArtistClick={handleArtistClick}
-              />
-            ))}
-          </Chart>
-
-          <Chart title='Artists' className='w-full h-full'>
-            {user.topArtists?.map((artist, index) => (
-              <ArtistCard
-                key={artist.spotifyId}
-                artist={artist}
-                index={index}
-                isExpanded={expandedItems.artists === artist.spotifyId}
-                isLoading={loadingItemId === artist.spotifyId}
-                itemDetails={itemDetails[artist.spotifyId]}
-                onCardClick={() => handleArtistClick(artist.spotifyId)}
-              />
-            ))}
-          </Chart>
-
-          <Chart title='Liked Songs' className='w-full h-full'>
-            {user.likedSongs?.map((song: Song) => (
-              <SongCard
-                key={song.spotifyId}
-                song={song}
-                isExpanded={expandedItems.liked === song.spotifyId}
-                isLoading={loadingItemId === song.spotifyId}
-                itemDetails={itemDetails[song.spotifyId]}
-                onCardClick={() => handleTrackClick(song, "liked")}
-                onArtistClick={handleArtistClick}
-              />
-            ))}
-          </Chart>
-        </Carousel>
-      </div>
-
-      {/* Desktop View */}
-      <div
-        id='mini-player-portal'
-        className='hidden xl:flex flex-row justify-center items-start gap-4 mx-auto container relative'
-      >
-        <Chart title='Disliked Songs' className='w-1/3 relative z-0 h-[366px]'>
+  const mobileContent = (
+    <div className='w-full h-full p-4'>
+      <Carousel titles={["Disliked Songs", "Artists", "Liked Songs"]}>
+        <Chart title='Disliked Songs' className='w-full h-full'>
           {user.dislikedSongs?.map((song: Song) => (
             <SongCard
               key={song.spotifyId}
@@ -241,10 +192,7 @@ const ChartsPage: FC = () => {
           ))}
         </Chart>
 
-        <Chart
-          title='Artists'
-          className='w-1/3 flex justify-center z-10 h-[600px]'
-        >
+        <Chart title='Artists' className='w-full h-full'>
           {user.topArtists?.map((artist, index) => (
             <ArtistCard
               key={artist.spotifyId}
@@ -258,7 +206,7 @@ const ChartsPage: FC = () => {
           ))}
         </Chart>
 
-        <Chart title='Liked Songs' className='w-1/3 relative z-0 h-[366px]'>
+        <Chart title='Liked Songs' className='w-full h-full'>
           {user.likedSongs?.map((song: Song) => (
             <SongCard
               key={song.spotifyId}
@@ -271,7 +219,62 @@ const ChartsPage: FC = () => {
             />
           ))}
         </Chart>
-      </div>
+      </Carousel>
+    </div>
+  );
+
+  const desktopContent = (
+    <div
+      id='mini-player-portal'
+      className='flex flex-row justify-center items-start gap-4 mx-auto container h-[600px] relative'
+    >
+      <Chart title='Disliked Songs' className='w-1/3 relative z-0 h-full'>
+        {user.dislikedSongs?.map((song: Song) => (
+          <SongCard
+            key={song.spotifyId}
+            song={song}
+            isExpanded={expandedItems.disliked === song.spotifyId}
+            isLoading={loadingItemId === song.spotifyId}
+            itemDetails={itemDetails[song.spotifyId]}
+            onCardClick={() => handleTrackClick(song, "disliked")}
+            onArtistClick={handleArtistClick}
+          />
+        ))}
+      </Chart>
+
+      <Chart title='Artists' className='w-1/3 flex justify-center z-10 h-full'>
+        {user.topArtists?.map((artist, index) => (
+          <ArtistCard
+            key={artist.spotifyId}
+            artist={artist}
+            index={index}
+            isExpanded={expandedItems.artists === artist.spotifyId}
+            isLoading={loadingItemId === artist.spotifyId}
+            itemDetails={itemDetails[artist.spotifyId]}
+            onCardClick={() => handleArtistClick(artist.spotifyId)}
+          />
+        ))}
+      </Chart>
+
+      <Chart title='Liked Songs' className='w-1/3 relative z-0 h-full'>
+        {user.likedSongs?.map((song: Song) => (
+          <SongCard
+            key={song.spotifyId}
+            song={song}
+            isExpanded={expandedItems.liked === song.spotifyId}
+            isLoading={loadingItemId === song.spotifyId}
+            itemDetails={itemDetails[song.spotifyId]}
+            onCardClick={() => handleTrackClick(song, "liked")}
+            onArtistClick={handleArtistClick}
+          />
+        ))}
+      </Chart>
+    </div>
+  );
+
+  return (
+    <div className='flex flex-col'>
+      {width >= 1280 ? desktopContent : mobileContent}
     </div>
   );
 };

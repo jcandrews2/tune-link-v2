@@ -28,14 +28,14 @@ const Carousel: React.FC<CarouselProps> = ({ children, titles }) => {
 
   return (
     <motion.div
-      className='w-full h-full flex flex-col overflow-hidden'
+      className='w-full h-full flex flex-col overflow-x-hidden justify-between'
       drag='x'
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
       style={{ touchAction: "none" }}
     >
-      {/* Carousel content that moves */}
+      {/* Carousel content */}
       <motion.div
         className='w-full h-1/2 flex'
         animate={{ x: `-${currentIndex * 100}%` }}
@@ -51,7 +51,7 @@ const Carousel: React.FC<CarouselProps> = ({ children, titles }) => {
         ))}
       </motion.div>
 
-      {/* Title and dots navigation (static) */}
+      {/* Dot navigation */}
       <div className='w-full'>
         <h3 className='text-center text-lg font-semibold text-white mb-2'>
           {titles[currentIndex]}

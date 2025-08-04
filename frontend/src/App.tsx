@@ -51,7 +51,7 @@ const App: FC = () => {
       <Layout>
         <div className='flex flex-col h-screen'>
           <Navbar />
-          <div className='text-white xl:p-4 h-full w-full'>
+          <div className='text-white flex-1 overflow-auto'>
             <Routes>
               <Route path='/welcome' element={<WelcomePage />} />
               <Route

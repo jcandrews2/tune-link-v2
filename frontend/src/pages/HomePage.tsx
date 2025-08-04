@@ -1,4 +1,4 @@
-import React, { FC, useEffect } from "react";
+import React, { FC } from "react";
 import RequestsBox from "../components/RequestsBox";
 import PreviousRequests from "../components/PreviousRequests";
 import Carousel from "../components/Carousel";
@@ -15,7 +15,7 @@ const HomePage: FC = () => {
       <div className='h-full w-full flex items-center justify-center'>
         <div
           id='player-portal'
-          className='flex items-center justify-center h-full w-full max-w-[350px] xl-max-width-1/3'
+          className='h-full w-full flex items-center justify-center'
         >
           {/* Player will be portalled here */}
         </div>
@@ -27,17 +27,14 @@ const HomePage: FC = () => {
   );
 
   const desktopContent = (
-    <div className='flex flex-row justify-center items-start gap-4 mx-auto container'>
-      <div className='w-1/3 relative z-0 h-[366px]'>
+    <div className='flex flex-row justify-center items-start gap-4 mx-auto container h-[600px]'>
+      <div className='w-1/3 relative z-0 h-2/3'>
         <RequestsBox />
       </div>
-      <div
-        id='player-portal'
-        className='w-1/3 flex justify-center z-10 h-[600px]'
-      >
+      <div id='player-portal' className='w-1/3 flex justify-center z-10 h-full'>
         {/* Player will be portalled here */}
       </div>
-      <div className='w-1/3 relative z-0 h-[366px]'>
+      <div className='w-1/3 relative z-0 h-2/3'>
         <PreviousRequests />
       </div>
     </div>

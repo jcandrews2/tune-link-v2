@@ -12,12 +12,13 @@ import java.util.Optional;
 public interface LikedTrackRepository extends JpaRepository<LikedTrack, Long> {
     Optional<LikedTrack> findBySpotifyId(String spotifyId);
     Optional<LikedTrack> findBySpotifyIdAndUser(String spotifyId, User user);
-    List<LikedTrack> findByUser(User user);
+    List<LikedTrack> findFirst25ByUserOrderByIdDesc(User user);
     
     @Query("SELECT lt.artist, lt.artistSpotifyId, COUNT(lt) as artistCount " +
            "FROM LikedTrack lt " +
            "WHERE lt.user = :user " +
            "GROUP BY lt.artist, lt.artistSpotifyId " +
-           "ORDER BY artistCount DESC")
+           "ORDER BY artistCount DESC " +
+           "LIMIT 25")
     List<Object[]> getTopArtistsByUser(User user);
 } 

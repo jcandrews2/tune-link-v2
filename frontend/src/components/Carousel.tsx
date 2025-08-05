@@ -1,13 +1,26 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { motion, PanInfo } from "framer-motion";
+import useStore from "../store";
 
 interface CarouselProps {
   children: React.ReactNode[];
   titles: string[];
+  isHomePage?: boolean;
 }
 
-const Carousel: React.FC<CarouselProps> = ({ children, titles }) => {
+const Carousel: React.FC<CarouselProps> = ({
+  children,
+  titles,
+  isHomePage = false,
+}) => {
+  const { spotifyPlayer } = useStore();
   const [currentIndex, setCurrentIndex] = useState(0);
+
+  useEffect(() => {
+    if (isHomePage && spotifyPlayer.currentTrack && !spotifyPlayer.isPaused) {
+      setCurrentIndex(1);
+    }
+  }, [spotifyPlayer.currentTrack, spotifyPlayer.isPaused, isHomePage]);
 
   const handleDotClick = (index: number) => {
     setCurrentIndex(index);
@@ -37,9 +50,9 @@ const Carousel: React.FC<CarouselProps> = ({ children, titles }) => {
     >
       {/* Carousel content */}
       <motion.div
-        className='w-full h-1/2 flex'
+        className='w-full h-5/6 flex'
         animate={{ x: `-${currentIndex * 100}%` }}
-        transition={{ type: "spring", stiffness: 300, damping: 30 }}
+        transition={{ type: "spring", stiffness: 400, damping: 30 }}
       >
         {children.map((child, index) => (
           <motion.div

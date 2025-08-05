@@ -8,5 +8,5 @@ import java.util.List;
 
 @Repository
 public interface RequestRepository extends JpaRepository<Request, Long> {
-    List<Request> findByUserIdOrderByTimestampDesc(String userId);
+    List<Request> findFirst25ByUserIdOrderByTimestampDesc(String userId);
 } 

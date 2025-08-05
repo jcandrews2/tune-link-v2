@@ -8,7 +8,10 @@ const HomePage: FC = () => {
   const { width } = useDocumentSize();
 
   const mobileContent = (
-    <Carousel titles={["Make Request", "Player", "Previous Requests"]}>
+    <Carousel
+      titles={["Make Request", "Player", "Previous Requests"]}
+      isHomePage
+    >
       <div className='h-full w-full flex items-center justify-center'>
         <RequestsBox />
       </div>
@@ -28,13 +31,13 @@ const HomePage: FC = () => {
 
   const desktopContent = (
     <div className='flex flex-row justify-center items-start gap-4 mx-auto container h-[600px]'>
-      <div className='w-1/3 relative z-0 h-2/3'>
+      <div className='w-1/3 relative z-0 h-3/5'>
         <RequestsBox />
       </div>
       <div id='player-portal' className='w-1/3 flex justify-center z-10 h-full'>
         {/* Player will be portalled here */}
       </div>
-      <div className='w-1/3 relative z-0 h-2/3'>
+      <div className='w-1/3 relative z-0 h-3/5'>
         <PreviousRequests />
       </div>
     </div>

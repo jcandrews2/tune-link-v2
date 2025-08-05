@@ -180,7 +180,7 @@ public class UserService {
     }
 
     public List<Request> getUserRequests(String userId) {
-        return requestRepository.findByUserIdOrderByTimestampDesc(userId);
+        return requestRepository.findFirst25ByUserIdOrderByTimestampDesc(userId);
     }
 
     public void saveRequest(String userId, String text) {
@@ -197,7 +197,7 @@ public class UserService {
             throw new NoSuchElementException("User not found with id: " + userId);
         }
 
-        return likedTrackRepository.findByUser(user)
+        return likedTrackRepository.findFirst25ByUserOrderByIdDesc(user)
             .stream()
             .map(likedTrack -> new Track(
                 likedTrack.getName(),
@@ -215,7 +215,7 @@ public class UserService {
             throw new NoSuchElementException("User not found with id: " + userId);
         }
 
-        return dislikedTrackRepository.findByUser(user)
+        return dislikedTrackRepository.findFirst25ByUserOrderByIdDesc(user)
             .stream()
             .map(dislikedTrack -> new Track(
                 dislikedTrack.getName(),

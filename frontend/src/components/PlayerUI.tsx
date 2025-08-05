@@ -9,6 +9,7 @@ import MarqueeText from "./MarqueeText";
 import { getDominantColor } from "../utils/playerUtils";
 import { handleLike, handleDislike } from "../utils/userUtils";
 import { Track, SpotifyPlayer } from "../types";
+import { useDocumentSize } from "../hooks/useDocumentSize";
 
 interface CardProps {
   index: number;
@@ -193,6 +194,7 @@ const Card: FC<CardProps> = ({
 const PlayerUI: FC = () => {
   const { user, spotifyPlayer, setUser, setSpotifyPlayer } = useStore();
   const location = useLocation();
+  const { width } = useDocumentSize();
   const isHomePage = location.pathname === "/";
   const [portalContainer, setPortalContainer] = useState<HTMLElement | null>(
     null
@@ -205,11 +207,14 @@ const PlayerUI: FC = () => {
     if (isHomePage) {
       const container = document.getElementById("player-portal");
       setPortalContainer(container);
-    } else {
+    } else if (width >= 1280) {
+      // Only set mini-player portal on desktop
       const container = document.getElementById("mini-player-portal");
       setPortalContainer(container);
+    } else {
+      setPortalContainer(null);
     }
-  }, [location]);
+  }, [location, width]);
 
   useEffect(() => {
     const handleKeyPress = (event: KeyboardEvent) => {

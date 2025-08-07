@@ -75,12 +75,14 @@ public class UserController {
         try {
             Map<String, Object> searchParams = openAIService.getSearchQuery(request);
             String endpoint = (String) searchParams.get("endpoint");
-            List<Track> recommendations;
+            List<Track> recommendations = new ArrayList<>();
+
+            logger.info("🤖 OpenAI Generated Search Params: {}", searchParams);
 
             if ("lastfm".equals(endpoint)) {
                 String tag = (String) searchParams.get("tag");
+                logger.info("🎧 LastFM Search - Tag: {}", tag);
                 List<Map<String, String>> lastFmTracks = lastFMService.getTracksByTag(tag, random.nextInt(51));
-                recommendations = new ArrayList<>();
                 for (Map<String, String> track : lastFmTracks) {
                     String query = track.get("artist") + " " + track.get("name");
                     List<Track> spotifyTracks = spotifyService.search(
@@ -104,15 +106,37 @@ public class UserController {
                 if (year != null && !year.isEmpty()) {
                     filters.put("year", year);
                 }
-                
-                recommendations = spotifyService.search(
-                    user.getSpotifyAccessToken(),
-                    query,
-                    type != null ? type : "track",
-                    filters,
-                    20,
-                    0
-                );
+
+                // For artist or album searches, we want to get their tracks
+                if (type != null && query != null) {
+                    if (type.equals("artist")) {
+                        filters.put("artist", query);
+                        query = ""; // Clear the main query since we're using it as a filter
+                        recommendations = spotifyService.search(
+                            user.getSpotifyAccessToken(),
+                            query,
+                            "track",
+                            filters,
+                            10,
+                            5
+                        );
+                    } else if (type.equals("album")) {
+                        // Use the album-specific endpoint to get all tracks from the album
+                        recommendations = spotifyService.getAlbumTracks(
+                            user.getSpotifyAccessToken(),
+                            query
+                        );
+                    }
+                } else {
+                    recommendations = spotifyService.search(
+                        user.getSpotifyAccessToken(),
+                        query,
+                        "track",
+                        filters,
+                        10,
+                        5
+                    );
+                }
             }
 
             List<RecommendedTrack> savedTracks = userService.updateRecommendedTracks(user, recommendations);

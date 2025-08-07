@@ -27,6 +27,8 @@ const Carousel: React.FC<CarouselProps> = ({
   };
 
   const handleDragEnd = (_: never, info: PanInfo) => {
+    if (spotifyPlayer.isDraggingSlider) return;
+
     const swipeThreshold = 50;
     const direction = info.offset.x > 0 ? -1 : 1;
 
@@ -42,11 +44,16 @@ const Carousel: React.FC<CarouselProps> = ({
   return (
     <motion.div
       className='w-full h-full flex flex-col overflow-x-hidden justify-between'
-      drag='x'
+      drag={!spotifyPlayer.isDraggingSlider ? "x" : false}
       dragConstraints={{ left: 0, right: 0 }}
       dragElastic={0.2}
       onDragEnd={handleDragEnd}
       style={{ touchAction: "none" }}
+      onPointerDown={(e) => {
+        if (spotifyPlayer.isDraggingSlider) {
+          e.stopPropagation();
+        }
+      }}
     >
       {/* Carousel content */}
       <motion.div

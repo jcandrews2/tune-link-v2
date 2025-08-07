@@ -32,8 +32,8 @@ public class LastFMService {
             .queryParam("tag", tag)
             .queryParam("api_key", apiKey)
             .queryParam("format", "json")
-            .queryParam("limit", 20)
-            .queryParam("page", (offset / 20) + 1)  // Convert offset to page number (LastFM uses 1-based pages)
+            .queryParam("limit", 10)
+            .queryParam("page", (offset / 20) + 1)
             .build()
             .toUriString();
 

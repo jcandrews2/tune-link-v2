@@ -1,14 +1,20 @@
-import React, { useEffect } from "react";
+import React from "react";
 import type { Song } from "../types";
 import MarqueeText from "./MarqueeText";
 import Loading from "./Loading";
 import ExpandedDetails from "./ExpandedDetails";
+import { useDocumentSize } from "../hooks/useDocumentSize";
+
+interface ItemDetails {
+  type: "track" | "artist";
+  details: unknown;
+}
 
 interface SongCardProps {
   song: Song;
   isExpanded: boolean;
   isLoading: boolean;
-  itemDetails: any;
+  itemDetails: ItemDetails;
   onCardClick: () => void;
   onArtistClick: (artistId: string, artistName: string) => void;
 }
@@ -21,6 +27,9 @@ const SongCard: React.FC<SongCardProps> = ({
   onCardClick,
   onArtistClick,
 }) => {
+  const { width } = useDocumentSize();
+  const isDesktop = width >= 1280;
+
   return (
     <div
       className={`border border-gray-700 rounded p-4 hover:border-white transition-colors cursor-pointer relative ${
@@ -32,8 +41,9 @@ const SongCard: React.FC<SongCardProps> = ({
         <MarqueeText text={song.name} className='font-semibold' />
         <MarqueeText
           text={song.artist}
-          className='text-sm text-gray-400 font-light hover:text-white cursor-pointer'
+          className={`text-sm text-gray-400 font-light ${isDesktop ? "hover:text-white cursor-pointer" : ""}`}
           onClick={(e) => {
+            if (!isDesktop) return;
             e.stopPropagation();
             onArtistClick(song.artistSpotifyId, song.artist);
           }}

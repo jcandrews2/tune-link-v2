@@ -154,10 +154,17 @@ public class UserService {
         // Add new recommendations, ensuring no duplicates
         List<RecommendedTrack> recommendedTracks = new ArrayList<>();
         Set<String> addedSpotifyIds = new HashSet<>();
+        Set<String> addedTrackKeys = new HashSet<>();
 
         for (Track track : tracks) {
             if (!addedSpotifyIds.add(track.getSpotifyId())) {
-                // Skip if we've already added this track
+                continue;
+            }
+            String trackKey = (track.getArtist() + "-" + track.getName())
+                .toLowerCase()
+                .replaceAll("[^a-z0-9]", "");
+
+            if (!addedTrackKeys.add(trackKey)) {
                 continue;
             }
 

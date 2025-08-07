@@ -38,6 +38,18 @@ const Card: FC<CardProps> = ({
   );
   const opacity = useTransform(x, [-200, -100, 0, 100, 200], [0, 1, 1, 1, 0]);
   const scale = useTransform(x, [-200, -100, 0, 100, 200], [0.8, 1, 1, 1, 0.8]);
+  const dragOpacity = useTransform(x, [-200, 0, 200], [0.3, 0, 0.3]);
+  const dragColor = useTransform(
+    x,
+    [-200, -10, 0, 10, 200],
+    [
+      "rgb(239, 68, 68)",
+      "rgb(239, 68, 68)",
+      "rgba(0, 0, 0, 0)",
+      "rgb(34, 197, 94)",
+      "rgb(34, 197, 94)",
+    ]
+  );
   const [shouldShowContent, setShouldShowContent] = useState(false);
   const swipeLocked = useRef(false);
 
@@ -70,7 +82,7 @@ const Card: FC<CardProps> = ({
       {currentTrack && (
         <>
           <div
-            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm blur-[50px] animate-fadeIn aspect-square z-0'
+            className='absolute -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm blur-[50px] animate-fadeIn w-full h-full z-0'
             key={animationKey}
             style={{
               backgroundColor: spotifyPlayer.dominantColor || "transparent",
@@ -79,7 +91,7 @@ const Card: FC<CardProps> = ({
           />
           <img
             src={currentTrack.album.images[0].url}
-            className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm aspect-square animate-fadeIn'
+            className='absolute z-10 -translate-x-1/2 -translate-y-1/2 left-1/2 top-1/2 rounded-sm w-full h-full animate-fadeIn'
             alt='Cover'
             id='album-cover'
             key={`cover-${currentTrack.id}-${animationKey}`}
@@ -182,9 +194,18 @@ const Card: FC<CardProps> = ({
         }}
       >
         <div className='border border-gray-700 rounded-lg p-4 xl:p-8 cursor-grab bg-black active:cursor-grabbing relative mx-auto'>
-          <div className='mx-auto'>{renderCardContent()}</div>
-          <SliderUI disabled={!isActive || !currentTrack} />
-          <MediaControls disabled={!isActive || !currentTrack} />
+          <motion.div
+            className='absolute inset-0 rounded-lg z-[1]'
+            style={{
+              backgroundColor: dragColor,
+              opacity: dragOpacity,
+            }}
+          />
+          <div className='mx-auto relative z-[2]'>{renderCardContent()}</div>
+          <div className='relative z-[2]'>
+            <SliderUI disabled={!isActive || !currentTrack} />
+            <MediaControls disabled={!isActive || !currentTrack} />
+          </div>
         </div>
       </motion.div>
     </motion.div>

@@ -85,7 +85,7 @@ public class SpotifyAuthController {
 
             ResponseCookie cookie = ResponseCookie.from("access_token", accessToken)
                 .httpOnly(true)
-                .secure(false) // TODO: Set true in production
+                .secure(true) // TODO: Set true in production
                 .path("/")
                 .maxAge(Duration.ofSeconds(expiresIn))
                 .sameSite("Lax")

@@ -28,7 +28,7 @@
   <h1 align="center">Vibesbased</h1>
 
   <p align="center">
-    A music discovery application based on vibes. 
+    A music discovery application based on vibes. Due to Spotify's new policies, new users need to message me to gain access.
     <br />
     <a href="https://vibesbased.site"><strong>Go to website »</strong></a>
     <br />
